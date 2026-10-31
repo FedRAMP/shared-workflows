@@ -1,0 +1,85 @@
+name: Builds & deploys Zensical sites for GitHub pages (FedRAMP style)
+
+on:
+  workflow_call:
+    inputs:
+      build-script:
+        description: Optional repository-local script that builds html/
+        type: string
+        default: ""
+      use-bun:
+        type: boolean
+        default: false
+      submodules:
+        type: boolean
+        default: false
+      venv-path:
+        type: string
+        default: ".venv"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: ${{ inputs.submodules && 'recursive' || 'false' }}
+      - uses: actions/checkout@v5
+        with:
+          repository: FedRAMP/shared-workflows
+          ref: v1
+          path: .shared-workflows
+          persist-credentials: false
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install shared Python dependencies
+        env:
+          VENV_PATH: ${{ inputs.venv-path }}
+        run: |
+          python -m venv "$VENV_PATH"
+          "$VENV_PATH/bin/python" -m pip install \
+            --require-hashes -r .shared-workflows/requirements.txt
+          echo "$GITHUB_WORKSPACE/$VENV_PATH/bin" >> "$GITHUB_PATH"
+
+      - uses: oven-sh/setup-bun@v2
+        if: inputs.use-bun
+        with:
+          bun-version: "1.4.4"
+
+      - name: Build site
+        env:
+          BUILD_SCRIPT: ${{ inputs.build-script }}
+        run: |
+          if [[ -n "$BUILD_SCRIPT" ]]; then
+            bash "$BUILD_SCRIPT"
+          else
+            zensical build --clean
+          fi
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: html/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v6
+      - id: deployment
+        uses: actions/deploy-pages@v5
