@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """Release controller. All remote writes are confined to REPOSITORY.
 
-Run only from local-release.yml on main. Generated harnesses use literal commit SHAs
-because reusable-workflow `uses` does not support expression-valued refs.
+Run only from local-release.yml on main. The committed harness is dispatched at
+the candidate commit; only data is passed as inputs. No workflow files are written.
 """
 import base64
-import copy
 import hashlib
 import json
 import os
@@ -18,11 +17,11 @@ import time
 import tomllib
 from html.parser import HTMLParser
 
-from common import ROOT, REPOSITORY, output_json, run, yaml_read, yaml_write
+from common import ROOT, REPOSITORY, output_json, run, yaml_read
 
 VERSION = re.compile(r'v1\.(\d+)\.(\d+)')
 SHA = re.compile(r'[0-9a-f]{40}')
-BUILDER = REPOSITORY + '/.github/workflows/build-zensical-artifact.yml@'
+BUILDER = './.github/workflows/build-zensical-artifact.yml'
 
 
 def api(endpoint, method='GET', data=None, missing_ok=False):
@@ -73,42 +72,35 @@ def next_version(tags):
     return f'v1.{minor}.{patch + 1}', previous
 
 
-def pin_builders(source):
-    if not SHA.fullmatch(source):
-        raise ValueError('Builder ref must be a commit SHA')
-    for name in ('build-fr-zensical.yml', 'import-zensical-sites.yml'):
-        path = ROOT / '.github/workflows' / name
-        text = path.read_text()
-        text, count = re.subn(re.escape(BUILDER) + r'[^\s]+', BUILDER + source, text)
-        if count != 1:
-            raise ValueError('Expected one builder reference in ' + name)
-        path.write_text(text)
+def harness_inputs(sites, ref, repository):
+    """Validate dispatch data against the committed production caller template."""
+    match = re.fullmatch(r'refs/heads/(release-tests/[0-9]+-[0-9]+)/harness', ref)
+    if repository != REPOSITORY or not match:
+        raise ValueError('Harness requires an isolated branch in ' + REPOSITORY)
+    expected = json.loads(yaml_read(ROOT / 'import-zensical-sites.yml')['jobs']['import']['with']['sites'])
+    defaults = {'use-bun': False, 'submodules': False, 'venv-path': '.venv', 'build-script': ''}
+    normalized = []
+    for site in expected:
+        normalized.append({**defaults, **site})
+    if not isinstance(sites, list) or len(sites) != len(normalized):
+        raise ValueError('Harness sites must match the production caller')
+    for site, wanted in zip(sites, normalized):
+        if (not isinstance(site, dict) or not isinstance(site.get('sha'), str) or
+                not SHA.fullmatch(site['sha']) or
+                {k: v for k, v in site.items() if k != 'sha'} != wanted):
+            raise ValueError('Harness may only add pinned SHAs to production site definitions')
+    return {'sites': json.dumps(sites), 'matrix': json.dumps({'include': sites}),
+            'base': match[1] + '/base', 'branch': match[1] + '/import'}
 
 
-def generate_harness(candidate, sites, namespace):
-    """Exercise the caller templates, changing only test destinations/options."""
-    if not SHA.fullmatch(candidate):
-        raise ValueError('Candidate must be a commit SHA')
-    importer = copy.deepcopy(yaml_read(ROOT / 'import-zensical-sites.yml')['jobs']['import'])
-    importer['uses'] = REPOSITORY + '/.github/workflows/import-zensical-sites.yml@' + candidate
-    importer.pop('secrets', None)  # the harness's own GITHUB_TOKEN creates local test PRs
-    importer['permissions'] = {'contents': 'write', 'pull-requests': 'write'}
-    importer['with'].update({'sites': json.dumps(sites), 'create-pr': True, 'release-test': True,
-                             'base-branch': namespace + '/base', 'import-branch': namespace + '/import'})
-    preview = copy.deepcopy(yaml_read(ROOT / 'zensical-to-preview.yml')['jobs']['site'])
-    preview['uses'] = REPOSITORY + '/.github/workflows/build-fr-zensical.yml@' + candidate
-    preview['if'] = "inputs.phase == 'create'"
-    preview['permissions'] = {'contents': 'read', 'pages': 'write', 'id-token': 'write'}
-    preview['strategy'] = {'fail-fast': False, 'matrix': {'include': sites}}
-    preview['with'].update({'deploy': False, 'source-repository': '${{ matrix.repository }}',
-                            'source-ref': '${{ matrix.sha }}', 'artifact-name': 'preview-${{ matrix.id }}',
-                            'artifact-mode': 'pages', 'preview-urls': True})
-    for key in ('use-bun', 'submodules', 'venv-path', 'build-script'):
-        preview['with'][key] = '${{ matrix.' + key + ' }}'
-    return {'name': 'local-release-e2e', 'run-name': 'local-release-e2e ${{ inputs.phase }}',
-            'on': {'workflow_dispatch': {'inputs': {'phase': {'type': 'choice', 'required': True,
-                                                             'options': ['create', 'refresh', 'skip']}}}},
-            'permissions': {'contents': 'read'}, 'jobs': {'import': importer, 'preview': preview}}
+def prepare_harness():
+    if os.environ.get('GITHUB_EVENT_NAME') != 'workflow_dispatch':
+        raise ValueError('Harness requires workflow_dispatch')
+    values = harness_inputs(json.loads(os.environ['SITES']), os.environ['GITHUB_REF'],
+                            os.environ['GITHUB_REPOSITORY'])
+    with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
+        for name, value in values.items():
+            stream.write(f'{name}={value}\n')
 
 
 def wait_ci(source):
@@ -154,13 +146,15 @@ def commit(message):
 
 
 def push_branch(sha, branch):
+    if git('diff', '--name-only', os.environ['GITHUB_SHA'], sha, '--', '.github/workflows'):
+        raise RuntimeError('Release automation must not push modified workflow files')
     # Never replace an existing branch, even after a partially failed previous run.
     git('push', f'--force-with-lease=refs/heads/{branch}:', 'origin', f'{sha}:refs/heads/{branch}')
 
 
 def dispatch_and_wait(phase, branch, harness_sha, state):
     repo_api('actions/workflows/local-release-e2e.yml/dispatches', method='POST',
-             data={'ref': branch, 'inputs': {'phase': phase}})
+             data={'ref': branch, 'inputs': {'phase': phase, 'sites': json.dumps(state['sites'])}})
     deadline = time.monotonic() + 300
     known = {r['id'] for r in state['runs']}
     selected = None
@@ -299,7 +293,8 @@ def release_notes(state, commits):
         subject = re.sub(r'(?<![\w/])#([0-9]+)\b', lambda m: REPOSITORY + '#' + m[1], subject)
         lines.append(f'- {subject} ([{sha[:7]}](https://github.com/{REPOSITORY}/commit/{sha}))')
     lines += ['', '## Release evidence', '',
-              f"- Source / builder commit: `{state['source_sha']}`",
+              f"- Source commit: `{state['source_sha']}`",
+              f"- Builder commit: `{state['builder_sha']}`",
               f"- Release commit: `{state['release_sha']}`",
               f"- Previous v1 target: `{state['previous_v1_oid']}`",
               f"- Previous v1 commit: `{state['previous_v1_commit']}`",
@@ -400,7 +395,6 @@ def main():
              'sites': sites, 'runs': []}
     git('config', 'user.name', 'github-actions[bot]')
     git('config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com')
-    pin_builders(source)
     output_json(ROOT / 'release-management/release.json',
                 {k: state[k] for k in ('version', 'source_sha', 'requirements_sha256', 'previous_version')})
     run('python3', 'release-management/check.py', '--actionlint')
@@ -411,8 +405,11 @@ def main():
         candidate = resume_candidate
         git('checkout', '--detach', candidate)
     else:
-        candidate = commit('Release ' + version + ': pin shared builder to ' + source)
+        candidate = commit('Release ' + version + ': record source ' + source)
+    if git('diff', '--name-only', source, candidate, '--', '.github/workflows'):
+        raise RuntimeError('Release preparation must not modify workflow files')
     state['release_sha'] = candidate
+    state['builder_sha'] = candidate
     output_json(evidence_dir() / 'state.json', state)
     push_branch(candidate, namespace + '/candidate')
     # Isolated base contains deliberate stale output to exercise replacement.
@@ -423,9 +420,7 @@ def main():
     base = commit('Prepare isolated import test base')
     push_branch(base, namespace + '/base')
     git('checkout', '--detach', candidate)
-    yaml_write(ROOT / '.github/workflows/local-release-e2e.yml', generate_harness(candidate, sites, namespace))
-    run('python3', 'release-management/check.py', '--actionlint')
-    harness = commit('Generate SHA-pinned release E2E harness')
+    harness = candidate  # Dispatch the committed workflow unchanged.
     push_branch(harness, namespace + '/harness')
     first_run = dispatch_and_wait('create', namespace + '/harness', harness, state)
     pr = verify_pr(namespace, sites)
@@ -481,7 +476,7 @@ def main():
 
 if __name__ == '__main__':
     try:
-        cleanup() if sys.argv[1:] == ['cleanup'] else main()
+        {'cleanup': cleanup, 'harness': prepare_harness}.get(sys.argv[1] if len(sys.argv) > 1 else '', main)()
     except Exception as error:
         print(f'::error::{error}', file=sys.stderr)
         sys.exit(1)

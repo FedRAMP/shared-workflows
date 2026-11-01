@@ -20,32 +20,38 @@ class ReleaseTests(unittest.TestCase):
         self.assertEqual(release.next_version(['v1', 'v1.0.2', 'v1.1.9', 'v1.2.0-rc1', 'v2.0.0']), ('v1.1.10', 'v1.1.9'))
         self.assertEqual(release.next_version([]), ('v1.0.0', None))
 
-    def test_harness_uses_candidate_and_production_templates(self):
-        sites = json.loads(yaml_read(ROOT / 'import-zensical-sites.yml')['jobs']['import']['with']['sites'])
-        harness = release.generate_harness(SHA, sites, 'release-tests/1-1')
+    def test_fixed_harness_uses_same_commit_workflows(self):
+        harness = yaml_read(ROOT / '.github/workflows/local-release-e2e.yml')
         imp, pages = harness['jobs']['import'], harness['jobs']['preview']
-        self.assertTrue(imp['uses'].endswith('@' + SHA))
-        self.assertTrue(pages['uses'].endswith('@' + SHA))
+        self.assertEqual(imp['uses'], './.github/workflows/import-zensical-sites.yml')
+        self.assertEqual(pages['uses'], './.github/workflows/build-fr-zensical.yml')
         self.assertNotIn('secrets', imp)
         self.assertNotIn('pages', imp['permissions'])
         self.assertNotIn('id-token', imp['permissions'])
         self.assertTrue(imp['with']['release-test'])
         self.assertFalse(pages['with']['deploy'])
-        self.assertEqual(json.loads(imp['with']['sites']), sites)
-        self.assertEqual(pages['strategy']['matrix']['include'], sites)
-        self.assertEqual(imp['with']['base-branch'], 'release-tests/1-1/base')
+        for name in ('import-zensical-sites.yml', 'build-fr-zensical.yml'):
+            self.assertEqual(yaml_read(ROOT / '.github/workflows' / name)['jobs']['build']['uses'], release.BUILDER)
 
-    def test_pinning_changes_only_nested_builder_refs(self):
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            workflow_dir = root / '.github/workflows'
-            workflow_dir.mkdir(parents=True)
-            for name in ('import-zensical-sites.yml', 'build-fr-zensical.yml'):
-                (workflow_dir / name).write_text((ROOT / '.github/workflows' / name).read_text())
-            with patch.object(release, 'ROOT', root):
-                release.pin_builders(SHA)
-            for name in ('import-zensical-sites.yml', 'build-fr-zensical.yml'):
-                self.assertEqual(yaml_read(workflow_dir / name)['jobs']['build']['uses'], release.BUILDER + SHA)
+    def test_harness_accepts_only_production_sites_and_isolated_branches(self):
+        sites = json.loads(yaml_read(ROOT / 'import-zensical-sites.yml')['jobs']['import']['with']['sites'])
+        defaults = {'use-bun': False, 'submodules': False, 'venv-path': '.venv', 'build-script': ''}
+        sites = [{**defaults, **s, 'sha': SHA} for s in sites]
+        ref = 'refs/heads/release-tests/1-1/harness'
+        values = release.harness_inputs(sites, ref, release.REPOSITORY)
+        self.assertEqual(json.loads(values['matrix'])['include'], sites)
+        self.assertEqual(values['base'], 'release-tests/1-1/base')
+        for bad_ref in ('refs/heads/main', 'refs/heads/release-tests/1-1/base'):
+            with self.assertRaises(ValueError):
+                release.harness_inputs(sites, bad_ref, release.REPOSITORY)
+        for key, value in [('repository', 'Example/other'), ('destination', 'static/other'),
+                           ('build-script', 'evil.sh'), ('sha', 'main')]:
+            bad = copy.deepcopy(sites)
+            bad[0][key] = value
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                release.harness_inputs(bad, ref, release.REPOSITORY)
+        with self.assertRaises(ValueError):
+            release.harness_inputs(sites, ref, 'FedRAMP/fedramp.gov')
 
     def test_release_refuses_other_repositories_branches_and_events(self):
         env = {'GITHUB_REPOSITORY': 'FedRAMP/shared-workflows', 'GITHUB_REF': 'refs/heads/main',
@@ -64,7 +70,7 @@ class ReleaseTests(unittest.TestCase):
             release.wait_ci(SHA)
 
     def test_notes_include_direct_commits_and_audit_fields(self):
-        state = {'version': 'v1.0.3', 'source_sha': SHA, 'release_sha': 'b' * 40,
+        state = {'version': 'v1.0.3', 'source_sha': SHA, 'release_sha': 'b' * 40, 'builder_sha': 'b' * 40,
                  'previous_v1_oid': 'c' * 40, 'previous_v1_commit': 'd' * 40,
                  'requirements_sha256': 'e' * 64, 'ci_url': 'https://example.test/ci',
                  'release_url': 'https://example.test/release', 'previous_version': 'v1.0.2',

@@ -14,8 +14,8 @@ def check():
         workflow = yaml_read(path)
         assert 'on' in workflow, path
         for job in workflow['jobs'].values():
-            if 'uses' in job and job['uses'].startswith(REPOSITORY + '/'):
-                match = re.fullmatch(re.escape(REPOSITORY) + r'/([\w./-]+)@(v1|[0-9a-f]{40})', job['uses'])
+            if 'uses' in job and job['uses'].startswith((REPOSITORY + '/', './.github/workflows/')):
+                match = re.fullmatch(r'(?:' + re.escape(REPOSITORY) + r'/|\./)([\w./-]+)(?:@(v1|[0-9a-f]{40}))?', job['uses'])
                 assert match, job['uses']
                 target = yaml_read(ROOT / match[1])
                 spec = target['on']['workflow_call'].get('inputs', {})
@@ -35,14 +35,28 @@ def check():
     importer = docs['import-zensical-sites.yml']
     for job in importer['jobs'].values():
         assert not {'pages', 'id-token'} & job.get('permissions', {}).keys()
-    assert '/build-zensical-artifact.yml@' in importer['jobs']['build']['uses']
-    assert '/build-zensical-artifact.yml@' in docs['build-fr-zensical.yml']['jobs']['build']['uses']
+    assert importer['jobs']['build']['uses'] == './.github/workflows/build-zensical-artifact.yml'
+    assert docs['build-fr-zensical.yml']['jobs']['build']['uses'] == './.github/workflows/build-zensical-artifact.yml'
     deployment = docs['build-fr-zensical.yml']['jobs']['deploy']
     assert deployment['permissions'] == {'pages': 'write', 'id-token': 'write'}
     assert deployment['if'] == 'inputs.deploy'
     assert docs['local-ci.yml']['on']['push']['branches'] == ['main']
     assert docs['local-ci.yml']['on']['pull_request']['branches'] == ['main']
     assert set(docs['local-release.yml']['on']) == {'workflow_dispatch'}
+    release_job = docs['local-release.yml']['jobs']['release']
+    assert release_job['permissions'] == {'contents': 'write', 'actions': 'write', 'pull-requests': 'write'}
+    assert 'secrets.' not in (ROOT / '.github/workflows/local-release.yml').read_text()
+    harness = docs['local-release-e2e.yml']['jobs']
+    for job_name, template, template_job in [('import', 'import-zensical-sites.yml', 'import'),
+                                             ('preview', 'zensical-to-preview.yml', 'site')]:
+        caller = yaml_read(ROOT / template)['jobs'][template_job]
+        expected_path = './' + caller['uses'].split(REPOSITORY + '/', 1)[1].split('@', 1)[0]
+        assert harness[job_name]['uses'] == expected_path
+    assert harness['import']['with']['create-pr'] is True
+    assert harness['import']['with']['release-test'] is True
+    assert harness['preview']['with']['deploy'] is False
+    assert harness['preview']['with']['preview-urls'] is True
+
     for path in [*ROOT.glob('release-management/**/*.py'), *ROOT.glob('import-zensical-sites/*.py')]:
         ast.parse(path.read_text(), filename=str(path))
     for path in (ROOT / 'release-management').glob('**/action.yml'):

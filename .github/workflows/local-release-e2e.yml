@@ -1,6 +1,6 @@
-# The release controller writes a SHA-pinned harness at this path on its own
-# temporary branch. This dispatch registration must exist on the default branch.
+# Fixed harness: dispatched at the release candidate, never generated at runtime.
 name: local-release-e2e
+run-name: local-release-e2e ${{ inputs.phase }}
 on:
   workflow_dispatch:
     inputs:
@@ -8,12 +8,63 @@ on:
         type: choice
         options: [create, refresh, skip]
         required: true
+      sites:
+        description: Production site definitions with pinned source SHAs
+        type: string
+        required: true
 permissions:
   contents: read
 jobs:
-  registration:
+  prepare:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      sites: ${{ steps.inputs.outputs.sites }}
+      matrix: ${{ steps.inputs.outputs.matrix }}
+      base: ${{ steps.inputs.outputs.base }}
+      branch: ${{ steps.inputs.outputs.branch }}
     steps:
-      - run: |
-          echo '::error::Run the local-release workflow; it dispatches its generated candidate harness.'
-          exit 1
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Validate isolated test scope and caller inputs
+        id: inputs
+        env:
+          SITES: ${{ inputs.sites }}
+        run: python3 release-management/release.py harness
+
+  import:
+    needs: prepare
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: ./.github/workflows/import-zensical-sites.yml
+    with:
+      sites: ${{ needs.prepare.outputs.sites }}
+      create-pr: true
+      release-test: true
+      base-branch: ${{ needs.prepare.outputs.base }}
+      import-branch: ${{ needs.prepare.outputs.branch }}
+
+  preview:
+    needs: prepare
+    if: inputs.phase == 'create'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    uses: ./.github/workflows/build-fr-zensical.yml
+    with:
+      deploy: false
+      source-repository: ${{ matrix.repository }}
+      source-ref: ${{ matrix.sha }}
+      artifact-name: preview-${{ matrix.id }}
+      artifact-mode: pages
+      preview-urls: true
+      use-bun: ${{ matrix.use-bun }}
+      submodules: ${{ matrix.submodules }}
+      venv-path: ${{ matrix.venv-path }}
+      build-script: ${{ matrix.build-script }}

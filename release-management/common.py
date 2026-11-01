@@ -21,11 +21,6 @@ def yaml_read(path):
     return json.loads(run('ruby', '-e', code, str(path)).stdout)
 
 
-def yaml_write(path, data):
-    # JSON is also YAML, avoiding emitter/version ambiguities for generated harnesses.
-    Path(path).write_text(json.dumps(data, indent=2) + '\n')
-
-
 def output_json(path, value):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     Path(path).write_text(json.dumps(value, indent=2) + '\n')

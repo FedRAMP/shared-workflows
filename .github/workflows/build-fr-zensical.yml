@@ -59,7 +59,7 @@ jobs:
 
   build:
     needs: validate
-    uses: FedRAMP/shared-workflows/.github/workflows/build-zensical-artifact.yml@v1
+    uses: ./.github/workflows/build-zensical-artifact.yml
     with:
       source-repository: ${{ inputs.source-repository }}
       source-ref: ${{ inputs.source-ref }}

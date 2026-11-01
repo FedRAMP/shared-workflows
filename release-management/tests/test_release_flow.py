@@ -119,9 +119,17 @@ class ReleaseFlowTests(unittest.TestCase):
         self.assertEqual(self.remote_ref('refs/tags/v1'), candidate)
         self.assertNotEqual(candidate, self.source)
         self.assertEqual(self.remote_ref('refs/heads/main'), self.source)
+        changed = real_run('git', 'diff', '--name-only', self.source, candidate).stdout.splitlines()
+        self.assertEqual(changed, ['release-management/release.json'])
+        for branch in ('candidate', 'base', 'harness'):
+            ref = self.remote_ref('refs/heads/release-tests/123-1/' + branch)
+            self.assertEqual(real_run('git', 'diff', '--name-only', self.source, ref,
+                                      '--', '.github/workflows').stdout, '')
+        self.assertEqual(self.remote_ref('refs/heads/release-tests/123-1/harness'), candidate)
+
         for name in ('import-zensical-sites.yml', 'build-fr-zensical.yml'):
             text = real_run('git', 'show', candidate + ':.github/workflows/' + name).stdout
-            self.assertIn(release.BUILDER + self.source, text)
+            self.assertIn(release.BUILDER, text)
         tree = real_run('git', 'ls-tree', '-r', '--name-only', candidate).stdout
         self.assertNotIn('release-stale.txt', tree)
         harness = real_run('git', 'show', candidate + ':.github/workflows/local-release-e2e.yml').stdout
@@ -156,3 +164,14 @@ class ReleaseFlowTests(unittest.TestCase):
             self.invoke()
         self.assertEqual(self.remote_ref('refs/tags/v1'), self.source)
         self.assertNotEqual(self.remote_ref('refs/tags/v1.0.1'), self.source)
+
+    def test_branch_push_rejects_workflow_edits(self):
+        path = self.work / '.github/workflows/local-ci.yml'
+        path.write_text(path.read_text() + '\n# Unexpected generated change\n')
+        real_run('git', 'add', str(path))
+        real_run('git', 'commit', '-m', 'Unexpected workflow edit')
+        changed = real_run('git', 'rev-parse', 'HEAD').stdout.strip()
+        with patch.dict(os.environ, self.env), self.assertRaisesRegex(RuntimeError, 'modified workflow'):
+            release.push_branch(changed, 'release-tests/123-1/harness')
+        refs = real_run('git', '--git-dir=' + str(self.remote), 'for-each-ref', '--format=%(refname)').stdout
+        self.assertNotIn('release-tests', refs)

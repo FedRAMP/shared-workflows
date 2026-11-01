@@ -27,11 +27,11 @@ Pages; only its deployment job requests Pages and OIDC write permissions.
 `import-zensical-sites.yml` calls the build-only workflow for each changed site
 with `preview-urls: false` and `artifact-mode: archive`, then prepares a PR.
 
-Development entry points use an explicit `@v1` builder reference. The automated
-release process replaces both nested references with the exact source commit SHA
-in a separate release commit. Published numbered releases therefore keep their
-builder and locked dependencies fixed even after `v1` moves. The main branch and
-copyable caller templates keep their normal `@v1` references.
+Shared workflows use same-commit `./.github/workflows/...` references internally.
+They do not follow a second moving `@v1` reference: the selected entry point and
+its builder resolve from the same commit. The release process uses lightweight
+version and `v1` tags pointing directly at the tested commit, rather than
+annotated tag objects. Copyable caller templates keep their normal `@v1` references.
 
 The import workflow uses
 [`import-zensical-sites/zensical-import.py`](import-zensical-sites/zensical-import.py)
@@ -152,37 +152,42 @@ this workflow never promotes a v2 release to v1.
 ### One-time repository setup
 
 1. Merge these workflows into the default branch (`main`). GitHub must know
-   `local-release-e2e.yml` on the default branch before the controller can dispatch its
-   generated version on a temporary branch.
-2. Add a repository Actions secret named `RELEASE_TOKEN`. Use a fine-grained PAT
-   restricted to **FedRAMP/shared-workflows**, with **Contents**, **Workflows**,
-   **Actions**, and **Pull requests** read/write permissions. An equivalent
-   appropriately scoped token can be supplied instead. Workflow-write access is
-   needed because release candidates and harnesses contain workflow files.
-   The token is used only by the release controller; site builds and the import
-   harness do not receive it. Keep the token valid and satisfy any organization
-   approval/SSO requirements.
-3. Under **Settings → Actions → General**, enable **Allow GitHub Actions to create
+   `local-release-e2e.yml` there before the controller can dispatch the committed
+   harness at the candidate commit on a temporary branch.
+2. Under **Settings → Actions → General**, enable **Allow GitHub Actions to create
    and approve pull requests**. The isolated import test uses its own
    `GITHUB_TOKEN` to create draft PRs in this repository.
-4. Ensure repository rules permit that release identity to create version tags,
+3. Ensure repository rules permit GitHub Actions to create version tags,
    move `v1`, and create/delete `release-tests/**` branches. Make **local-ci / Quick
    checks** required for merging into `main` (the displayed check is **Quick
    checks**). No environment approval is required by these workflows.
 
+**No PAT or custom release secret is required.** GitHub supplies the job-scoped
+`GITHUB_TOKEN` automatically. The release controller requests `contents: write`
+for branches/tags/releases, `actions: write` for dispatching/cancelling test runs,
+and `pull-requests: write` for inspecting/closing test PRs. Builds receive their
+own restricted tokens, not the controller's token. The existing optional
+`ZENSICAL_IMPORT_TOKEN` for production imports is unrelated and remains optional.
+
 These are repository settings; committing the files alone does not configure
-secrets, rules, or Actions permissions. The release workflow does not require
-access to the private fedramp.gov repository.
+rules or Actions permissions. The release workflow does not require access to the
+private fedramp.gov repository. It reads the public source-site repositories for
+builds; all release branches, PRs, tags, and releases stay in shared-workflows.
+GitHub permits `workflow_dispatch` with the automatic token, so no separate token
+is needed to start the child test runs.
 
 ### What a release does
 
 1. Captures the dispatch's exact `main` SHA. A later push to main does not change
    that candidate. It waits up to ten minutes for that SHA's successful push CI.
-2. Creates a release commit with both nested builder calls pinned to that source
-   SHA and a `release-management/release.json` record. It does not modify main.
+2. Creates a release commit adding only a `release-management/release.json` record.
+   Workflow files are unchanged, and main is not modified. Same-commit references
+   keep the builder at this candidate commit without rewriting workflow files.
 3. Resolves the four source-site commits from the root importer template and
-   creates a generated harness from **both root caller templates**. All workflow
-   calls in the harness use explicit candidate SHAs, never the current `v1`.
+   dispatches the **fixed, committed harness** at the candidate commit. It passes
+   site definitions and SHAs as inputs, validates them against the importer
+   template, and uses the same entry points as both root caller templates. Static
+   checks keep those entry points aligned. No test call follows the current `v1`.
 4. Builds all four sites through the actual importer, creates a draft PR in this
    repository, and verifies its source markers, HTML, notes, changed-path scope,
    and deletion of deliberately stale output. It separately builds all four
@@ -217,7 +222,7 @@ release's source commit, including direct commits. Use descriptive commit messag
 (or squash-merge titles); no labeling or manual note writing is needed. Commit and
 PR references link to this repository.
 
-Each release records its source SHA, prepared release SHA, builder SHA (the source
+Each release records its source SHA, prepared release SHA, builder SHA (the release
 SHA), prior `v1` tag object and peeled commit, dependency-lock checksum, source-site
 SHAs, build versions/submodule SHAs, source CI link, all E2E run links, and the
 closed test PR. The manifest is attached to the release. Workflow evidence is also
