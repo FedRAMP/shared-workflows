@@ -332,6 +332,11 @@ run. Moving a tag does not itself run workflows in consuming repositories.
 
 ### Local quick checks
 
+GitHub jobs explicitly use `ubuntu-26.04`. Artifact transfers use
+`actions/upload-artifact@v5` and `actions/download-artifact@v6` (Node.js 24).
+Run the full integration workflow on GitHub to verify the runner image and builds;
+local checks do not execute that image.
+
 Python 3.12+ and Ruby are required. With actionlint 1.7.12 on PATH:
 
 ```bash
@@ -342,5 +347,6 @@ git diff --check
 
 Without actionlint, omit that flag to run the other static checks. The linter
 suppression is limited to its missing `job.workflow_repository` and
-`job.workflow_sha` context properties; all other lint diagnostics remain errors.
+`job.workflow_sha` context properties and its unrecognized `ubuntu-26.04` label;
+all other lint diagnostics remain errors.
 Full release checks require GitHub Actions and configured repository credentials.

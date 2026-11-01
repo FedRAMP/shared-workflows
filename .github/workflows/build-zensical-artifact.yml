@@ -42,7 +42,7 @@ concurrency:
 jobs:
   build:
     name: Build Site Artifact
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 30
     steps:
       - name: Validate Artifact Settings
@@ -118,7 +118,7 @@ jobs:
           } > "$RUNNER_TEMP/site-artifact/build-info.txt"
 
       - name: Upload Site Archives
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: inputs.artifact-mode == 'archive'
         with:
           name: ${{ inputs.artifact-name }}

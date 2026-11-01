@@ -11,7 +11,7 @@ jobs:
   release:
     name: Validate And Publish
     if: github.repository == 'FedRAMP/shared-workflows' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 180
     permissions:
       contents: write
@@ -37,7 +37,7 @@ jobs:
         run: python3 release-management/release.py cleanup
       - name: Save Release Evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: release-evidence-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/release-evidence/

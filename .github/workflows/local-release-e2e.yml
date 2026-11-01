@@ -33,7 +33,7 @@ permissions:
 jobs:
   prepare:
     name: Prepare Full Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     permissions:
       contents: write
@@ -59,7 +59,7 @@ jobs:
           URLS: ${{ inputs.urls }}
         run: python3 release-management/pipeline.py prepare
       - name: Save Prepared State
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: pipeline-${{ github.run_attempt }}-prepare
           path: ${{ runner.temp }}/release-evidence/state.json
@@ -107,7 +107,7 @@ jobs:
   verify-create:
     name: Verify Created PR
     needs: [import, preview]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     permissions:
       contents: write
@@ -124,7 +124,7 @@ jobs:
         with:
           python-version: '3.13'
       - name: Restore Pipeline State
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: pipeline-${{ github.run_attempt }}-prepare
           path: ${{ runner.temp }}/release-evidence
@@ -134,7 +134,7 @@ jobs:
           IMPORT_CHANGED: ${{ needs.import.outputs.changed }}
         run: python3 release-management/pipeline.py create
       - name: Save Verified State
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: pipeline-${{ github.run_attempt }}-create
           path: ${{ runner.temp }}/release-evidence/state.json
@@ -159,7 +159,7 @@ jobs:
   verify-refresh:
     name: Verify Refreshed PR
     needs: refresh
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     permissions:
       contents: read
@@ -176,7 +176,7 @@ jobs:
         with:
           python-version: '3.13'
       - name: Restore Pipeline State
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: pipeline-${{ github.run_attempt }}-create
           path: ${{ runner.temp }}/release-evidence
@@ -186,7 +186,7 @@ jobs:
           IMPORT_CHANGED: ${{ needs.refresh.outputs.changed }}
         run: python3 release-management/pipeline.py refresh
       - name: Save Verified State
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: pipeline-${{ github.run_attempt }}-refresh
           path: ${{ runner.temp }}/release-evidence/state.json
@@ -211,7 +211,7 @@ jobs:
   verify-skip:
     name: Verify Unchanged Sources
     needs: skip
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     permissions:
       contents: read
@@ -228,7 +228,7 @@ jobs:
         with:
           python-version: '3.13'
       - name: Restore Pipeline State
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: pipeline-${{ github.run_attempt }}-refresh
           path: ${{ runner.temp }}/release-evidence
@@ -238,7 +238,7 @@ jobs:
           IMPORT_CHANGED: ${{ needs.skip.outputs.changed }}
         run: python3 release-management/pipeline.py skip
       - name: Save Verified State
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: pipeline-${{ github.run_attempt }}-skip
           path: ${{ runner.temp }}/release-evidence/state.json
@@ -249,7 +249,7 @@ jobs:
     name: Clean Test Resources
     if: always()
     needs: [prepare, import, preview, verify-create, refresh, verify-refresh, skip, verify-skip]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     permissions:
       contents: write
@@ -273,7 +273,7 @@ jobs:
     name: Full Test Results
     if: always()
     needs: [verify-skip, cleanup]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 5
     steps:
       - name: Require All Checks
@@ -293,7 +293,7 @@ jobs:
         with:
           python-version: '3.13'
       - name: Restore Verified State
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: pipeline-${{ github.run_attempt }}-skip
           path: ${{ runner.temp }}/release-evidence
@@ -303,7 +303,7 @@ jobs:
           CLEANUP_RESULT: ${{ needs.cleanup.result }}
         run: python3 release-management/pipeline.py finish
       - name: Save Test Evidence
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: pipeline-${{ github.run_attempt }}-result
           path: ${{ runner.temp }}/release-evidence/test-manifest.json

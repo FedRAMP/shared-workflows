@@ -68,8 +68,10 @@ def check():
             if 'run' in step:
                 run('bash', '-n', input=re.sub(r'\$\{\{.*?\}\}', 'EXPRESSION', step['run']))
     if '--actionlint' in sys.argv:
-        # GitHub.com's workflow identity contexts are newer than this linter's schema.
+        # GitHub.com's workflow identity contexts and Ubuntu 26.04 hosted label
+        # are newer than this pinned linter's schema. Keep exceptions exact.
         run('actionlint', '-ignore', r'property "workflow_(repository|sha)" is not defined',
+            '-ignore', r'^label "ubuntu-26\.04" is unknown\.',
             *map(str, files))
     print('Workflow interfaces, permission boundaries, Python and shell syntax passed.')
 
