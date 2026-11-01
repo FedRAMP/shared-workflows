@@ -173,8 +173,12 @@ def commit_notes(site, previous, temp):
         notes = run(*prefix, 'log', '--no-merges', '-10', '--format=  - %s (%h)', revision).stdout
         if count > 10:
             notes += f'  - …and {count - 10} more commits\n'
-        return notes
-    return run(*prefix, 'log', '--no-merges', '-1', '--format=  - %s (%h)', sha).stdout
+    else:
+        notes = run(*prefix, 'log', '--no-merges', '-1', '--format=  - %s (%h)', sha).stdout
+    # These subjects are displayed in the destination repo's PR, so bare issue
+    # and PR references must identify their source repo. Leave qualified refs alone.
+    return re.sub(r'(?<![\w/&#=.%+-])#([0-9]+)\b',
+                  lambda match: f"{site['repository']}#{match[1]}", notes)
 
 
 def matrix_sites():
