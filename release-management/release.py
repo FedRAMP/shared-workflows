@@ -23,6 +23,19 @@ from common import ROOT, REPOSITORY, output_json, run, yaml_read
 VERSION = re.compile(r'v1\.(\d+)\.(\d+)')
 SHA = re.compile(r'[0-9a-f]{40}')
 BUILDER = './.github/workflows/build-zensical-artifact.yml'
+PHASE_LABELS = {
+    'create': 'Build all sites and previews; create a draft import PR',
+    'refresh': 'Rebuild all imports and update the existing draft PR',
+    'skip': 'Verify unchanged sources skip builds and leave the PR unchanged',
+}
+BUILD_POLICY = (
+    'Every full test run deliberately rebuilds all configured sites, even when their '
+    'source SHAs have not changed. The isolated test base has no source markers, '
+    'so the initial phase builds every import and preview. The refresh phase '
+    'deliberately invalidates a pending marker to exercise rebuilding and PR updates. '
+    'Normal imports skip unchanged sources; the final phase verifies that behavior '
+    'by expecting no builds and no PR changes.'
+)
 
 
 def api(endpoint, method='GET', data=None, missing_ok=False):
@@ -33,6 +46,16 @@ def api(endpoint, method='GET', data=None, missing_ok=False):
     if result.returncode:
         if missing_ok and 'HTTP 404' in result.stderr:
             return None
+        # Deleting an already-removed Git ref returns 422 rather than 404.
+        # Do not suppress other validation, permission, or protection errors.
+        if (missing_ok and method == 'DELETE' and '/git/refs/heads/' in endpoint
+                and 'HTTP 422' in result.stderr):
+            try:
+                message = json.loads(result.stdout).get('message')
+            except (ValueError, AttributeError):
+                message = None
+            if message == 'Reference does not exist':
+                return None
         raise RuntimeError(f'GitHub API {method} {endpoint}: {result.stderr.strip()}')
     return json.loads(result.stdout) if result.stdout.strip() else None
 
@@ -102,6 +125,11 @@ def prepare_harness():
     with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
         for name, value in values.items():
             stream.write(f'{name}={value}\n')
+    parent = values['base'].split('/')[1].split('-')[0]
+    with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
+        stream.write(f'Part of [parent test/release run #{parent}]'
+                     f'(https://github.com/{REPOSITORY}/actions/runs/{parent}).\n\n'
+                     'This internal test phase does not publish or deploy.\n')
 
 
 def wait_ci(source):
@@ -155,7 +183,8 @@ def push_branch(sha, branch):
 
 def dispatch_and_wait(phase, branch, harness_sha, state):
     repo_api('actions/workflows/local-release-e2e.yml/dispatches', method='POST',
-             data={'ref': branch, 'inputs': {'phase': phase, 'sites': json.dumps(state['sites'])}})
+             data={'ref': branch, 'inputs': {'phase': phase, 'sites': json.dumps(state['sites']),
+                                           'parent-run': os.environ['GITHUB_RUN_ID']}})
     deadline = time.monotonic() + 300
     known = {r['id'] for r in state['runs']}
     selected = None
@@ -172,6 +201,8 @@ def dispatch_and_wait(phase, branch, harness_sha, state):
     state['runs'].append(record)
     output_json(evidence_dir() / 'state.json', state)
     print('Running ' + phase + ': ' + record['url'], flush=True)
+    with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
+        stream.write(f"- [{PHASE_LABELS[phase]}]({record['url']}) started.\n")
     # Runs are sequential; the outer workflow's 180-minute timeout is the final bound.
     deadline = time.monotonic() + 3600
     while time.monotonic() < deadline:
@@ -179,6 +210,8 @@ def dispatch_and_wait(phase, branch, harness_sha, state):
         if result['status'] == 'completed':
             record['conclusion'] = result['conclusion']
             output_json(evidence_dir() / 'state.json', state)
+            with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
+                stream.write(f"- [{PHASE_LABELS[phase]}]({record['url']}): {result['conclusion']}.\n")
             if result['conclusion'] != 'success':
                 raise RuntimeError('Release E2E failed: ' + record['url'])
             return record['id']
@@ -302,9 +335,10 @@ def release_notes(state, commits):
               f"- requirements.txt SHA-256: `{state['requirements_sha256']}`",
               f"- [Source CI]({state['ci_url']})",
               f"- [Release run]({state['release_url']})"]
-    lines.append(f"- [Closed test PR]({state['test_pr_url']})")
+    lines.append(f"- [Inspect the test PR (closed without merging)]({state['test_pr_url']})")
     for record in state['runs']:
-        lines.append(f"- [E2E {record['phase']}]({record['url']}): {record['conclusion']}")
+        lines.append(f"- [{PHASE_LABELS[record['phase']]}]({record['url']}): {record['conclusion']}")
+    lines += ['', BUILD_POLICY, '']
     if state['previous_version']:
         lines.append(f"- [Changes since {state['previous_version']}](https://github.com/{REPOSITORY}/compare/{state['previous_version']}...{state['version']})")
     lines += ['', '## Build inputs', '', '```json', json.dumps(state['sites'], indent=2), '```',
@@ -351,12 +385,20 @@ def run_e2e(state, urls):
     sites = state['sites']
     candidate = state['release_sha']
     namespace = prefix()
+    with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
+        stream.write('## Full pipeline test plan\n\n' + BUILD_POLICY + '\n\n'
+                     f"Expected builds: {len(sites)} imports + {len(sites)} previews + "
+                     f"{len(sites)} refreshed imports = {3 * len(sites)} builds. "
+                     'The final unchanged-source check must produce zero builds.\n\n')
     git('checkout', '--detach', candidate)
     push_branch(candidate, namespace + '/candidate')
     # Isolated base contains deliberate stale output to exercise replacement.
     for site in sites:
         destination = ROOT / site['destination']
         destination.mkdir(parents=True, exist_ok=True)
+        # Always exercise the complete build, even if the candidate happens to
+        # contain markers matching today's downstream SHAs.
+        (destination / '.zensical-source-sha').unlink(missing_ok=True)
         (destination / 'release-stale.txt').write_text('Must be removed by import\n')
     base = commit('Prepare isolated import test base')
     push_branch(base, namespace + '/base')
@@ -411,8 +453,9 @@ def run_tests():
     with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
         stream.write(f"## Full tests passed\n\nTested commit: `{source}`\n\n")
         for record in state['runs']:
-            stream.write(f"- [{record['phase']}]({record['url']}): {record['conclusion']}\n")
-        stream.write(f"- [Closed test PR]({state['test_pr_url']})\n\nNo release was published and no tags were changed.\n")
+            stream.write(f"- [{PHASE_LABELS[record['phase']]}]({record['url']}): {record['conclusion']}\n")
+        stream.write(f"- [Inspect the test PR (closed without merging)]({state['test_pr_url']})\n\n"
+                     + BUILD_POLICY + '\n\nNo release was published and no tags were changed.\n')
     print('Full tests passed. No releases or tags were created or changed.', flush=True)
 
 

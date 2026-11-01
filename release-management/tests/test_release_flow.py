@@ -194,3 +194,26 @@ class ReleaseFlowTests(unittest.TestCase):
             self.invoke(test_only=True)
         self.assertEqual(before, real_run('git', '--git-dir=' + str(self.remote), 'show-ref', '--tags').stdout)
         self.assertFalse(self.gh_calls)
+
+    def test_full_tests_remove_matching_markers_only_from_isolated_base(self):
+        for site in self.sites:
+            destination = self.work / site['destination']
+            destination.mkdir(parents=True, exist_ok=True)
+            (destination / '.zensical-source-sha').write_text(site['sha'] + '\n')
+        real_run('git', 'add', 'static')
+        real_run('git', 'commit', '-m', 'Record already imported source SHAs')
+        self.source = real_run('git', 'rev-parse', 'HEAD').stdout.strip()
+        self.env['GITHUB_SHA'] = self.source
+        self.invoke(test_only=True)
+        base = self.remote_ref('refs/heads/release-tests/123-1/base')
+        for site in self.sites:
+            marker = site['destination'] + '/.zensical-source-sha'
+            self.assertEqual(real_run('git', 'ls-tree', base, marker).stdout, '')
+            self.assertEqual(real_run('git', 'show', self.source + ':' + marker).stdout.strip(), site['sha'])
+        summary = (self.folder / 'summary').read_text()
+        self.assertIn('even when their source SHAs have not changed', summary)
+        self.assertIn('12 builds', summary)
+        self.assertIn('Normal imports skip unchanged sources', summary)
+        for label in release.PHASE_LABELS.values():
+            self.assertIn(label, summary)
+        self.assertIn('closed without merging', summary)

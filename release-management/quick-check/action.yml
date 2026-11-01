@@ -3,10 +3,11 @@ description: Validate workflow contracts and run fast offline tests
 runs:
   using: composite
   steps:
-    - uses: actions/setup-python@v6
+    - name: Set Up Python
+      uses: actions/setup-python@v6
       with:
         python-version: '3.13'
-    - name: Install pinned workflow linter
+    - name: Install Workflow Linter
       shell: bash
       run: |
         lint_dir="$RUNNER_TEMP/actionlint"
@@ -17,9 +18,9 @@ runs:
         echo "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  $lint_dir/actionlint.tar.gz" | sha256sum --check
         tar -xzf "$lint_dir/actionlint.tar.gz" -C "$lint_dir" actionlint
         echo "$lint_dir" >> "$GITHUB_PATH"
-    - name: Check workflows and scripts
+    - name: Validate Workflow Contracts
       shell: bash
       run: python3 release-management/check.py --actionlint
-    - name: Run offline regression tests
+    - name: Run Regression Tests
       shell: bash
       run: python3 -m unittest discover -s release-management/tests -v

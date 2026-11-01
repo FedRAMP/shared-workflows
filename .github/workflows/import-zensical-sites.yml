@@ -1,4 +1,4 @@
-name: (Shared) Import Sites And Create Draft Pull Request
+name: "(Shared) Import: Build Sites And Prepare Draft PR"
 
 on:
   workflow_call:
@@ -29,6 +29,7 @@ permissions:
 
 jobs:
   discover:
+    name: Find Source Changes
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -40,17 +41,19 @@ jobs:
       base-sha: ${{ steps.discover.outputs.base-sha }}
       paths: ${{ steps.discover.outputs.paths }}
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout Destination Repository
+        uses: actions/checkout@v5
         with:
           ref: ${{ inputs.base-branch }}
           persist-credentials: false
-      - uses: actions/checkout@v5
+      - name: Checkout Shared Tools
+        uses: actions/checkout@v5
         with:
           repository: ${{ job.workflow_repository }}
           ref: ${{ job.workflow_sha }}
           path: .shared-workflows
           persist-credentials: false
-      - name: Discover changed sources
+      - name: Find Source Changes
         id: discover
         env:
           SITES: ${{ inputs.sites }}
@@ -63,6 +66,7 @@ jobs:
         run: python3 .shared-workflows/import-zensical-sites/zensical-import.py discover
 
   build:
+    name: Build ${{ matrix.id }} Site
     needs: discover
     if: needs.discover.outputs.changed == 'true'
     strategy:
@@ -81,30 +85,35 @@ jobs:
       build-script: ${{ matrix.build-script }}
 
   collect:
+    name: Collect Built Sites
     needs: [discover, build]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout Destination Repository
+        uses: actions/checkout@v5
         with:
           ref: ${{ needs.discover.outputs.base-sha }}
           persist-credentials: false
-      - uses: actions/checkout@v5
+      - name: Checkout Shared Tools
+        uses: actions/checkout@v5
         with:
           repository: ${{ job.workflow_repository }}
           ref: ${{ job.workflow_sha }}
           path: .shared-workflows
           persist-credentials: false
-      - uses: actions/download-artifact@v4
+      - name: Download Site Archives
+        uses: actions/download-artifact@v4
         with:
           pattern: import-*
           path: ${{ runner.temp }}/site-artifacts
-      - name: Verify and collect every built site
+      - name: Verify Site Archives
         env:
           MATRIX: ${{ needs.discover.outputs.matrix }}
           GIT_TERMINAL_PROMPT: '0'
         run: python3 .shared-workflows/import-zensical-sites/zensical-import.py collect
-      - uses: actions/upload-artifact@v4
+      - name: Upload Site Archives
+        uses: actions/upload-artifact@v4
         with:
           name: collected-sites
           path: |
@@ -114,6 +123,7 @@ jobs:
           retention-days: 7
 
   import-pr:
+    name: Prepare Import PR
     needs: [discover, collect]
     # discover enforces the production or isolated release-test repository/branch scope.
     if: inputs.create-pr
@@ -123,11 +133,12 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout Destination Repository
+        uses: actions/checkout@v5
         with:
           ref: ${{ inputs.base-branch }}
           persist-credentials: false
-      - name: Ensure base has not moved during builds
+      - name: Verify Base Commit
         env:
           EXPECTED_BASE: ${{ needs.discover.outputs.base-sha }}
         run: |
@@ -135,21 +146,23 @@ jobs:
             echo '::error::Base branch changed during the import. Rerun against its latest commit.'
             exit 1
           fi
-      - uses: actions/checkout@v5
+      - name: Checkout Shared Tools
+        uses: actions/checkout@v5
         with:
           repository: ${{ job.workflow_repository }}
           ref: ${{ job.workflow_sha }}
           path: .shared-workflows
           persist-credentials: false
-      - uses: actions/download-artifact@v4
+      - name: Download Site Archives
+        uses: actions/download-artifact@v4
         with:
           name: collected-sites
           path: ${{ runner.temp }}/collected
-      - name: Apply verified output
+      - name: Apply Built Sites
         env:
           MATRIX: ${{ needs.discover.outputs.matrix }}
         run: python3 .shared-workflows/import-zensical-sites/zensical-import.py apply
-      - name: Create or refresh draft import PR
+      - name: Update Draft PR
         id: pr
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
@@ -161,7 +174,7 @@ jobs:
           commit-message: Import updated Zensical sites
           title: Import updated Zensical sites
           body-path: ${{ runner.temp }}/collected/import-pr.md
-      - name: Report import PR
+      - name: Report Import PR
         if: steps.pr.outputs.pull-request-url != ''
         env:
           PR_URL: ${{ steps.pr.outputs.pull-request-url }}

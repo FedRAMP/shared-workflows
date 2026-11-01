@@ -1,4 +1,4 @@
-name: (Local) Short Continuous Integration Health Check
+name: "(Local) Test: Quick CI Checks"
 on:
   pull_request:
     branches: [main]
@@ -15,7 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout Repository Sources
+        uses: actions/checkout@v5
         with:
           persist-credentials: false
-      - uses: ./release-management/quick-check
+      - name: Run Quick Checks
+        uses: ./release-management/quick-check

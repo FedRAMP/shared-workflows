@@ -1,4 +1,4 @@
-name: (Shared) Build And Deploy Zensical Site To Pages
+name: "(Shared) Publish: Build Site And Deploy Pages"
 
 on:
   workflow_call:
@@ -45,9 +45,10 @@ concurrency:
 
 jobs:
   validate:
+    name: Validate Deployment Settings
     runs-on: ubuntu-latest
     steps:
-      - name: Validate deployment settings
+      - name: Validate Deployment Settings
         env:
           MODE: ${{ inputs.artifact-mode }}
           DEPLOY: ${{ inputs.deploy }}
@@ -58,6 +59,7 @@ jobs:
           fi
 
   build:
+    name: Build Site Artifact
     needs: validate
     uses: ./.github/workflows/build-zensical-artifact.yml
     with:
@@ -72,6 +74,7 @@ jobs:
       venv-path: ${{ inputs.venv-path }}
 
   deploy:
+    name: Deploy GitHub Pages
     if: inputs.deploy
     needs: build
     runs-on: ubuntu-latest
@@ -83,8 +86,10 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/configure-pages@v6
-      - id: deployment
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v6
+      - name: Deploy GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v5
         with:
           artifact_name: ${{ inputs.artifact-name == 'site-archive' && 'github-pages' || inputs.artifact-name }}

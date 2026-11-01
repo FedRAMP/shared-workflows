@@ -1,7 +1,7 @@
 # Copy to .github/workflows/import-zensical-sites.yml in FedRAMP/fedramp.gov.
 # Publish all shared workflows to v1 before running this caller.
 
-name: (Local) Import Shared Sites Into Draft Pull Request
+name: "(Local) Import: Prepare Site Updates PR"
 on:
   workflow_dispatch:
 permissions:
@@ -12,6 +12,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   import:
+    name: Import Site Updates
     uses: FedRAMP/shared-workflows/.github/workflows/import-zensical-sites.yml@v1
     with:
       create-pr: true

@@ -1,5 +1,5 @@
-name: (Local) Test And Publish New Workflow Release
-run-name: (Local) Test And Publish New Workflow Release — ${{ github.sha }}
+name: "(Local) Publish: Full Release"
+run-name: "(Local) Publish: Full Release — ${{ github.sha }}"
 on:
   workflow_dispatch:
 permissions:
@@ -9,6 +9,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   release:
+    name: Validate And Publish
     if: github.repository == 'FedRAMP/shared-workflows' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 180
@@ -17,22 +18,24 @@ jobs:
       actions: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout Repository Sources
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
-      - uses: ./release-management/quick-check
-      - name: Prepare, test, publish, and promote release
+      - name: Run Quick Checks
+        uses: ./release-management/quick-check
+      - name: Test And Publish
         env:
           GH_TOKEN: ${{ github.token }}
           PYTHONUNBUFFERED: '1'
         run: python3 release-management/release.py
-      - name: Clean up release test branches and PRs
+      - name: Clean Test Resources
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: python3 release-management/release.py cleanup
-      - name: Retain release evidence
+      - name: Save Release Evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:

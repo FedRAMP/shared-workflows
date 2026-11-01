@@ -49,7 +49,7 @@ Copy the root-level [import-zensical-sites.yml](import-zensical-sites.yml) to
 `.github/workflows/import-zensical-sites.yml` in fedramp.gov. It contains:
 
 ```yaml
-name: (Local) Import Shared Sites Into Draft Pull Request
+name: (Local) Import: Prepare Site Updates PR
 on:
   workflow_dispatch:
 permissions:
@@ -135,20 +135,25 @@ repository only. Actions display names start with `(Local)` for repository-speci
 entry points and `(Shared)` for reusable workflows. Root caller templates use
 `(Local)` because they run in the consuming repository. The three reusable workflows
 (`build-fr-zensical.yml`, `build-zensical-artifact.yml`, and
-`import-zensical-sites.yml`) retain their existing names. Root-level YAML files
+`import-zensical-sites.yml`) retain their existing filenames. Root-level YAML files
 are copyable caller templates, not active workflows in this repository.
 
 | Workflow file | Actions display name |
 |---|---|
-| `.github/workflows/local-ci.yml` | (Local) Short Continuous Integration Health Check |
-| `.github/workflows/local-test.yml` | (Local) Full Build And Pull Request Tests |
-| `.github/workflows/local-release.yml` | (Local) Test And Publish New Workflow Release |
-| `.github/workflows/local-release-e2e.yml` | (Local) Internal Build And Import Test Harness |
-| `.github/workflows/build-fr-zensical.yml` | (Shared) Build And Deploy Zensical Site To Pages |
-| `.github/workflows/build-zensical-artifact.yml` | (Shared) Build Zensical Site And Upload Artifact |
-| `.github/workflows/import-zensical-sites.yml` | (Shared) Import Sites And Create Draft Pull Request |
-| `import-zensical-sites.yml` | (Local) Import Shared Sites Into Draft Pull Request |
-| `zensical-to-preview.yml` | (Local) Build And Deploy Site To GitHub Pages |
+| `.github/workflows/local-ci.yml` | (Local) Test: Quick CI Checks |
+| `.github/workflows/local-test.yml` | (Local) Test: All Builds & Pull Requests |
+| `.github/workflows/local-release.yml` | (Local) Publish: Full Release |
+| `.github/workflows/local-release-e2e.yml` | (Local) Test: Internal Pipeline Phase |
+| `.github/workflows/build-fr-zensical.yml` | (Shared) Publish: Build Site And Deploy Pages |
+| `.github/workflows/build-zensical-artifact.yml` | (Shared) Build Only: Upload Site Artifact |
+| `.github/workflows/import-zensical-sites.yml` | (Shared) Import: Build Sites And Prepare Draft PR |
+| `import-zensical-sites.yml` | (Local) Import: Prepare Site Updates PR |
+| `zensical-to-preview.yml` | (Local) Publish: Deploy Preview Site |
+
+The label after `(Local)` or `(Shared)` describes the purpose: **Test** validates,
+**Publish** can deploy a site or publish a workflow release, **Build Only** uploads
+artifacts without deployment, and **Import** prepares site changes in a draft PR.
+The shared Pages workflow supports disabling deployment, as the test harness does.
 
 There are two levels of validation. `local-ci.yml` runs on pull requests targeting
 `main` and pushes to `main`. It performs actionlint, workflow-interface and
@@ -156,12 +161,29 @@ permission checks, Python/shell syntax checks, and offline importer/release test
 It does not build sites, create PRs, deploy Pages, or change tags. The tests in
 `release-management/tests/` are part of CI, not the production import path.
 
-To run the full tests **without releasing**, use **Actions → (Local) Full Build And Pull Request Tests → Run workflow → main** after merging these workflows. This runs the same twelve site
+To run the full tests **without releasing**, use **Actions → (Local) Test: All Builds & Pull Requests → Run workflow → main** after merging these workflows. This runs the same twelve site
 builds and draft-PR create/refresh/skip checks as a release, then closes the test
 PR and removes its temporary branches. It creates no version tags or GitHub
 release and does not move `v1`. Results are attached as a `test-evidence-*`
 artifact, including `test-manifest.json`. Run `local-test`, not the internal
 `local-release-e2e` harness, which requires controller-supplied inputs.
+
+Every manual full test deliberately builds all four sites even if no downstream
+SHA has changed. It removes source markers only from the isolated test base, then
+runs four import builds and four preview builds. The refresh test invalidates a
+pending marker to trigger four more import builds and update the same PR. Normal
+imports skip unchanged sources; the final test verifies that behavior by expecting
+zero builds and no PR changes. The run summary explains this deliberate test behavior.
+Production import behavior is unchanged.
+
+Each full suite dispatches three child runs: `create` tests the initial PR and
+preview builds; `refresh` tests updating that PR; `skip` verifies unchanged sources
+are not rebuilt. These remain separate runs so the controller can test the exact
+candidate commit and inspect or modify the test PR between phases. Child run titles
+include the parent run ID. The parent's summary links to each phase as it starts,
+and each child's summary links back to its parent. No child publishes a release or
+deploys Pages. Cleanup is safe to repeat after the test controller has already
+removed its branches.
 
 `local-test` requires successful CI for the selected main commit and the same
 Actions PR/branch permissions described below. It uses the automatic token and
@@ -170,7 +192,7 @@ release runs share a concurrency group to avoid overlapping full suites.
 
 `local-release.yml` is manually dispatched from `main`. It requires successful push CI
 for the exact source SHA, reruns the quick checks, and then runs full integration
-checks before publishing. Use **Actions → (Local) Test And Publish New Workflow Release → Run workflow → main**. No
+checks before publishing. Use **Actions → (Local) Publish: Full Release → Run workflow → main**. No
 version or release-note input is required; releases increment the highest existing
 `v1.x.y` patch version. Breaking changes require a separate major-version process;
 this workflow never promotes a v2 release to v1.
@@ -186,7 +208,7 @@ test run does not substitute for its release gate.
    and approve pull requests**. The isolated import test uses its own
    `GITHUB_TOKEN` to create draft PRs in this repository.
 3. Ensure repository rules permit GitHub Actions to create version tags,
-   move `v1`, and create/delete `release-tests/**` branches. Make **(Local) Short Continuous Integration Health Check / Quick checks** required for merging into `main` (the displayed check is **Quick
+   move `v1`, and create/delete `release-tests/**` branches. Make **(Local) Test: Quick CI Checks / Quick checks** required for merging into `main` (the displayed check is **Quick
    checks**). No environment approval is required by these workflows.
 
 **No PAT or custom release secret is required.** GitHub supplies the job-scoped

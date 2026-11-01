@@ -1,4 +1,4 @@
-name: (Shared) Build Zensical Site And Upload Artifact
+name: "(Shared) Build Only: Upload Site Artifact"
 
 on:
   workflow_call:
@@ -41,32 +41,36 @@ concurrency:
 
 jobs:
   build:
+    name: Build Site Artifact
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Validate artifact settings
+      - name: Validate Artifact Settings
         env:
           MODE: ${{ inputs.artifact-mode }}
         run: |
           case "$MODE" in pages|archive) ;; *) echo "::error::Invalid artifact-mode"; exit 1 ;; esac
-      - uses: actions/checkout@v5
+      - name: Checkout Repository Sources
+        uses: actions/checkout@v5
         with:
           repository: ${{ inputs.source-repository || github.repository }}
           ref: ${{ inputs.source-ref }}
           submodules: ${{ inputs.submodules && 'recursive' || 'false' }}
           persist-credentials: false
-      - uses: actions/checkout@v5
+      - name: Checkout Shared Tools
+        uses: actions/checkout@v5
         with:
           repository: ${{ job.workflow_repository }}
           ref: ${{ job.workflow_sha }}
           path: .shared-workflows
           persist-credentials: false
 
-      - uses: actions/setup-python@v6
+      - name: Set Up Python
+        uses: actions/setup-python@v6
         with:
           python-version: "3.13"
 
-      - name: Install shared Python dependencies
+      - name: Install Python Dependencies
         env:
           VENV_PATH: ${{ inputs.venv-path }}
         run: |
@@ -75,17 +79,18 @@ jobs:
             --require-hashes -r .shared-workflows/requirements.txt
           echo "$GITHUB_WORKSPACE/$VENV_PATH/bin" >> "$GITHUB_PATH"
 
-      - uses: oven-sh/setup-bun@v2
+      - name: Set Up Bun
+        uses: oven-sh/setup-bun@v2
         if: inputs.use-bun
         with:
           bun-version: "1.4.4"
 
-      - name: Set preview site URL
+      - name: Configure Preview URL
         if: inputs.preview-urls
         run: |
           sed -i '/^[[:space:]]*site_url[[:space:]]*=/s|www\.fedramp\.gov|preview.fedramp.gov|g' zensical.toml
 
-      - name: Build site
+      - name: Build Zensical Site
         env:
           BUILD_SCRIPT: ${{ inputs.build-script }}
         run: |
@@ -95,10 +100,10 @@ jobs:
             zensical build --clean --strict
           fi
 
-      - name: Verify generated output
+      - name: Verify Built Site
         run: test -s html/index.html
 
-      - name: Package import archive
+      - name: Package Site Archive
         if: inputs.artifact-mode == 'archive'
         env:
           USE_BUN: ${{ inputs.use-bun }}
@@ -112,7 +117,8 @@ jobs:
             git submodule status --recursive
           } > "$RUNNER_TEMP/site-artifact/build-info.txt"
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Site Archives
+        uses: actions/upload-artifact@v4
         if: inputs.artifact-mode == 'archive'
         with:
           name: ${{ inputs.artifact-name }}
@@ -120,7 +126,8 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-      - uses: actions/upload-pages-artifact@v5
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v5
         if: inputs.artifact-mode == 'pages'
         with:
           name: ${{ inputs.artifact-name == 'site-archive' && 'github-pages' || inputs.artifact-name }}

@@ -1,5 +1,5 @@
-name: (Local) Full Build And Pull Request Tests
-run-name: (Local) Full Build And Pull Request Tests — ${{ github.sha }}
+name: "(Local) Test: All Builds & Pull Requests"
+run-name: "(Local) Test: All Builds & Pull Requests — ${{ github.sha }}"
 on:
   workflow_dispatch:
 permissions:
@@ -9,6 +9,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   test:
+    name: Full Integration Tests
     if: github.repository == 'FedRAMP/shared-workflows' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 180
@@ -17,22 +18,24 @@ jobs:
       actions: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout Repository Sources
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
-      - uses: ./release-management/quick-check
-      - name: Run full builds and PR lifecycle tests (no publication)
+      - name: Run Quick Checks
+        uses: ./release-management/quick-check
+      - name: Run Integration Tests
         env:
           GH_TOKEN: ${{ github.token }}
           PYTHONUNBUFFERED: '1'
         run: python3 release-management/release.py test
-      - name: Clean up release test branches and PRs
+      - name: Clean Test Resources
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: python3 release-management/release.py cleanup
-      - name: Retain test evidence
+      - name: Save Test Evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:

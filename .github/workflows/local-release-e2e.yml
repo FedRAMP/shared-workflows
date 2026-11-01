@@ -1,9 +1,13 @@
 # Fixed harness: dispatched at the release candidate, never generated at runtime.
-name: (Local) Internal Build And Import Test Harness
-run-name: (Local) Internal Build And Import Test Harness — ${{ inputs.phase }}
+name: "(Local) Test: Internal Pipeline Phase"
+run-name: "(Local) Test: Internal Pipeline Phase — ${{ inputs.phase == 'create' && 'Build Sites And Create PR' || inputs.phase == 'refresh' && 'Rebuild And Update PR' || 'Verify Unchanged Sources Skip Builds' }} — parent #${{ inputs.parent-run }}"
 on:
   workflow_dispatch:
     inputs:
+      parent-run:
+        description: Controller run ID for navigation
+        type: string
+        required: true
       phase:
         type: choice
         options: [create, refresh, skip]
@@ -16,6 +20,7 @@ permissions:
   contents: read
 jobs:
   prepare:
+    name: Validate Test Inputs
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -24,16 +29,18 @@ jobs:
       base: ${{ steps.inputs.outputs.base }}
       branch: ${{ steps.inputs.outputs.branch }}
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout Repository Sources
+        uses: actions/checkout@v5
         with:
           persist-credentials: false
-      - name: Validate isolated test scope and caller inputs
+      - name: Validate Test Inputs
         id: inputs
         env:
           SITES: ${{ inputs.sites }}
         run: python3 release-management/release.py harness
 
   import:
+    name: Test Import Lifecycle
     needs: prepare
     permissions:
       contents: write
@@ -47,6 +54,7 @@ jobs:
       import-branch: ${{ needs.prepare.outputs.branch }}
 
   preview:
+    name: Preview ${{ matrix.id }} Site
     needs: prepare
     if: inputs.phase == 'create'
     permissions:

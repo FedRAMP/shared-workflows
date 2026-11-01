@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import sys
+import subprocess
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -16,6 +17,47 @@ SHA = 'a' * 40
 
 
 class ReleaseTests(unittest.TestCase):
+    def test_cleanup_can_run_twice_and_handle_absent_branches(self):
+        branches = {'base', 'harness', 'candidate'}  # import may never be created
+        env = {'GITHUB_REPOSITORY': release.REPOSITORY, 'GITHUB_REF': 'refs/heads/main',
+               'GITHUB_EVENT_NAME': 'workflow_dispatch', 'GITHUB_RUN_ID': '123', 'GITHUB_RUN_ATTEMPT': '2'}
+        def command(*args, **kwargs):
+            endpoint = args[4]
+            if 'actions/workflows/' in endpoint:
+                body = {'workflow_runs': []}
+            elif '/pulls?' in endpoint:
+                body = []
+            else:
+                self.assertEqual(args[3], 'DELETE')
+                self.assertIn('/git/refs/heads/release-tests/123-2/', endpoint)
+                branch = endpoint.rsplit('/', 1)[1]
+                if branch not in branches:
+                    return subprocess.CompletedProcess(args, 1,
+                        json.dumps({'message': 'Reference does not exist'}),
+                        'gh: Reference does not exist (HTTP 422)')
+                branches.remove(branch)
+                body = None
+            return subprocess.CompletedProcess(args, 0, json.dumps(body), '')
+        with patch.dict(os.environ, env), patch.object(release, 'run', side_effect=command):
+            release.cleanup()
+            release.cleanup()
+        self.assertFalse(branches)
+
+    def test_missing_ref_exception_does_not_hide_other_errors(self):
+        endpoint = 'repos/FedRAMP/shared-workflows/git/refs/heads/release-tests/123-2/import'
+        for method, path, status, message, missing_ok in [
+            ('DELETE', endpoint, 422, 'Cannot delete a protected branch', True),
+            ('DELETE', endpoint, 403, 'Resource not accessible by integration', True),
+            ('PATCH', endpoint, 422, 'Reference does not exist', True),
+            ('DELETE', endpoint, 422, 'Reference does not exist', False),
+            ('DELETE', 'repos/FedRAMP/shared-workflows/releases/1', 422, 'Reference does not exist', True),
+        ]:
+            with self.subTest(method=method, path=path, status=status, missing_ok=missing_ok):
+                result = subprocess.CompletedProcess([], 1, json.dumps({'message': message}),
+                                                     f'gh: {message} (HTTP {status})')
+                with patch.object(release, 'run', return_value=result), self.assertRaises(RuntimeError):
+                    release.api(path, method=method, missing_ok=missing_ok)
+
     def test_next_patch_ignores_major_tag_and_prereleases(self):
         self.assertEqual(release.next_version(['v1', 'v1.0.2', 'v1.1.9', 'v1.2.0-rc1', 'v2.0.0']), ('v1.1.10', 'v1.1.9'))
         self.assertEqual(release.next_version([]), ('v1.0.0', None))
