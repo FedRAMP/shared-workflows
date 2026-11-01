@@ -1,0 +1,19 @@
+# The release controller writes a SHA-pinned harness at this path on its own
+# temporary branch. This dispatch registration must exist on the default branch.
+name: local-release-e2e
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        type: choice
+        options: [create, refresh, skip]
+        required: true
+permissions:
+  contents: read
+jobs:
+  registration:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo '::error::Run the local-release workflow; it dispatches its generated candidate harness.'
+          exit 1

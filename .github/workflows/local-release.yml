@@ -1,0 +1,47 @@
+name: local-release
+run-name: local-release from ${{ github.sha }}
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: release-v1
+  cancel-in-progress: false
+jobs:
+  release:
+    if: github.repository == 'FedRAMP/shared-workflows' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Require release credentials
+        env:
+          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        run: |
+          if [[ -z "$RELEASE_TOKEN" ]]; then
+            echo '::error::Configure RELEASE_TOKEN as documented in README.md.'
+            exit 1
+          fi
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN }}
+      - uses: ./release-management/quick-check
+      - name: Prepare, test, publish, and promote release
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          PYTHONUNBUFFERED: '1'
+        run: python3 release-management/release.py
+      - name: Clean up release test branches and PRs
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        run: python3 release-management/release.py cleanup
+      - name: Retain release evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-evidence/
+          if-no-files-found: ignore
+          retention-days: 30

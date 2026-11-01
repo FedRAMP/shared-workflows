@@ -86,3 +86,5 @@ jobs:
       - uses: actions/configure-pages@v6
       - id: deployment
         uses: actions/deploy-pages@v5
+        with:
+          artifact_name: ${{ inputs.artifact-name == 'site-archive' && 'github-pages' || inputs.artifact-name }}

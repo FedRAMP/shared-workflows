@@ -1,0 +1,487 @@
+#!/usr/bin/env python3
+"""Release controller. All remote writes are confined to REPOSITORY.
+
+Run only from local-release.yml on main. Generated harnesses use literal commit SHAs
+because reusable-workflow `uses` does not support expression-valued refs.
+"""
+import base64
+import copy
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import sys
+import tarfile
+import tempfile
+import time
+import tomllib
+from html.parser import HTMLParser
+
+from common import ROOT, REPOSITORY, output_json, run, yaml_read, yaml_write
+
+VERSION = re.compile(r'v1\.(\d+)\.(\d+)')
+SHA = re.compile(r'[0-9a-f]{40}')
+BUILDER = REPOSITORY + '/.github/workflows/build-zensical-artifact.yml@'
+
+
+def api(endpoint, method='GET', data=None, missing_ok=False):
+    args = ['gh', 'api', '--method', method, endpoint]
+    if data is not None:
+        args += ['--input', '-']
+    result = run(*args, input=json.dumps(data) if data is not None else None, check=False)
+    if result.returncode:
+        if missing_ok and 'HTTP 404' in result.stderr:
+            return None
+        raise RuntimeError(f'GitHub API {method} {endpoint}: {result.stderr.strip()}')
+    return json.loads(result.stdout) if result.stdout.strip() else None
+
+
+def repo_api(path, **kwargs):
+    return api(f'repos/{REPOSITORY}/{path}', **kwargs)
+
+
+def git(*args):
+    return run('git', *args).stdout.strip()
+
+
+def evidence_dir():
+    return Path(os.environ['RUNNER_TEMP']) / 'release-evidence'
+
+
+def prefix():
+    value = f"release-tests/{os.environ['GITHUB_RUN_ID']}-{os.environ['GITHUB_RUN_ATTEMPT']}"
+    if not re.fullmatch(r'release-tests/[0-9]+-[0-9]+', value):
+        raise ValueError('Invalid release test namespace')
+    return value
+
+
+def context_guard():
+    if os.environ.get('GITHUB_REPOSITORY', '').lower() != REPOSITORY.lower():
+        raise ValueError('Release automation is restricted to ' + REPOSITORY)
+    if os.environ.get('GITHUB_REF') != 'refs/heads/main':
+        raise ValueError('Release must be dispatched from main')
+    if os.environ.get('GITHUB_EVENT_NAME') != 'workflow_dispatch':
+        raise ValueError('Release requires workflow_dispatch')
+
+
+def next_version(tags):
+    versions = [(tuple(map(int, m.groups())), tag) for tag in tags if (m := VERSION.fullmatch(tag))]
+    if not versions:
+        return 'v1.0.0', None
+    (minor, patch), previous = max(versions)
+    return f'v1.{minor}.{patch + 1}', previous
+
+
+def pin_builders(source):
+    if not SHA.fullmatch(source):
+        raise ValueError('Builder ref must be a commit SHA')
+    for name in ('build-fr-zensical.yml', 'import-zensical-sites.yml'):
+        path = ROOT / '.github/workflows' / name
+        text = path.read_text()
+        text, count = re.subn(re.escape(BUILDER) + r'[^\s]+', BUILDER + source, text)
+        if count != 1:
+            raise ValueError('Expected one builder reference in ' + name)
+        path.write_text(text)
+
+
+def generate_harness(candidate, sites, namespace):
+    """Exercise the caller templates, changing only test destinations/options."""
+    if not SHA.fullmatch(candidate):
+        raise ValueError('Candidate must be a commit SHA')
+    importer = copy.deepcopy(yaml_read(ROOT / 'import-zensical-sites.yml')['jobs']['import'])
+    importer['uses'] = REPOSITORY + '/.github/workflows/import-zensical-sites.yml@' + candidate
+    importer.pop('secrets', None)  # the harness's own GITHUB_TOKEN creates local test PRs
+    importer['permissions'] = {'contents': 'write', 'pull-requests': 'write'}
+    importer['with'].update({'sites': json.dumps(sites), 'create-pr': True, 'release-test': True,
+                             'base-branch': namespace + '/base', 'import-branch': namespace + '/import'})
+    preview = copy.deepcopy(yaml_read(ROOT / 'zensical-to-preview.yml')['jobs']['site'])
+    preview['uses'] = REPOSITORY + '/.github/workflows/build-fr-zensical.yml@' + candidate
+    preview['if'] = "inputs.phase == 'create'"
+    preview['permissions'] = {'contents': 'read', 'pages': 'write', 'id-token': 'write'}
+    preview['strategy'] = {'fail-fast': False, 'matrix': {'include': sites}}
+    preview['with'].update({'deploy': False, 'source-repository': '${{ matrix.repository }}',
+                            'source-ref': '${{ matrix.sha }}', 'artifact-name': 'preview-${{ matrix.id }}',
+                            'artifact-mode': 'pages', 'preview-urls': True})
+    for key in ('use-bun', 'submodules', 'venv-path', 'build-script'):
+        preview['with'][key] = '${{ matrix.' + key + ' }}'
+    return {'name': 'local-release-e2e', 'run-name': 'local-release-e2e ${{ inputs.phase }}',
+            'on': {'workflow_dispatch': {'inputs': {'phase': {'type': 'choice', 'required': True,
+                                                             'options': ['create', 'refresh', 'skip']}}}},
+            'permissions': {'contents': 'read'}, 'jobs': {'import': importer, 'preview': preview}}
+
+
+def wait_ci(source):
+    deadline = time.monotonic() + 600
+    while time.monotonic() < deadline:
+        runs = repo_api(f'actions/workflows/local-ci.yml/runs?event=push&head_sha={source}&per_page=100')['workflow_runs']
+        runs = [r for r in runs if r['head_branch'] == 'main' and r['head_sha'] == source]
+        if runs:
+            latest = max(runs, key=lambda r: r['id'])
+            if latest['status'] == 'completed':
+                if latest['conclusion'] != 'success':
+                    raise RuntimeError('CI did not pass for source commit: ' + latest['html_url'])
+                return latest['html_url']
+        print('Waiting for successful push CI at ' + source, flush=True)
+        time.sleep(15)
+    raise RuntimeError('No successful main push CI for this exact source SHA within 10 minutes')
+
+
+def resolve_sites():
+    sites = json.loads(yaml_read(ROOT / 'import-zensical-sites.yml')['jobs']['import']['with']['sites'])
+    defaults = {'use-bun': False, 'submodules': False, 'venv-path': '.venv', 'build-script': ''}
+    # Reuse production validation, including unique IDs and non-overlapping paths.
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('importer', ROOT / 'import-zensical-sites/zensical-import.py')
+    importer = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(importer)
+    sites = importer.sites_from_json(json.dumps(sites))
+    urls = {}
+    for site in sites:
+        for key, value in defaults.items():
+            site.setdefault(key, value)
+        site['sha'] = api(f"repos/{site['repository']}/commits/main")['sha']
+        config = api(f"repos/{site['repository']}/contents/zensical.toml?ref={site['sha']}")
+        toml = tomllib.loads(base64.b64decode(config['content']).decode())
+        urls[site['id']] = toml.get('project', toml)['site_url']
+    return sites, urls
+
+
+def commit(message):
+    git('add', '-A')
+    git('commit', '-m', message)
+    return git('rev-parse', 'HEAD')
+
+
+def push_branch(sha, branch):
+    # Never replace an existing branch, even after a partially failed previous run.
+    git('push', f'--force-with-lease=refs/heads/{branch}:', 'origin', f'{sha}:refs/heads/{branch}')
+
+
+def dispatch_and_wait(phase, branch, harness_sha, state):
+    repo_api('actions/workflows/local-release-e2e.yml/dispatches', method='POST',
+             data={'ref': branch, 'inputs': {'phase': phase}})
+    deadline = time.monotonic() + 300
+    known = {r['id'] for r in state['runs']}
+    selected = None
+    while time.monotonic() < deadline:
+        runs = repo_api(f'actions/workflows/local-release-e2e.yml/runs?branch={branch}&event=workflow_dispatch&per_page=100')['workflow_runs']
+        matches = [r for r in runs if r['head_sha'] == harness_sha and r['id'] not in known]
+        if matches:
+            selected = max(matches, key=lambda r: r['id'])
+            break
+        time.sleep(5)
+    if not selected:
+        raise RuntimeError('Dispatched harness did not appear within five minutes')
+    record = {'id': selected['id'], 'phase': phase, 'url': selected['html_url']}
+    state['runs'].append(record)
+    output_json(evidence_dir() / 'state.json', state)
+    print('Running ' + phase + ': ' + record['url'], flush=True)
+    # Runs are sequential; the outer workflow's 180-minute timeout is the final bound.
+    deadline = time.monotonic() + 3600
+    while time.monotonic() < deadline:
+        result = repo_api(f"actions/runs/{record['id']}")
+        if result['status'] == 'completed':
+            record['conclusion'] = result['conclusion']
+            output_json(evidence_dir() / 'state.json', state)
+            if result['conclusion'] != 'success':
+                raise RuntimeError('Release E2E failed: ' + record['url'])
+            return record['id']
+        print('Waiting for ' + record['url'], flush=True)
+        time.sleep(20)
+    raise RuntimeError('Release E2E exceeded one hour: ' + record['url'])
+
+
+def test_pr(namespace):
+    prs = repo_api(f"pulls?state=open&base={namespace}/base&head=FedRAMP:{namespace}/import")
+    if len(prs) != 1:
+        raise RuntimeError('Expected exactly one isolated draft import PR')
+    pr = prs[0]
+    if not pr['draft'] or pr['base']['ref'] != namespace + '/base' or pr['head']['repo']['full_name'] != REPOSITORY:
+        raise RuntimeError('Unexpected test PR scope or draft status')
+    return pr
+
+
+def verify_pr(namespace, sites, expected_number=None):
+    pr = test_pr(namespace)
+    if expected_number and pr['number'] != expected_number:
+        raise RuntimeError('Refresh created a different PR')
+    git('fetch', 'origin', f'{namespace}/base', f'{namespace}/import')
+    head = pr['head']['sha']
+    paths = git('diff', '--name-only', pr['base']['sha'], head).splitlines()
+    if not paths or any(not any(p.startswith(s['destination'] + '/') for s in sites) for p in paths):
+        raise RuntimeError('Import PR changed files outside expected destinations')
+    for site in sites:
+        dest = site['destination']
+        if git('show', f'{head}:{dest}/.zensical-source-sha') != site['sha']:
+            raise RuntimeError('PR has incorrect source marker')
+        if not git('show', f'{head}:{dest}/index.html'):
+            raise RuntimeError('PR is missing generated HTML')
+        if git('ls-tree', head, dest + '/release-stale.txt'):
+            raise RuntimeError('Import failed to delete stale output')
+        if site['sha'] not in pr['body'] or site['repository'] not in pr['body']:
+            raise RuntimeError('PR body lacks source evidence')
+    if re.search(r'(?<![\w/&#=.%+-])#[0-9]+\b', pr['body']):
+        raise RuntimeError('PR notes contain an unqualified source PR reference')
+    return pr
+
+
+class CanonicalParser(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.urls = []
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == 'link' and attrs.get('rel') == 'canonical':
+            self.urls.append(attrs.get('href', ''))
+
+
+def verify_artifacts(run_id, sites, urls, include_preview=True):
+    artifacts = repo_api(f'actions/runs/{run_id}/artifacts?per_page=100')['artifacts']
+    names = {a['name'] for a in artifacts}
+    expected = {'collected-sites'} | {'import-' + s['id'] for s in sites}
+    if include_preview:
+        expected |= {'preview-' + s['id'] for s in sites}
+    if names != expected:
+        raise RuntimeError(f'Unexpected build artifacts: {names ^ expected}')
+    environments = {}
+    with tempfile.TemporaryDirectory() as directory:
+        run('gh', 'run', 'download', str(run_id), '--repo', REPOSITORY, '--dir', directory)
+        for site in sites:
+            info = Path(directory) / ('import-' + site['id']) / 'build-info.txt'
+            environments[site['id']] = info.read_text()
+            checks = [('import-' + site['id'], 'site.tar.gz', 'r:gz', urls[site['id']])]
+            if include_preview:
+                checks.append(('preview-' + site['id'], 'artifact.tar', 'r:*',
+                               urls[site['id']].replace('www.fedramp.gov', 'preview.fedramp.gov')))
+            for name, filename, mode, expected_url in checks:
+                with tarfile.open(Path(directory) / name / filename, mode) as archive:
+                    member = next((m for m in archive if m.name.removeprefix('./') == 'index.html'), None)
+                    if member is None or not member.isfile() or member.size == 0:
+                        raise RuntimeError('Missing generated index in ' + name)
+                    parser = CanonicalParser()
+                    parser.feed(archive.extractfile(member).read().decode())
+                    if not any(u.rstrip('/') == expected_url.rstrip('/') for u in parser.urls):
+                        raise RuntimeError(f'{name}: canonical URL does not match {expected_url}')
+    return environments
+
+
+def cleanup():
+    context_guard()
+    namespace = prefix()
+    # Cancel children first so they cannot recreate branches after cleanup.
+    runs = repo_api(f'actions/workflows/local-release-e2e.yml/runs?branch={namespace}/harness&per_page=100')['workflow_runs']
+    active = [r for r in runs if r['status'] != 'completed']
+    for child in active:
+        try:
+            repo_api(f"actions/runs/{child['id']}/cancel", method='POST')
+        except RuntimeError:
+            # Completion can race the cancellation request.
+            if repo_api(f"actions/runs/{child['id']}")['status'] != 'completed':
+                raise
+    for child in active:
+        deadline = time.monotonic() + 180
+        while repo_api(f"actions/runs/{child['id']}")['status'] != 'completed':
+            if time.monotonic() >= deadline:
+                raise RuntimeError('Child still running; preserve test branches for safe cleanup')
+            time.sleep(5)
+    for pr in repo_api(f'pulls?state=open&base={namespace}/base&head=FedRAMP:{namespace}/import'):
+        repo_api(f"pulls/{pr['number']}", method='PATCH', data={'state': 'closed'})
+    for suffix in ('import', 'base', 'harness', 'candidate'):
+        repo_api(f'git/refs/heads/{namespace}/{suffix}', method='DELETE', missing_ok=True)
+    print('Closed isolated test PRs and removed this attempt’s temporary branches.', flush=True)
+
+
+def release_notes(state, commits):
+    lines = [f"# {state['version']}", '', '## Changes', '']
+    for sha, subject in commits:
+        subject = re.sub(r'(?<![\w/])#([0-9]+)\b', lambda m: REPOSITORY + '#' + m[1], subject)
+        lines.append(f'- {subject} ([{sha[:7]}](https://github.com/{REPOSITORY}/commit/{sha}))')
+    lines += ['', '## Release evidence', '',
+              f"- Source / builder commit: `{state['source_sha']}`",
+              f"- Release commit: `{state['release_sha']}`",
+              f"- Previous v1 target: `{state['previous_v1_oid']}`",
+              f"- Previous v1 commit: `{state['previous_v1_commit']}`",
+              f"- requirements.txt SHA-256: `{state['requirements_sha256']}`",
+              f"- [Source CI]({state['ci_url']})",
+              f"- [Release run]({state['release_url']})"]
+    lines.append(f"- [Closed test PR]({state['test_pr_url']})")
+    for record in state['runs']:
+        lines.append(f"- [E2E {record['phase']}]({record['url']}): {record['conclusion']}")
+    if state['previous_version']:
+        lines.append(f"- [Changes since {state['previous_version']}](https://github.com/{REPOSITORY}/compare/{state['previous_version']}...{state['version']})")
+    lines += ['', '## Build inputs', '', '```json', json.dumps(state['sites'], indent=2), '```',
+              '', '## Build environments (including resolved submodules)', '', '```',
+              '\n'.join(k + ':\n' + v for k, v in state['environments'].items()), '```',
+              '', 'The preview checks build Pages artifacts without deploying. Test PRs were closed without merging.',
+              '', '## Rollback', '', '```bash',
+              f"git push --force-with-lease=refs/tags/v1:{state['release_sha']} origin {state['previous_v1_commit']}:refs/tags/v1",
+              '```', '', 'Fetch the previous commit first if it is not available locally.']
+    return '\n'.join(lines) + '\n'
+
+
+def release_ready(state):
+    if ([r['phase'] for r in state['runs']] != ['create', 'refresh', 'skip'] or
+            any(r.get('conclusion') != 'success' for r in state['runs']) or
+            not state.get('cleanup_complete') or not state.get('test_pr_url') or
+            not state.get('environments')):
+        raise RuntimeError('Release evidence is incomplete; refusing to publish or promote')
+
+
+def previous_source_commit(tag):
+    if not tag:
+        return None
+    metadata = run('git', 'show', tag + ':release-management/release.json', check=False)
+    return (json.loads(metadata.stdout)['source_sha'] if metadata.returncode == 0
+            else git('rev-parse', tag + '^{commit}'))
+
+
+def latest_published_version():
+    tags = []
+    page = 1
+    while True:
+        releases = repo_api(f'releases?per_page=100&page={page}')
+        tags.extend(r['tag_name'] for r in releases if not r['draft'] and not r['prerelease']
+                    and VERSION.fullmatch(r['tag_name']))
+        if len(releases) < 100:
+            break
+        page += 1
+    return next_version(tags)[1]
+
+
+def main():
+    context_guard()
+    source = os.environ['GITHUB_SHA']
+    if not SHA.fullmatch(source) or git('rev-parse', 'HEAD') != source:
+        raise ValueError('Checkout must match the dispatched source commit')
+    if git('status', '--porcelain', '--untracked-files=no'):
+        raise ValueError('Tracked source files must be clean')
+    evidence_dir().mkdir(parents=True, exist_ok=True)
+    ci_url = wait_ci(source)
+    git('fetch', 'origin', '--tags')
+    version, newest_tag = next_version(git('tag', '--list', 'v1.*').splitlines())
+    previous = latest_published_version()
+    previous_source = previous_source_commit(previous)
+    resume_candidate = None
+    newest_metadata = (run('git', 'show', newest_tag + ':release-management/release.json', check=False)
+                       if newest_tag else None)
+    metadata = (json.loads(newest_metadata.stdout)
+                if newest_metadata and newest_metadata.returncode == 0 else {})
+    if metadata.get('source_sha') == source:
+        # A failure after tagging or publishing can be retried without replacing
+        # the immutable version. Rerun all E2E gates against that exact candidate.
+        version = newest_tag
+        resume_candidate = git('rev-parse', version + '^{commit}')
+        if repo_api('git/ref/tags/v1')['object']['sha'] == resume_candidate:
+            print('This source is already released and promoted as ' + version)
+            return
+        previous = metadata['previous_version']
+        previous_source = previous_source_commit(previous)
+    elif previous_source == source:
+        raise RuntimeError('No source changes since the last published release')
+    if previous_source:
+        run('git', 'merge-base', '--is-ancestor', previous_source, source)
+    old_ref = repo_api('git/ref/tags/v1')['object']['sha']
+    # Resolve annotated and lightweight tags to a commit, and record both identities.
+    old_commit = git('rev-parse', old_ref + '^{commit}')
+    run('git', 'merge-base', '--is-ancestor', previous_source_commit(old_commit), source)
+    commits_raw = git('log', '--no-merges', '--reverse', '--format=%H%x09%s',
+                      (previous_source + '..' if previous_source else '') + source)
+    commits = [line.split('\t', 1) for line in commits_raw.splitlines()]
+    if not commits:
+        raise RuntimeError('No new source commits to release')
+    sites, urls = resolve_sites()
+    namespace = prefix()
+    state = {'version': version, 'previous_version': previous, 'source_sha': source,
+             'previous_v1_oid': old_ref, 'previous_v1_commit': old_commit,
+             'requirements_sha256': hashlib.sha256((ROOT / 'requirements.txt').read_bytes()).hexdigest(),
+             'ci_url': ci_url, 'release_url': f"https://github.com/{REPOSITORY}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
+             'sites': sites, 'runs': []}
+    git('config', 'user.name', 'github-actions[bot]')
+    git('config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com')
+    pin_builders(source)
+    output_json(ROOT / 'release-management/release.json',
+                {k: state[k] for k in ('version', 'source_sha', 'requirements_sha256', 'previous_version')})
+    run('python3', 'release-management/check.py', '--actionlint')
+    if resume_candidate:
+        git('add', '-A')
+        if git('write-tree') != git('rev-parse', resume_candidate + '^{tree}'):
+            raise RuntimeError('Prepared tree differs from existing immutable release tag')
+        candidate = resume_candidate
+        git('checkout', '--detach', candidate)
+    else:
+        candidate = commit('Release ' + version + ': pin shared builder to ' + source)
+    state['release_sha'] = candidate
+    output_json(evidence_dir() / 'state.json', state)
+    push_branch(candidate, namespace + '/candidate')
+    # Isolated base contains deliberate stale output to exercise replacement.
+    for site in sites:
+        destination = ROOT / site['destination']
+        destination.mkdir(parents=True, exist_ok=True)
+        (destination / 'release-stale.txt').write_text('Must be removed by import\n')
+    base = commit('Prepare isolated import test base')
+    push_branch(base, namespace + '/base')
+    git('checkout', '--detach', candidate)
+    yaml_write(ROOT / '.github/workflows/local-release-e2e.yml', generate_harness(candidate, sites, namespace))
+    run('python3', 'release-management/check.py', '--actionlint')
+    harness = commit('Generate SHA-pinned release E2E harness')
+    push_branch(harness, namespace + '/harness')
+    first_run = dispatch_and_wait('create', namespace + '/harness', harness, state)
+    pr = verify_pr(namespace, sites)
+    state['test_pr_url'] = pr['html_url']
+    output_json(evidence_dir() / 'state.json', state)
+    state['environments'] = {'create/' + k: v for k, v in verify_artifacts(first_run, sites, urls).items()}
+    # Corrupt a pending marker: the next run must refresh the existing PR.
+    marker_path = sites[0]['destination'] + '/.zensical-source-sha'
+    content = repo_api(f'contents/{marker_path}?ref={pr["head"]["sha"]}')
+    repo_api('contents/' + marker_path, method='PUT', data={
+        'message': 'Exercise pending import refresh', 'branch': namespace + '/import',
+        'sha': content['sha'], 'content': base64.b64encode(('0' * 40 + '\n').encode()).decode()})
+    refresh_run = dispatch_and_wait('refresh', namespace + '/harness', harness, state)
+    state['environments'].update({'refresh/' + k: v for k, v in
+                                  verify_artifacts(refresh_run, sites, urls, include_preview=False).items()})
+    updated = verify_pr(namespace, sites, pr['number'])
+    skip_run = dispatch_and_wait('skip', namespace + '/harness', harness, state)
+    unchanged = verify_pr(namespace, sites, pr['number'])
+    if updated['head']['sha'] != unchanged['head']['sha']:
+        raise RuntimeError('Pending import skip unexpectedly changed the PR')
+    if repo_api(f'actions/runs/{skip_run}/artifacts?per_page=100')['artifacts']:
+        raise RuntimeError('Pending import skip unexpectedly rebuilt sites')
+    # Cleanup is part of the release gate, not an optional post-release courtesy.
+    cleanup()
+    state['cleanup_complete'] = True
+    release_ready(state)
+    output_json(evidence_dir() / 'release-manifest.json', state)
+    notes_path = evidence_dir() / 'release-notes.md'
+    notes_path.write_text(release_notes(state, commits))
+    # Numbered tags are create-only. Never force or overwrite one on a retry.
+    if not resume_candidate:
+        git('tag', version, candidate)
+        git('push', 'origin', 'refs/tags/' + version)
+    published = repo_api('releases/tags/' + version, missing_ok=True)
+    if not published:
+        run('gh', 'release', 'create', version, '--repo', REPOSITORY, '--verify-tag',
+            '--title', version, '--notes-file', str(notes_path), str(evidence_dir() / 'release-manifest.json'))
+    else:
+        if published['draft'] or published['prerelease']:
+            raise RuntimeError('Existing release is not a published stable release')
+        # Preserve existing release notes and assets on retries. Repair an upload
+        # interrupted after release creation without replacing any existing asset.
+        if not any(a['name'] == 'release-manifest.json' for a in published['assets']):
+            run('gh', 'release', 'upload', version, str(evidence_dir() / 'release-manifest.json'), '--repo', REPOSITORY)
+    # Promote last, using compare-and-swap so unrelated changes to v1 are not lost.
+    git('push', f'--force-with-lease=refs/tags/v1:{old_ref}', 'origin', f'{candidate}:refs/tags/v1')
+    if repo_api('git/ref/tags/v1')['object']['sha'] != candidate:
+        raise RuntimeError('Remote v1 verification failed')
+    with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
+        stream.write(notes_path.read_text())
+    print('Published ' + version + ' and promoted v1 to ' + candidate, flush=True)
+
+
+if __name__ == '__main__':
+    try:
+        cleanup() if sys.argv[1:] == ['cleanup'] else main()
+    except Exception as error:
+        print(f'::error::{error}', file=sys.stderr)
+        sys.exit(1)

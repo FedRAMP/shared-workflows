@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Import orchestration only; all site builds run in build-fr-zensical.yml."""
+"""Import orchestration only; builds run in build-zensical-artifact.yml."""
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -91,20 +91,35 @@ def marker(destination):
     return path.read_text().strip() if path.is_file() and not path.is_symlink() else ''
 
 
+def validate_pr_scope(repository):
+    if os.environ.get('RELEASE_TEST') == 'true':
+        ref = os.environ.get('GITHUB_REF', '')
+        match = re.fullmatch(r'refs/heads/(release-tests/[0-9]+-[0-9]+)/harness', ref)
+        if (repository.lower() != 'fedramp/shared-workflows' or not match or
+                os.environ.get('GITHUB_EVENT_NAME') != 'workflow_dispatch' or
+                os.environ['BASE_BRANCH'] != match[1] + '/base' or
+                os.environ['IMPORT_BRANCH'] != match[1] + '/import'):
+            raise ValueError('Release test PRs require isolated shared-workflows test branches')
+    elif repository.lower() != 'fedramp/fedramp.gov':
+        raise ValueError('PR creation is restricted to FedRAMP/fedramp.gov')
+
+
 def discover():
     create_pr = os.environ['CREATE_PR'] == 'true'
     repository = os.environ['GITHUB_REPOSITORY']
-    if create_pr and repository.lower() != 'fedramp/fedramp.gov':
-        raise ValueError('PR creation is restricted to FedRAMP/fedramp.gov')
+    if create_pr:
+        validate_pr_scope(repository)
     sites = sites_from_json(os.environ['SITES'])
     changed, failures = [], []
     for site in sites:
-        result = run('git', 'ls-remote', '--exit-code',
-                     f"https://github.com/{site['repository']}.git", 'refs/heads/main', check=False)
-        sha = result.stdout.split()[0] if result.stdout.split() else ''
-        if result.returncode or not SHA.fullmatch(sha):
-            failures.append(site['repository'])
-            continue
+        sha = site.get('sha')
+        if not sha:
+            result = run('git', 'ls-remote', '--exit-code',
+                         f"https://github.com/{site['repository']}.git", 'refs/heads/main', check=False)
+            sha = result.stdout.split()[0] if result.stdout.split() else ''
+            if result.returncode or not SHA.fullmatch(sha):
+                failures.append(site['repository'])
+                continue
         site['sha'] = sha
         previous = marker(site['destination'])
         summary(f"{site['repository']}: {previous or 'not imported'} → {sha}")
