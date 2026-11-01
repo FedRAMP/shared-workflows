@@ -1,0 +1,164 @@
+name: Import Zensical sites
+
+on:
+  workflow_call:
+    inputs:
+      sites:
+        description: JSON array of site IDs, repositories, destinations, and builder options
+        type: string
+        required: true
+      base-branch:
+        type: string
+        default: develop
+      import-branch:
+        type: string
+        default: automation/zensical-sites
+      create-pr:
+        type: boolean
+        default: false
+    secrets:
+      ZENSICAL_IMPORT_TOKEN:
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      changed: ${{ steps.discover.outputs.changed }}
+      matrix: ${{ steps.discover.outputs.matrix }}
+      base-sha: ${{ steps.discover.outputs.base-sha }}
+      paths: ${{ steps.discover.outputs.paths }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.base-branch }}
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          path: .shared-workflows
+          persist-credentials: false
+      - name: Discover changed sources
+        id: discover
+        env:
+          SITES: ${{ inputs.sites }}
+          BASE_BRANCH: ${{ inputs.base-branch }}
+          IMPORT_BRANCH: ${{ inputs.import-branch }}
+          CREATE_PR: ${{ inputs.create-pr }}
+          GH_TOKEN: ${{ github.token }}
+          GIT_TERMINAL_PROMPT: '0'
+        run: python3 .shared-workflows/import-zensical-sites/zensical-import.py discover
+
+  build:
+    needs: discover
+    if: needs.discover.outputs.changed == 'true'
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.discover.outputs.matrix) }}
+    uses: ./.github/workflows/build-fr-zensical.yml
+    with:
+      deploy: false
+      source-repository: ${{ matrix.repository }}
+      source-ref: ${{ matrix.sha }}
+      preview-urls: false
+      artifact-mode: archive
+      artifact-name: import-${{ matrix.id }}
+      use-bun: ${{ matrix.use-bun }}
+      submodules: ${{ matrix.submodules }}
+      venv-path: ${{ matrix.venv-path }}
+      build-script: ${{ matrix.build-script }}
+
+  collect:
+    needs: [discover, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.discover.outputs.base-sha }}
+          persist-credentials: false
+      - uses: actions/checkout@v5
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          path: .shared-workflows
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: import-*
+          path: ${{ runner.temp }}/site-artifacts
+      - name: Verify and collect every built site
+        env:
+          MATRIX: ${{ needs.discover.outputs.matrix }}
+          GIT_TERMINAL_PROMPT: '0'
+        run: python3 .shared-workflows/import-zensical-sites/zensical-import.py collect
+      - uses: actions/upload-artifact@v4
+        with:
+          name: collected-sites
+          path: |
+            ${{ runner.temp }}/collected-sites.tar.gz
+            ${{ runner.temp }}/import-pr.md
+          if-no-files-found: error
+          retention-days: 7
+
+  import-pr:
+    needs: [discover, collect]
+    if: inputs.create-pr && github.repository == 'FedRAMP/fedramp.gov'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.base-branch }}
+          persist-credentials: false
+      - name: Ensure base has not moved during builds
+        env:
+          EXPECTED_BASE: ${{ needs.discover.outputs.base-sha }}
+        run: |
+          if [[ "$(git rev-parse HEAD)" != "$EXPECTED_BASE" ]]; then
+            echo '::error::Base branch changed during the import. Rerun against its latest commit.'
+            exit 1
+          fi
+      - uses: actions/checkout@v5
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          path: .shared-workflows
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: collected-sites
+          path: ${{ runner.temp }}/collected
+      - name: Apply verified output
+        env:
+          MATRIX: ${{ needs.discover.outputs.matrix }}
+        run: python3 .shared-workflows/import-zensical-sites/zensical-import.py apply
+      - name: Create or refresh draft import PR
+        id: pr
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ secrets.ZENSICAL_IMPORT_TOKEN || github.token }}
+          base: ${{ inputs.base-branch }}
+          branch: ${{ inputs.import-branch }}
+          draft: always-true
+          add-paths: ${{ needs.discover.outputs.paths }}
+          commit-message: Import updated Zensical sites
+          title: Import updated Zensical sites
+          body-path: ${{ runner.temp }}/collected/import-pr.md
+      - name: Report import PR
+        if: steps.pr.outputs.pull-request-url != ''
+        env:
+          PR_URL: ${{ steps.pr.outputs.pull-request-url }}
+          PR_OPERATION: ${{ steps.pr.outputs.pull-request-operation }}
+        run: echo "Import PR ($PR_OPERATION) -- $PR_URL" >> "$GITHUB_STEP_SUMMARY"

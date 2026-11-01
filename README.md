@@ -19,6 +19,108 @@ Clean up any old actions if appropriate, as well as any leftover `requirements.i
 > Note: If it's 2026 or another site with enrichment, uncomment and configure the
 > relevant parts of the action!
 
+## Importing multiple sites into fedramp.gov
+
+`build-fr-zensical.yml` contains the common build environment and optional Pages
+deployment. `import-zensical-sites.yml` calls it for each changed site with
+`deploy: false`, `preview-urls: false`, and `artifact-mode: archive`. Python, Bun,
+and locked Python dependencies are configured in one place. The relative
+reusable-workflow reference and shared source checkout keep builds and
+dependencies on the same release commit.
+
+The import workflow uses
+[`import-zensical-sites/zensical-import.py`](import-zensical-sites/zensical-import.py)
+for change discovery, artifact collection, and applying built sites. It checks
+out this helper from the same shared-workflows release; callers do not need to
+copy the script into their repositories.
+
+The importer resolves each source repository's `main` commit and compares it
+with the destination's `.zensical-source-sha`. Changed sites build independently;
+all builds and artifacts must succeed before one draft PR can be prepared.
+Imports preserve source URLs. Existing Pages callers retain their preview-domain
+rewrite and deployment defaults.
+
+A caller in fedramp.gov can use:
+
+```yaml
+name: Import Zensical Sites
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: import-zensical-sites
+  cancel-in-progress: false
+jobs:
+  import:
+    uses: FedRAMP/shared-workflows/.github/workflows/import-zensical-sites.yml@v1
+    with:
+      create-pr: true
+      base-branch: develop
+      import-branch: automation/zensical-sites
+      sites: |
+        [
+          {"id":"join","repository":"FedRAMP/join","destination":"static/join"},
+          {"id":"phase4","repository":"FedRAMP/phase4","destination":"static/20x/phase4"},
+          {"id":"2026","repository":"FedRAMP/2026","destination":"static/2026",
+           "use-bun":true,"submodules":true,"venv-path":"tools/.venv",
+           "build-script":"tools/scripts/build-ci.sh"},
+          {"id":"legacy","repository":"FedRAMP/docs-legacy","destination":"static/legacy"}
+        ]
+    secrets:
+      ZENSICAL_IMPORT_TOKEN: ${{ secrets.ZENSICAL_IMPORT_TOKEN }}
+```
+
+### Import inputs and behavior
+
+- `sites` is a required JSON array. Each entry requires a unique `id`, a source
+  `repository`, and a `destination` strictly below `static/`. Destinations cannot
+  overlap or traverse symlinks. Optional `use-bun`, `submodules`, `venv-path`, and
+  `build-script` use the common builder's defaults.
+- `create-pr` defaults to `false`: builds and collected artifacts are retained
+  for seven days without writing a branch or PR. Setting it to `true` is allowed
+  only for the caller repository `FedRAMP/fedramp.gov`.
+- `base-branch` defaults to `develop`; `import-branch` defaults to
+  `automation/zensical-sites`. A PR-mode run skips builds if the existing open
+  import PR already has all desired source markers. Build-only runs do not skip
+  based on pending PRs.
+- `ZENSICAL_IMPORT_TOKEN` is optional. A fine-grained PAT with contents and pull
+  requests read/write can trigger downstream CI. Without it, the workflow uses
+  `github.token`; enable Actions PR creation in the caller repository settings.
+- Only the PR job requests write permissions. Site builds receive no import PAT
+  or Pages deployment permissions. The caller must grant the permissions needed
+  by the selected workflow, as shown above.
+- A base branch that advances during builds causes PR preparation to fail;
+  rerun against the latest base. Imported files are staged only within changed
+  destinations. PRs remain drafts and require manual review and merge.
+- Changes to build tooling alone do not trigger imports when source SHAs are
+  unchanged. The 2026 build script also syncs upstream rules, so its source
+  marker identifies the site commit, not every dependency input.
+
+### Build-only interface
+
+`build-fr-zensical.yml` accepts the existing builder options plus
+`source-repository` and `source-ref` (empty means the normal caller checkout),
+`preview-urls` (default `true`), `artifact-mode` (`pages` or `archive`, default
+`pages`), and `artifact-name` (default `site-archive`). Archive mode preserves
+hidden files and permissions inside a tar archive and records build versions
+alongside it. Set `deploy: false` for build-only use; the deployment job is skipped.
+
+The workflow retains `deploy: true` by default for existing Pages callers.
+Archive mode cannot be combined with Pages deployment. Import matrix
+jobs use distinct artifact names and concurrency groups.
+
+### Validation and rollout
+
+GitHub runtime validation should exercise Pages callers,
+the 2026 build script, failed matrix jobs, and draft PR creation/update.
+
+Release all shared files together before enabling the fedramp.gov caller. Test
+an immutable release with `create-pr: false` while sources differ from the base,
+then follow the release process below to update `v1`. If rolling `v1` back to a
+release without the importer, restore the previous fedramp.gov importer too.
+
 ## Creating a release
 
 Callers installed from `zensical-to-preview.yml` use `@v1`. Merging changes into
