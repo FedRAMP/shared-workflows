@@ -21,14 +21,19 @@ Clean up any old actions if appropriate, as well as any leftover `requirements.i
 
 ## Importing multiple sites into fedramp.gov
 
-`build-fr-zensical.yml` contains the common build environment and optional Pages
-deployment. `import-zensical-sites.yml` calls it for each changed site with
-`deploy: false`, `preview-urls: false`, and `artifact-mode: archive`. Python, Bun,
-and locked Python dependencies are configured in one place. The importer calls
-the builder through an explicit repository and commit reference. The builder
-checks out its dependencies from that same commit. When releasing builder or
-dependency changes, update the importer's builder SHA to the published commit
-before releasing the importer.
+`build-zensical-artifact.yml` contains the common build environment and requests
+only `contents: read`. `build-fr-zensical.yml` calls it and optionally deploys to
+Pages; only its deployment job requests Pages and OIDC write permissions.
+`import-zensical-sites.yml` calls the build-only workflow for each changed site
+with `preview-urls: false` and `artifact-mode: archive`, then prepares a PR.
+
+Both entry points use an explicit
+`FedRAMP/shared-workflows/.github/workflows/build-zensical-artifact.yml@v1`
+reference. Publish all three workflows together before updating `v1`. The builder
+checks out dependencies from its own resolved commit. Because the nested reference
+uses the moving `v1` tag, pinning only an entry point does not pin its builder;
+testing a candidate builder requires updating the nested reference to that
+candidate's published version or commit too.
 
 The import workflow uses
 [`import-zensical-sites/zensical-import.py`](import-zensical-sites/zensical-import.py)
@@ -42,7 +47,8 @@ all builds and artifacts must succeed before one draft PR can be prepared.
 Imports preserve source URLs. Existing Pages callers retain their preview-domain
 rewrite and deployment defaults.
 
-A caller in fedramp.gov can use:
+Copy the root-level [import-zensical-sites.yml](import-zensical-sites.yml) to
+`.github/workflows/import-zensical-sites.yml` in fedramp.gov. It contains:
 
 ```yaml
 name: Import Zensical Sites
@@ -102,14 +108,17 @@ jobs:
 
 ### Build-only interface
 
-`build-fr-zensical.yml` accepts the existing builder options plus
+`build-zensical-artifact.yml` accepts the existing builder options plus
 `source-repository` and `source-ref` (empty means the normal caller checkout),
 `preview-urls` (default `true`), `artifact-mode` (`pages` or `archive`, default
 `pages`), and `artifact-name` (default `site-archive`). Archive mode preserves
 hidden files and permissions inside a tar archive and records build versions
-alongside it. Set `deploy: false` for build-only use; the deployment job is skipped.
+alongside it. It has no deployment job and requests no Pages or OIDC permissions.
 
-The workflow retains `deploy: true` by default for existing Pages callers.
+`build-fr-zensical.yml` retains `deploy: true` by default for existing Pages callers.
+Its `deploy: false` option skips deployment but still requires the caller to allow
+the declared Pages and OIDC permissions during workflow validation. Import callers
+avoid that requirement by using the build-only workflow directly.
 Archive mode cannot be combined with Pages deployment. Import matrix
 jobs use distinct artifact names and concurrency groups.
 

@@ -1,0 +1,30 @@
+# Copy to .github/workflows/import-zensical-sites.yml in FedRAMP/fedramp.gov.
+# Publish all shared workflows to v1 before running this caller.
+
+name: Import Zensical Sites
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: import-zensical-sites
+  cancel-in-progress: false
+jobs:
+  import:
+    uses: FedRAMP/shared-workflows/.github/workflows/import-zensical-sites.yml@v1
+    with:
+      create-pr: true
+      base-branch: develop
+      import-branch: automation/zensical-sites
+      sites: |
+        [
+          {"id":"join","repository":"FedRAMP/join","destination":"static/join"},
+          {"id":"phase4","repository":"FedRAMP/phase4","destination":"static/20x/phase4"},
+          {"id":"2026","repository":"FedRAMP/2026","destination":"static/2026",
+           "use-bun":true,"submodules":true,"venv-path":"tools/.venv",
+           "build-script":"tools/scripts/build-ci.sh"},
+          {"id":"legacy","repository":"FedRAMP/docs-legacy","destination":"static/legacy"}
+        ]
+    secrets:
+      ZENSICAL_IMPORT_TOKEN: ${{ secrets.ZENSICAL_IMPORT_TOKEN }}
