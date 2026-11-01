@@ -63,7 +63,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.discover.outputs.matrix) }}
-    uses: ./.github/workflows/build-fr-zensical.yml
+    uses: $/.github/workflows/build-fr-zensical.yml
     with:
       deploy: false
       source-repository: ${{ matrix.repository }}
