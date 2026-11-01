@@ -32,6 +32,9 @@ class ReleaseFlowTests(unittest.TestCase):
             shutil.copytree(ROOT / name, self.work / name, ignore=shutil.ignore_patterns('__pycache__'))
         for name in ('requirements.txt', '.gitignore', 'import-zensical-sites.yml', 'zensical-to-preview.yml'):
             shutil.copy(ROOT / name, self.work / name)
+        # Build an independent history: a real candidate's metadata points to
+        # commits in the checkout, not commits in this disposable test repo.
+        (self.work / 'release-management/release.json').unlink(missing_ok=True)
         self.cwd = Path.cwd()
         os.chdir(self.work)
         self.addCleanup(os.chdir, self.cwd)
@@ -258,3 +261,17 @@ class ReleaseFlowTests(unittest.TestCase):
             self.invoke()
         self.assertFalse(self.gh_calls)
         self.assertEqual(self.remote_ref('refs/tags/v1'), self.old_oid)
+
+    def test_release_candidate_checkout_does_not_contaminate_fixture_history(self):
+        # The same suite runs on main and on a candidate containing real release
+        # metadata. That metadata refers to commits outside our disposable Git repo.
+        candidate_source = self.folder / 'candidate-source'
+        shutil.copytree(self.work, candidate_source)
+        (candidate_source / 'release-management/release.json').write_text(json.dumps({
+            'version': 'v1.9.9', 'source_sha': 'f' * 40,
+            'requirements_sha256': 'e' * 64, 'previous_version': 'v1.9.8'}))
+        result = unittest.TestResult()
+        with patch(__name__ + '.ROOT', candidate_source):
+            case = ReleaseFlowTests('test_success_promotes_pinned_candidate_and_leaves_main_alone')
+            case.run(result)
+        self.assertTrue(result.wasSuccessful(), result.errors + result.failures)
