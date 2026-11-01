@@ -3,6 +3,10 @@ name: Builds & deploys Zensical sites for GitHub pages (FedRAMP style)
 on:
   workflow_call:
     inputs:
+      deploy:
+        description: Deploy the built site to GitHub Pages
+        type: boolean
+        default: true
       build-script:
         description: Optional repository-local script that builds html/
         type: string
@@ -21,20 +25,22 @@ permissions:
   contents: read
 
 concurrency:
-  group: pages
+  group: ${{ inputs.deploy && 'pages' || format('site-check-{0}', github.ref) }}
   cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
         with:
           submodules: ${{ inputs.submodules && 'recursive' || 'false' }}
+          persist-credentials: false
       - uses: actions/checkout@v5
         with:
-          repository: FedRAMP/shared-workflows
-          ref: v1
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
           path: .shared-workflows
           persist-credentials: false
 
@@ -56,6 +62,10 @@ jobs:
         with:
           bun-version: "1.4.4"
 
+      - name: Set preview site URL
+        run: |
+          sed -i '/^[[:space:]]*site_url[[:space:]]*=/s|www\.fedramp\.gov|preview.fedramp.gov|g' zensical.toml
+
       - name: Build site
         env:
           BUILD_SCRIPT: ${{ inputs.build-script }}
@@ -63,7 +73,7 @@ jobs:
           if [[ -n "$BUILD_SCRIPT" ]]; then
             bash "$BUILD_SCRIPT"
           else
-            zensical build --clean
+            zensical build --clean --strict
           fi
 
       - uses: actions/upload-pages-artifact@v5
@@ -71,8 +81,10 @@ jobs:
           path: html/
 
   deploy:
+    if: inputs.deploy
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       pages: write
       id-token: write
