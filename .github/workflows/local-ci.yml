@@ -1,4 +1,4 @@
-name: local-ci
+name: (Local) Short Continuous Integration Health Check
 on:
   pull_request:
     branches: [main]

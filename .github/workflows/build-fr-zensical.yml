@@ -1,4 +1,4 @@
-name: Builds & deploys Zensical sites for GitHub pages (FedRAMP style)
+name: (Shared) Build And Deploy Zensical Site To Pages
 
 on:
   workflow_call:

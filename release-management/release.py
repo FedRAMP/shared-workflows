@@ -4,6 +4,7 @@
 Run only from local-release.yml on main. The committed harness is dispatched at
 the candidate commit; only data is passed as inputs. No workflow files are written.
 """
+import argparse
 import base64
 import hashlib
 import json
@@ -345,6 +346,76 @@ def latest_published_version():
     return next_version(tags)[1]
 
 
+def run_e2e(state, urls):
+    """Shared full-test gate for test-only runs and releases; never publishes."""
+    sites = state['sites']
+    candidate = state['release_sha']
+    namespace = prefix()
+    git('checkout', '--detach', candidate)
+    push_branch(candidate, namespace + '/candidate')
+    # Isolated base contains deliberate stale output to exercise replacement.
+    for site in sites:
+        destination = ROOT / site['destination']
+        destination.mkdir(parents=True, exist_ok=True)
+        (destination / 'release-stale.txt').write_text('Must be removed by import\n')
+    base = commit('Prepare isolated import test base')
+    push_branch(base, namespace + '/base')
+    git('checkout', '--detach', candidate)
+    harness = candidate  # Dispatch the committed workflow unchanged.
+    push_branch(harness, namespace + '/harness')
+    first_run = dispatch_and_wait('create', namespace + '/harness', harness, state)
+    pr = verify_pr(namespace, sites)
+    state['test_pr_url'] = pr['html_url']
+    output_json(evidence_dir() / 'state.json', state)
+    state['environments'] = {'create/' + k: v for k, v in verify_artifacts(first_run, sites, urls).items()}
+    # Corrupt a pending marker: the next run must refresh the existing PR.
+    marker_path = sites[0]['destination'] + '/.zensical-source-sha'
+    content = repo_api(f'contents/{marker_path}?ref={pr["head"]["sha"]}')
+    repo_api('contents/' + marker_path, method='PUT', data={
+        'message': 'Exercise pending import refresh', 'branch': namespace + '/import',
+        'sha': content['sha'], 'content': base64.b64encode(('0' * 40 + '\n').encode()).decode()})
+    refresh_run = dispatch_and_wait('refresh', namespace + '/harness', harness, state)
+    state['environments'].update({'refresh/' + k: v for k, v in
+                                  verify_artifacts(refresh_run, sites, urls, include_preview=False).items()})
+    updated = verify_pr(namespace, sites, pr['number'])
+    skip_run = dispatch_and_wait('skip', namespace + '/harness', harness, state)
+    unchanged = verify_pr(namespace, sites, pr['number'])
+    if updated['head']['sha'] != unchanged['head']['sha']:
+        raise RuntimeError('Pending import skip unexpectedly changed the PR')
+    if repo_api(f'actions/runs/{skip_run}/artifacts?per_page=100')['artifacts']:
+        raise RuntimeError('Pending import skip unexpectedly rebuilt sites')
+    # Cleanup is part of the release gate, not an optional post-release courtesy.
+    cleanup()
+    state['cleanup_complete'] = True
+    release_ready(state)
+
+
+def run_tests():
+    context_guard()
+    source = os.environ['GITHUB_SHA']
+    if not SHA.fullmatch(source) or git('rev-parse', 'HEAD') != source:
+        raise ValueError('Checkout must match the dispatched source commit')
+    if git('status', '--porcelain', '--untracked-files=no'):
+        raise ValueError('Tracked source files must be clean')
+    evidence_dir().mkdir(parents=True, exist_ok=True)
+    ci_url = wait_ci(source)
+    sites, urls = resolve_sites()
+    git('config', 'user.name', 'github-actions[bot]')
+    git('config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com')
+    state = {'mode': 'test-only', 'source_sha': source, 'release_sha': source,
+             'builder_sha': source, 'sites': sites, 'runs': [], 'ci_url': ci_url,
+             'requirements_sha256': hashlib.sha256((ROOT / 'requirements.txt').read_bytes()).hexdigest()}
+    output_json(evidence_dir() / 'state.json', state)
+    run_e2e(state, urls)
+    output_json(evidence_dir() / 'test-manifest.json', state)
+    with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
+        stream.write(f"## Full tests passed\n\nTested commit: `{source}`\n\n")
+        for record in state['runs']:
+            stream.write(f"- [{record['phase']}]({record['url']}): {record['conclusion']}\n")
+        stream.write(f"- [Closed test PR]({state['test_pr_url']})\n\nNo release was published and no tags were changed.\n")
+    print('Full tests passed. No releases or tags were created or changed.', flush=True)
+
+
 def main():
     context_guard()
     source = os.environ['GITHUB_SHA']
@@ -411,42 +482,7 @@ def main():
     state['release_sha'] = candidate
     state['builder_sha'] = candidate
     output_json(evidence_dir() / 'state.json', state)
-    push_branch(candidate, namespace + '/candidate')
-    # Isolated base contains deliberate stale output to exercise replacement.
-    for site in sites:
-        destination = ROOT / site['destination']
-        destination.mkdir(parents=True, exist_ok=True)
-        (destination / 'release-stale.txt').write_text('Must be removed by import\n')
-    base = commit('Prepare isolated import test base')
-    push_branch(base, namespace + '/base')
-    git('checkout', '--detach', candidate)
-    harness = candidate  # Dispatch the committed workflow unchanged.
-    push_branch(harness, namespace + '/harness')
-    first_run = dispatch_and_wait('create', namespace + '/harness', harness, state)
-    pr = verify_pr(namespace, sites)
-    state['test_pr_url'] = pr['html_url']
-    output_json(evidence_dir() / 'state.json', state)
-    state['environments'] = {'create/' + k: v for k, v in verify_artifacts(first_run, sites, urls).items()}
-    # Corrupt a pending marker: the next run must refresh the existing PR.
-    marker_path = sites[0]['destination'] + '/.zensical-source-sha'
-    content = repo_api(f'contents/{marker_path}?ref={pr["head"]["sha"]}')
-    repo_api('contents/' + marker_path, method='PUT', data={
-        'message': 'Exercise pending import refresh', 'branch': namespace + '/import',
-        'sha': content['sha'], 'content': base64.b64encode(('0' * 40 + '\n').encode()).decode()})
-    refresh_run = dispatch_and_wait('refresh', namespace + '/harness', harness, state)
-    state['environments'].update({'refresh/' + k: v for k, v in
-                                  verify_artifacts(refresh_run, sites, urls, include_preview=False).items()})
-    updated = verify_pr(namespace, sites, pr['number'])
-    skip_run = dispatch_and_wait('skip', namespace + '/harness', harness, state)
-    unchanged = verify_pr(namespace, sites, pr['number'])
-    if updated['head']['sha'] != unchanged['head']['sha']:
-        raise RuntimeError('Pending import skip unexpectedly changed the PR')
-    if repo_api(f'actions/runs/{skip_run}/artifacts?per_page=100')['artifacts']:
-        raise RuntimeError('Pending import skip unexpectedly rebuilt sites')
-    # Cleanup is part of the release gate, not an optional post-release courtesy.
-    cleanup()
-    state['cleanup_complete'] = True
-    release_ready(state)
+    run_e2e(state, urls)
     output_json(evidence_dir() / 'release-manifest.json', state)
     notes_path = evidence_dir() / 'release-notes.md'
     notes_path.write_text(release_notes(state, commits))
@@ -476,7 +512,10 @@ def main():
 
 if __name__ == '__main__':
     try:
-        {'cleanup': cleanup, 'harness': prepare_harness}.get(sys.argv[1] if len(sys.argv) > 1 else '', main)()
+        parser = argparse.ArgumentParser(description=__doc__)
+        parser.add_argument('command', nargs='?', default='release', choices=['release', 'test', 'cleanup', 'harness'])
+        command = parser.parse_args().command
+        {'release': main, 'test': run_tests, 'cleanup': cleanup, 'harness': prepare_harness}[command]()
     except Exception as error:
         print(f'::error::{error}', file=sys.stderr)
         sys.exit(1)

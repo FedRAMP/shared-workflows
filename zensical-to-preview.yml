@@ -1,6 +1,6 @@
 # Deploys Zensical site to GitHub Pages using the FedRAMP shared workflow
 
-name: Deploy to GitHub Pages
+name: (Local) Build And Deploy Site To GitHub Pages
 
 on:
   push:

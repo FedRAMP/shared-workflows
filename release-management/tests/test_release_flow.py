@@ -99,7 +99,7 @@ class ReleaseFlowTests(unittest.TestCase):
                               'url': 'https://example.test/' + phase, 'conclusion': 'success'})
         return len(state['runs'])
 
-    def invoke(self):
+    def invoke(self, test_only=False):
         pr = {'number': 42, 'head': {'sha': 'b' * 40}, 'html_url': 'https://example.test/pr'}
         with patch.dict(os.environ, self.env), patch.object(release, 'ROOT', self.work), \
                 patch.object(release, 'run', side_effect=self.command), \
@@ -111,7 +111,7 @@ class ReleaseFlowTests(unittest.TestCase):
                 patch.object(release, 'verify_pr', return_value=pr), \
                 patch.object(release, 'verify_artifacts', return_value={'join': 'Python 3.13\n'}), \
                 patch.object(release, 'cleanup'):
-            release.main()
+            release.run_tests() if test_only else release.main()
 
     def test_success_promotes_pinned_candidate_and_leaves_main_alone(self):
         self.invoke()
@@ -175,3 +175,22 @@ class ReleaseFlowTests(unittest.TestCase):
             release.push_branch(changed, 'release-tests/123-1/harness')
         refs = real_run('git', '--git-dir=' + str(self.remote), 'for-each-ref', '--format=%(refname)').stdout
         self.assertNotIn('release-tests', refs)
+
+    def test_standalone_full_tests_do_not_publish_or_change_any_tags(self):
+        before = real_run('git', '--git-dir=' + str(self.remote), 'show-ref', '--tags').stdout
+        self.invoke(test_only=True)
+        after = real_run('git', '--git-dir=' + str(self.remote), 'show-ref', '--tags').stdout
+        self.assertEqual(before, after)
+        self.assertFalse(self.gh_calls)
+        manifest = json.loads((self.folder / 'runner/release-evidence/test-manifest.json').read_text())
+        self.assertEqual(manifest['mode'], 'test-only')
+        self.assertEqual([r['phase'] for r in manifest['runs']], ['create', 'refresh', 'skip'])
+        self.assertTrue(manifest['cleanup_complete'])
+
+    def test_failed_standalone_tests_do_not_publish_or_change_tags(self):
+        before = real_run('git', '--git-dir=' + str(self.remote), 'show-ref', '--tags').stdout
+        self.fail_phase = 'refresh'
+        with self.assertRaisesRegex(RuntimeError, 'E2E failure'):
+            self.invoke(test_only=True)
+        self.assertEqual(before, real_run('git', '--git-dir=' + str(self.remote), 'show-ref', '--tags').stdout)
+        self.assertFalse(self.gh_calls)

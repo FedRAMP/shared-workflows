@@ -1,5 +1,5 @@
-name: local-release
-run-name: local-release from ${{ github.sha }}
+name: (Local) Test And Publish New Workflow Release
+run-name: (Local) Test And Publish New Workflow Release — ${{ github.sha }}
 on:
   workflow_dispatch:
 permissions:
