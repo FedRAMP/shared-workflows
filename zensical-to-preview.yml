@@ -17,8 +17,9 @@ permissions:
 jobs:
   site:
     uses: FedRAMP/shared-workflows/.github/workflows/build-fr-zensical.yml@v1
+    with:
+      deploy: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
 # Additional stuff for 2026 or similar, edit as appropriate.
-#    with:
 #      use-bun: true
 #      submodules: true
 #      venv-path: tools/.venv
