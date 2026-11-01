@@ -16,6 +16,10 @@ on:
       create-pr:
         type: boolean
         default: false
+      release-test:
+        description: Restricted to this repository's isolated release test branches
+        type: boolean
+        default: false
     secrets:
       ZENSICAL_IMPORT_TOKEN:
         required: false
@@ -53,6 +57,7 @@ jobs:
           BASE_BRANCH: ${{ inputs.base-branch }}
           IMPORT_BRANCH: ${{ inputs.import-branch }}
           CREATE_PR: ${{ inputs.create-pr }}
+          RELEASE_TEST: ${{ inputs.release-test }}
           GH_TOKEN: ${{ github.token }}
           GIT_TERMINAL_PROMPT: '0'
         run: python3 .shared-workflows/import-zensical-sites/zensical-import.py discover
@@ -63,7 +68,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.discover.outputs.matrix) }}
-    uses: FedRAMP/shared-workflows/.github/workflows/build-zensical-artifact.yml@v1
+    uses: ./.github/workflows/build-zensical-artifact.yml
     with:
       source-repository: ${{ matrix.repository }}
       source-ref: ${{ matrix.sha }}
@@ -110,7 +115,8 @@ jobs:
 
   import-pr:
     needs: [discover, collect]
-    if: inputs.create-pr && github.repository == 'FedRAMP/fedramp.gov'
+    # discover enforces the production or isolated release-test repository/branch scope.
+    if: inputs.create-pr
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:

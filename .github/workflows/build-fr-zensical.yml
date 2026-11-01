@@ -59,7 +59,7 @@ jobs:
 
   build:
     needs: validate
-    uses: FedRAMP/shared-workflows/.github/workflows/build-zensical-artifact.yml@v1
+    uses: ./.github/workflows/build-zensical-artifact.yml
     with:
       source-repository: ${{ inputs.source-repository }}
       source-ref: ${{ inputs.source-ref }}
@@ -86,3 +86,5 @@ jobs:
       - uses: actions/configure-pages@v6
       - id: deployment
         uses: actions/deploy-pages@v5
+        with:
+          artifact_name: ${{ inputs.artifact-name == 'site-archive' && 'github-pages' || inputs.artifact-name }}

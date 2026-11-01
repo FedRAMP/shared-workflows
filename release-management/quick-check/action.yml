@@ -1,0 +1,25 @@
+name: Quick checks
+description: Validate workflow contracts and run fast offline tests
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.13'
+    - name: Install pinned workflow linter
+      shell: bash
+      run: |
+        lint_dir="$RUNNER_TEMP/actionlint"
+        mkdir -p "$lint_dir"
+        curl --fail --silent --show-error --location --retry 3 \
+          https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz \
+          --output "$lint_dir/actionlint.tar.gz"
+        echo "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  $lint_dir/actionlint.tar.gz" | sha256sum --check
+        tar -xzf "$lint_dir/actionlint.tar.gz" -C "$lint_dir" actionlint
+        echo "$lint_dir" >> "$GITHUB_PATH"
+    - name: Check workflows and scripts
+      shell: bash
+      run: python3 release-management/check.py --actionlint
+    - name: Run offline regression tests
+      shell: bash
+      run: python3 -m unittest discover -s release-management/tests -v

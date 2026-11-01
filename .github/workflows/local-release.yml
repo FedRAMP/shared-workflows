@@ -1,0 +1,42 @@
+name: local-release
+run-name: local-release from ${{ github.sha }}
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: release-v1
+  cancel-in-progress: false
+jobs:
+  release:
+    if: github.repository == 'FedRAMP/shared-workflows' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    permissions:
+      contents: write
+      actions: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - uses: ./release-management/quick-check
+      - name: Prepare, test, publish, and promote release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PYTHONUNBUFFERED: '1'
+        run: python3 release-management/release.py
+      - name: Clean up release test branches and PRs
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 release-management/release.py cleanup
+      - name: Retain release evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-evidence/
+          if-no-files-found: ignore
+          retention-days: 30

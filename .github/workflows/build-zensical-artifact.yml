@@ -109,6 +109,7 @@ jobs:
             python --version
             python -m pip show zensical | sed -n 's/^Version: /Zensical /p'
             if [[ "$USE_BUN" == true ]]; then printf 'Bun '; bun --version; fi
+            git submodule status --recursive
           } > "$RUNNER_TEMP/site-artifact/build-info.txt"
 
       - uses: actions/upload-artifact@v4
@@ -122,5 +123,6 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
         if: inputs.artifact-mode == 'pages'
         with:
+          name: ${{ inputs.artifact-name == 'site-archive' && 'github-pages' || inputs.artifact-name }}
           path: html/
 

@@ -27,13 +27,11 @@ Pages; only its deployment job requests Pages and OIDC write permissions.
 `import-zensical-sites.yml` calls the build-only workflow for each changed site
 with `preview-urls: false` and `artifact-mode: archive`, then prepares a PR.
 
-Both entry points use an explicit
-`FedRAMP/shared-workflows/.github/workflows/build-zensical-artifact.yml@v1`
-reference. Publish all three workflows together before updating `v1`. The builder
-checks out dependencies from its own resolved commit. Because the nested reference
-uses the moving `v1` tag, pinning only an entry point does not pin its builder;
-testing a candidate builder requires updating the nested reference to that
-candidate's published version or commit too.
+Shared workflows use same-commit `./.github/workflows/...` references internally.
+They do not follow a second moving `@v1` reference: the selected entry point and
+its builder resolve from the same commit. The release process uses lightweight
+version and `v1` tags pointing directly at the tested commit, rather than
+annotated tag objects. Copyable caller templates keep their normal `@v1` references.
 
 The import workflow uses
 [`import-zensical-sites/zensical-import.py`](import-zensical-sites/zensical-import.py)
@@ -84,11 +82,15 @@ jobs:
 
 - `sites` is a required JSON array. Each entry requires a unique `id`, a source
   `repository`, and a `destination` strictly below `static/`. Destinations cannot
-  overlap or traverse symlinks. Optional `use-bun`, `submodules`, `venv-path`, and
+  overlap or traverse symlinks. An optional 40-character `sha` pins a source
+  commit; otherwise discovery resolves `main`. Optional `use-bun`, `submodules`, `venv-path`, and
   `build-script` use the common builder's defaults.
 - `create-pr` defaults to `false`: builds and collected artifacts are retained
   for seven days without writing a branch or PR. Setting it to `true` is allowed
-  only for the caller repository `FedRAMP/fedramp.gov`.
+  for the caller repository `FedRAMP/fedramp.gov`. The release harness can also
+  create PRs within `FedRAMP/shared-workflows` using `release-test: true`, but only
+  with matching `release-tests/<run-id>-<attempt>/{harness,base,import}` branches
+  and a `workflow_dispatch` event. It cannot target `main` or `develop`.
 - `base-branch` defaults to `develop`; `import-branch` defaults to
   `automation/zensical-sites`. A PR-mode run skips builds if the existing open
   import PR already has all desired source markers. Build-only runs do not skip
@@ -122,108 +124,139 @@ avoid that requirement by using the build-only workflow directly.
 Archive mode cannot be combined with Pages deployment. Import matrix
 jobs use distinct artifact names and concurrency groups.
 
-### Validation and rollout
+## Continuous integration and releases
 
-GitHub runtime validation should exercise Pages callers,
-the 2026 build script, failed matrix jobs, and draft PR creation/update.
+Release tooling, tests, and the quick-check composite action all live under
+`release-management/`. Workflow entry points stay in `.github/workflows/` for
+GitHub discovery.
 
-Release all shared files together before enabling the fedramp.gov caller. Test
-an immutable release with `create-pr: false` while sources differ from the base,
-then follow the release process below to update `v1`. If rolling `v1` back to a
-release without the importer, restore the previous fedramp.gov importer too.
+Workflow files and Actions display names starting with `local-` are maintenance
+workflows for this repository only. The three reusable workflows
+(`build-fr-zensical.yml`, `build-zensical-artifact.yml`, and
+`import-zensical-sites.yml`) retain their existing names. Root-level YAML files
+are copyable caller templates, not active workflows in this repository.
 
-## Creating a release
+There are two levels of validation. `local-ci.yml` runs on pull requests targeting
+`main` and pushes to `main`. It performs actionlint, workflow-interface and
+permission checks, Python/shell syntax checks, and offline importer/release tests.
+It does not build sites, create PRs, deploy Pages, or change tags. The tests in
+`release-management/tests/` are part of CI, not the production import path.
 
-Callers installed from `zensical-to-preview.yml` use `@v1`. Merging changes into
-`main` does not update those callers: move the `v1` tag when a release is ready.
-The shared workflow checks out its own commit for `requirements.txt`, so the
-workflow and Python dependencies are released together.
+`local-release.yml` is manually dispatched from `main`. It requires successful push CI
+for the exact source SHA, reruns the quick checks, and then runs full integration
+checks before publishing. Use **Actions → local-release → Run workflow → main**. No
+version or release-note input is required; releases increment the highest existing
+`v1.x.y` patch version. Breaking changes require a separate major-version process;
+this workflow never promotes a v2 release to v1.
 
-Use two kinds of tags:
+### One-time repository setup
 
-- **Version tags**, such as `v1.0.2`, identify a specific release. Never move or
-  overwrite a published version tag; publish a new version for fixes.
-- **Major tags**, such as `v1`, point to the recommended compatible release.
-  Update `v1` for compatible fixes and features. For breaking changes, release
-  `v2.0.0` and create `v2`, leaving `v1` available for existing callers.
+1. Merge these workflows into the default branch (`main`). GitHub must know
+   `local-release-e2e.yml` there before the controller can dispatch the committed
+   harness at the candidate commit on a temporary branch.
+2. Under **Settings → Actions → General**, enable **Allow GitHub Actions to create
+   and approve pull requests**. The isolated import test uses its own
+   `GITHUB_TOKEN` to create draft PRs in this repository.
+3. Ensure repository rules permit GitHub Actions to create version tags,
+   move `v1`, and create/delete `release-tests/**` branches. Make **local-ci / Quick
+   checks** required for merging into `main` (the displayed check is **Quick
+   checks**). No environment approval is required by these workflows.
 
-### Prepare and tag a version
+**No PAT or custom release secret is required.** GitHub supplies the job-scoped
+`GITHUB_TOKEN` automatically. The release controller requests `contents: write`
+for branches/tags/releases, `actions: write` for dispatching/cancelling test runs,
+and `pull-requests: write` for inspecting/closing test PRs. Builds receive their
+own restricted tokens, not the controller's token. The existing optional
+`ZENSICAL_IMPORT_TOKEN` for production imports is unrelated and remains optional.
 
-Merge the intended changes into `main` first. If Python dependencies changed,
-update and commit both `requirements.in` and the generated `requirements.txt`.
-Run these commands from this repository with a clean working tree and permission
-to push tags. The release command also requires the GitHub CLI (`gh`) to be
-installed and authenticated with `gh auth login`.
+These are repository settings; committing the files alone does not configure
+rules or Actions permissions. The release workflow does not require access to the
+private fedramp.gov repository. It reads the public source-site repositories for
+builds; all release branches, PRs, tags, and releases stay in shared-workflows.
+GitHub permits `workflow_dispatch` with the automatic token, so no separate token
+is needed to start the child test runs.
+
+### What a release does
+
+1. Captures the dispatch's exact `main` SHA. A later push to main does not change
+   that candidate. It waits up to ten minutes for that SHA's successful push CI.
+2. Creates a release commit adding only a `release-management/release.json` record.
+   Workflow files are unchanged, and main is not modified. Same-commit references
+   keep the builder at this candidate commit without rewriting workflow files.
+3. Resolves the four source-site commits from the root importer template and
+   dispatches the **fixed, committed harness** at the candidate commit. It passes
+   site definitions and SHAs as inputs, validates them against the importer
+   template, and uses the same entry points as both root caller templates. Static
+   checks keep those entry points aligned. No test call follows the current `v1`.
+4. Builds all four sites through the actual importer, creates a draft PR in this
+   repository, and verifies its source markers, HTML, notes, changed-path scope,
+   and deletion of deliberately stale output. It separately builds all four
+   sites through the Pages wrapper with preview URLs and `deploy: false`, then
+   downloads and verifies the real Pages artifacts and canonical URLs.
+5. Corrupts a pending marker on the disposable PR branch, runs the importer again,
+   and verifies that it refreshes the **same PR**. A third run verifies that an
+   unchanged pending import produces no artifacts and does not modify that PR.
+6. Closes the draft PR without merging and deletes this attempt's test branches.
+   Cleanup must succeed before publication. An `always()` step also attempts
+   cleanup after failures or cancellations, cancelling child runs first.
+7. Creates a numbered tag and GitHub release, attaches `release-manifest.json`,
+   and moves `v1` **last**, using a compare-and-swap against its previous target.
+   It verifies the resulting remote ref and writes a workflow summary.
+
+The integration test makes twelve full site builds: four import builds, four
+preview builds, and four import-refresh builds. The final pending-PR check skips
+building. The 2026 builds continue to use the repository's built-in script and
+latest rules synchronization. Resolved site commits are fixed across these tests;
+upstream rules can advance during the run, so both import passes record their
+actual submodule commits in the release evidence.
+
+These tests exercise artifact production and real PR creation/update/skip in this
+repository. They intentionally do not deploy a public Pages site, merge test PRs,
+or access fedramp.gov. Private-caller access settings and actual Pages deployment
+remain outside this release gate.
+
+### Release notes and evidence
+
+Notes are generated from **all non-merge commit subjects** since the previous
+release's source commit, including direct commits. Use descriptive commit messages
+(or squash-merge titles); no labeling or manual note writing is needed. Commit and
+PR references link to this repository.
+
+Each release records its source SHA, prepared release SHA, builder SHA (the release
+SHA), prior `v1` tag object and peeled commit, dependency-lock checksum, source-site
+SHAs, build versions/submodule SHAs, source CI link, all E2E run links, and the
+closed test PR. The manifest is attached to the release. Workflow evidence is also
+retained for 30 days, including on failures when available. Numbered version tags
+are never overwritten; `v1` is a moving lightweight tag pointing directly to the
+release commit.
+
+### Failures, retries, and rollback
+
+Only one release runs at a time. A failed gate leaves `v1` unchanged. If publication
+was interrupted after the numbered tag was pushed, rerunning from the same source
+reuses that exact candidate and reruns the integration checks; it does not overwrite
+the version tag. Existing published notes/assets are preserved. Running an already
+promoted source is a no-op. If a run is forcibly terminated before cleanup can
+complete, inspect its `release-tests/<run-id>-<attempt>/` branches and draft PR;
+the controller never deletes another attempt's branches.
+
+Every release includes a rollback command with the previous commit and an expected
+current `v1` target. A rollback moves only `v1`; keep numbered tags and releases
+intact. Consumers pinned to a version or SHA keep their original implementation.
+Consumers using `@v1` pick up a promotion or rollback on their next fresh workflow
+run. Moving a tag does not itself run workflows in consuming repositories.
+
+### Local quick checks
+
+Python 3.12+ and Ruby are required. With actionlint 1.7.12 on PATH:
 
 ```bash
-git switch main
-git pull --ff-only origin main
-git fetch origin --tags
-git status --short
-git tag --list 'v*' --sort=-version:refname
+python3 release-management/check.py --actionlint
+python3 -m unittest discover -s release-management/tests -v
+git diff --check
 ```
 
-If fetching reports that a local major tag would be overwritten, refresh that
-specific moving tag with `git fetch origin +refs/tags/v1:refs/tags/v1` and retry.
-Stop if the working tree is not clean. Review the commit to release, then choose
-an unused version below (`v1.0.2` is an example, not an automatically selected
-next version):
-
-```bash
-release_version=v1.0.2
-git log -1 --oneline origin/main
-git tag -a "$release_version" origin/main -m "Release $release_version"
-git push origin "refs/tags/$release_version"
-```
-
-Before updating `v1`, test the new version in a consuming site's workflow by
-temporarily replacing `@v1` with the version tag. Check the build and deployment,
-including any custom build script used by that site.
-
-### Publish the release and update the major tag
-
-Create a GitHub release for the version tag. `--verify-tag` requires the tag to
-already exist on GitHub; `--generate-notes` supplies initial release notes.
-
-```bash
-gh release create "$release_version" \
-  --repo FedRAMP/shared-workflows \
-  --verify-tag \
-  --title "$release_version" \
-  --generate-notes
-```
-
-Alternatively, use the repository's **Releases → Draft a new release** page and
-select the version tag you just pushed. Review the release notes and describe
-any changes callers need to make. See the
-[GitHub CLI release documentation](https://cli.github.com/manual/gh_release_create)
-for more options.
-
-Move the major tag to the tested release commit:
-
-```bash
-git tag -fa v1 "${release_version}^{commit}" -m "Latest compatible v1 release: $release_version"
-git push origin +refs/tags/v1:refs/tags/v1
-git ls-remote origin 'refs/tags/v1*'
-```
-
-The `+` deliberately replaces only the remote `v1` tag. Repository tag rules
-must allow that update. Creating a GitHub release alone does not move `v1`.
-Callers using `@v1` pick up the update on subsequent runs; moving the tag does
-not itself trigger their workflows. Callers pinned to a version or commit must
-update their reference explicitly. Changes to the copied caller template also
-need to be applied in each consuming repository.
-
-### Roll back the major tag
-
-If a release causes problems, point `v1` back to a known working version and
-start a new workflow run in affected repositories:
-
-```bash
-rollback_version=v1.0.1
-git tag -fa v1 "${rollback_version}^{commit}" -m "Roll back v1 to $rollback_version"
-git push origin +refs/tags/v1:refs/tags/v1
-```
-
-Keep the published version tags intact, document the problem in the affected
-release's notes, and publish the fix under a new version.
+Without actionlint, omit that flag to run the other static checks. The linter
+suppression is limited to its missing `job.workflow_repository` and
+`job.workflow_sha` context properties; all other lint diagnostics remain errors.
+Full release checks require GitHub Actions and configured repository credentials.
