@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type="text/xsl" href="rss.xsl"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>FedRAMP Legacy Documentation Changelog</title><description>Legacy documentation by FedRAMP, available for reference only during the transition to the Consolidated Rules for 2026.</description><link>https://www.fedramp.gov/legacy/</link><atom:link href="https://www.fedramp.gov/legacy/feed_rss_updated.xml" rel="self" type="application/rss+xml" /><managingEditor>pete@fedramp.gov</managingEditor><docs>https://github.com/fedramp/docs-legacy</docs><language>en</language><pubDate>Sun, 01 Nov 2026 16:13:18 +0000</pubDate><lastBuildDate>Sun, 01 Nov 2026 16:13:18 +0000</lastBuildDate><ttl>1440</ttl><generator>Zensical RSS</generator><item><title>Changelog</title><description>&lt;h1&gt;Changelog for fedramp.gov/legacy&lt;/h1&gt;
+&lt;p&gt;This page contains summaries of changes that are made to the Legacy section of this site.&lt;/p&gt;
+&lt;p&gt;An &lt;a href=&quot;https://www.fedramp.gov/legacy/feed_rss_updated.xml&quot;&gt;RSS feed for this page is available here&lt;/a&gt;.&lt;/p&gt;
+&lt;h2&gt;2026-10-27 Updating static site version and testing RSS feed support&lt;/h2&gt;
+&lt;p&gt;This version makes no changes to the materials on the site itself and is purely for convenience and testing:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A Changelog page was added (you are here)&lt;/li&gt;
+&lt;li&gt;The underlying static site builder was updated to the latest version&lt;/li&gt;
+&lt;li&gt;Social media sharing card support was added&lt;/li&gt;
+&lt;li&gt;RSS support for updates to the Changelog is being tested&lt;/li&gt;
+&lt;/ul&gt;</description><link>https://www.fedramp.gov/legacy/changelog/</link><source url="https://www.fedramp.gov/legacy/feed_rss_updated.xml">FedRAMP Legacy Documentation Changelog</source><pubDate>Sun, 01 Nov 2026 00:13:01 +0000</pubDate><guid isPermaLink="true">https://www.fedramp.gov/legacy/changelog/</guid></item></channel></rss>
