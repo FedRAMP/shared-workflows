@@ -16,6 +16,7 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'release-management'))
 import release
+import pipeline
 from common import run as real_run, yaml_read
 
 
@@ -53,7 +54,9 @@ class ReleaseFlowTests(unittest.TestCase):
         self.env = {'GITHUB_REPOSITORY': 'FedRAMP/shared-workflows', 'GITHUB_REF': 'refs/heads/main',
                     'GITHUB_EVENT_NAME': 'workflow_dispatch', 'GITHUB_RUN_ID': '123', 'GITHUB_RUN_ATTEMPT': '1',
                     'GITHUB_SHA': self.source, 'RUNNER_TEMP': str(self.folder / 'runner'),
-                    'GITHUB_STEP_SUMMARY': str(self.folder / 'summary')}
+                    'GITHUB_STEP_SUMMARY': str(self.folder / 'summary'),
+                    'GITHUB_OUTPUT': str(self.folder / 'outputs'),
+                    'GITHUB_WORKFLOW_REF': 'FedRAMP/shared-workflows/.github/workflows/local-test.yml@refs/heads/main'}
         sites = json.loads(yaml_read(self.work / 'import-zensical-sites.yml')['jobs']['import']['with']['sites'])
         for site in sites:
             site['sha'] = 'a' * 40
@@ -64,6 +67,7 @@ class ReleaseFlowTests(unittest.TestCase):
         self.fail_phase = None
         self.fail_publish = False
         self.race_promotion = False
+        self.bad_evidence = {}
 
     def remote_ref(self, ref):
         return real_run('git', '--git-dir=' + str(self.remote), 'rev-parse', ref).stdout.strip()
@@ -81,6 +85,10 @@ class ReleaseFlowTests(unittest.TestCase):
 
     def command(self, *args, **kwargs):
         if args[0] == 'gh':
+            if args[:3] == ('gh', 'run', 'download'):
+                destination = Path(args[args.index('--dir') + 1])
+                (destination / 'test-manifest.json').write_text(json.dumps(self.pipeline_manifest))
+                return subprocess.CompletedProcess(args, 0, '', '')
             self.gh_calls.append(args)
             if self.fail_publish and args[:3] == ('gh', 'release', 'create'):
                 raise RuntimeError('Simulated publication failure')
@@ -93,11 +101,19 @@ class ReleaseFlowTests(unittest.TestCase):
         return real_run(*args, **kwargs)
 
     def dispatch(self, phase, branch, harness, state):
-        if phase == self.fail_phase:
+        self.assertEqual(phase, 'pipeline')
+        if self.fail_phase:
             raise RuntimeError('Simulated E2E failure')
-        state['runs'].append({'id': len(state['runs']) + 1, 'phase': phase,
-                              'url': 'https://example.test/' + phase, 'conclusion': 'success'})
-        return len(state['runs'])
+        state['pipeline_attempt'] = 1
+        self.pipeline_manifest = {
+            'release_sha': harness, 'sites': state['sites'], 'namespace': release.prefix(),
+            'pipeline_run_id': '99', 'pipeline_run_attempt': '1',
+            'runs': [{'id': 99, 'phase': p, 'conclusion': 'success', 'url': 'https://example.test/pipeline'}
+                     for p in ('create', 'refresh', 'skip')],
+            'environments': {'create/join': 'Python 3.13'},
+            'test_pr_url': 'https://example.test/pr', 'cleanup_complete': True}
+        self.pipeline_manifest.update(self.bad_evidence)
+        return 99
 
     def invoke(self, test_only=False):
         pr = {'number': 42, 'head': {'sha': 'b' * 40}, 'html_url': 'https://example.test/pr'}
@@ -110,8 +126,19 @@ class ReleaseFlowTests(unittest.TestCase):
                 patch.object(release, 'dispatch_and_wait', side_effect=self.dispatch), \
                 patch.object(release, 'verify_pr', return_value=pr), \
                 patch.object(release, 'verify_artifacts', return_value={'join': 'Python 3.13\n'}), \
-                patch.object(release, 'cleanup'):
-            release.run_tests() if test_only else release.main()
+                patch.object(release, 'cleanup'), patch.object(release, 'cleanup_branches'):
+            if test_only:
+                pipeline.prepare()
+                for phase in ('create', 'refresh', 'skip'):
+                    if phase == self.fail_phase:
+                        raise RuntimeError('Simulated E2E failure')
+                    os.environ['IMPORT_CHANGED'] = 'false' if phase == 'skip' else 'true'
+                    pipeline.verify(phase)
+                pipeline.cleanup()
+                os.environ.update(CHECK_RESULT='success', CLEANUP_RESULT='success')
+                pipeline.finish()
+            else:
+                release.main()
 
     def test_success_promotes_pinned_candidate_and_leaves_main_alone(self):
         self.invoke()
@@ -121,7 +148,7 @@ class ReleaseFlowTests(unittest.TestCase):
         self.assertEqual(self.remote_ref('refs/heads/main'), self.source)
         changed = real_run('git', 'diff', '--name-only', self.source, candidate).stdout.splitlines()
         self.assertEqual(changed, ['release-management/release.json'])
-        for branch in ('candidate', 'base', 'harness'):
+        for branch in ('candidate', 'harness'):
             ref = self.remote_ref('refs/heads/release-tests/123-1/' + branch)
             self.assertEqual(real_run('git', 'diff', '--name-only', self.source, ref,
                                       '--', '.github/workflows').stdout, '')
@@ -217,3 +244,17 @@ class ReleaseFlowTests(unittest.TestCase):
         for label in release.PHASE_LABELS.values():
             self.assertIn(label, summary)
         self.assertIn('closed without merging', summary)
+
+    def test_wrong_pipeline_commit_prevents_publication(self):
+        self.bad_evidence = {'release_sha': 'f' * 40}
+        with self.assertRaisesRegex(RuntimeError, 'evidence does not match'):
+            self.invoke()
+        self.assertFalse(self.gh_calls)
+        self.assertEqual(self.remote_ref('refs/tags/v1'), self.old_oid)
+
+    def test_missing_cleanup_evidence_prevents_publication(self):
+        self.bad_evidence = {'cleanup_complete': False}
+        with self.assertRaisesRegex(RuntimeError, 'evidence is incomplete'):
+            self.invoke()
+        self.assertFalse(self.gh_calls)
+        self.assertEqual(self.remote_ref('refs/tags/v1'), self.old_oid)

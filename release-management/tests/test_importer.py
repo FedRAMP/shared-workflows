@@ -193,3 +193,27 @@ class ImportTests(unittest.TestCase):
             self.assertIn('closes FedRAMP/2026#163', notes)
             self.assertIn('Other/repo#42', notes)
             self.assertIn('https://example.test/#123', notes)
+
+    def test_native_main_scope_requires_local_test_caller_and_current_attempt(self):
+        os.environ.update(RELEASE_TEST='true', GITHUB_RUN_ATTEMPT='2',
+                          GITHUB_WORKFLOW_REF='FedRAMP/shared-workflows/.github/workflows/local-test.yml@refs/heads/main',
+                          BASE_BRANCH='release-tests/1-2/base', IMPORT_BRANCH='release-tests/1-2/import')
+        m.validate_pr_scope('FedRAMP/shared-workflows')
+        for key, value in [('GITHUB_WORKFLOW_REF', 'other'), ('GITHUB_RUN_ATTEMPT', '3'),
+                           ('BASE_BRANCH', 'main'), ('IMPORT_BRANCH', 'automation/zensical-sites')]:
+            with patch.dict(os.environ, {key: value}), self.assertRaises(ValueError):
+                m.validate_pr_scope('FedRAMP/shared-workflows')
+
+    def test_prefixed_collect_reads_only_the_requested_phase(self):
+        sites = self.sites()
+        self.make_artifacts(sites)
+        artifacts = self.runner / 'site-artifacts'
+        for path in list(artifacts.iterdir()):
+            path.rename(path.with_name('attempt-1-refresh-' + path.name))
+        # A bad archive from another phase must not be read.
+        (artifacts / 'import-join').mkdir()
+        with patch.dict(os.environ, ARTIFACT_PREFIX='attempt-1-refresh-'), \
+                patch.object(m, 'commit_notes', return_value=''):
+            m.collect()
+        for site in sites:
+            self.assertEqual(m.marker(site['destination']), SHA)

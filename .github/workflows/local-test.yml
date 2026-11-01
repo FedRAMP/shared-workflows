@@ -11,35 +11,10 @@ jobs:
   test:
     name: Full Integration Tests
     if: github.repository == 'FedRAMP/shared-workflows' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    timeout-minutes: 180
     permissions:
       contents: write
-      actions: write
       pull-requests: write
-    steps:
-      - name: Checkout Repository Sources
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ github.sha }}
-          fetch-depth: 0
-      - name: Run Quick Checks
-        uses: ./release-management/quick-check
-      - name: Run Integration Tests
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PYTHONUNBUFFERED: '1'
-        run: python3 release-management/release.py test
-      - name: Clean Test Resources
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: python3 release-management/release.py cleanup
-      - name: Save Test Evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-evidence-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/release-evidence/
-          if-no-files-found: ignore
-          retention-days: 30
+      actions: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/local-release-e2e.yml

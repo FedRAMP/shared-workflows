@@ -1,46 +1,73 @@
-# Fixed harness: dispatched at the release candidate, never generated at runtime.
-name: "(Local) Test: Internal Pipeline Phase"
-run-name: "(Local) Test: Internal Pipeline Phase — ${{ inputs.phase == 'create' && 'Build Sites And Create PR' || inputs.phase == 'refresh' && 'Rebuild And Update PR' || 'Verify Unchanged Sources Skip Builds' }} — parent #${{ inputs.parent-run }}"
+# One native-job graph, called by local tests or dispatched at a release candidate.
+name: "(Local) Test: Complete Integration Pipeline"
+run-name: "(Local) Test: Complete Integration Pipeline — release #${{ inputs.parent-run }}"
 on:
+  workflow_call:
+    inputs:
+      sites:
+        type: string
+        default: ''
+      urls:
+        type: string
+        default: ''
+      parent-run:
+        type: string
+        default: ''
   workflow_dispatch:
     inputs:
-      parent-run:
-        description: Controller run ID for navigation
+      sites:
+        description: Production sites with pinned SHAs
         type: string
         required: true
-      phase:
-        type: choice
-        options: [create, refresh, skip]
+      urls:
+        description: Expected canonical URLs for pinned sites
+        type: string
         required: true
-      sites:
-        description: Production site definitions with pinned source SHAs
+      parent-run:
+        description: Parent release run ID
         type: string
         required: true
 permissions:
   contents: read
+  actions: read
 jobs:
   prepare:
-    name: Validate Test Inputs
+    name: Prepare Full Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      actions: read
     outputs:
-      sites: ${{ steps.inputs.outputs.sites }}
-      matrix: ${{ steps.inputs.outputs.matrix }}
-      base: ${{ steps.inputs.outputs.base }}
-      branch: ${{ steps.inputs.outputs.branch }}
+      sites: ${{ steps.prepare.outputs.sites }}
+      matrix: ${{ steps.prepare.outputs.matrix }}
+      base: ${{ steps.prepare.outputs.base }}
+      branch: ${{ steps.prepare.outputs.branch }}
     steps:
-      - name: Checkout Repository Sources
+      - name: Checkout Candidate Sources
         uses: actions/checkout@v5
         with:
-          persist-credentials: false
-      - name: Validate Test Inputs
-        id: inputs
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Run Quick Checks
+        uses: ./release-management/quick-check
+      - name: Prepare Isolated Base
+        id: prepare
         env:
+          GH_TOKEN: ${{ github.token }}
           SITES: ${{ inputs.sites }}
-        run: python3 release-management/release.py harness
+          URLS: ${{ inputs.urls }}
+        run: python3 release-management/pipeline.py prepare
+      - name: Save Prepared State
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-${{ github.run_attempt }}-prepare
+          path: ${{ runner.temp }}/release-evidence/state.json
+          if-no-files-found: error
+          retention-days: 7
 
   import:
-    name: Test Import Lifecycle
+    name: "Create Import PR"
     needs: prepare
     permissions:
       contents: write
@@ -50,13 +77,13 @@ jobs:
       sites: ${{ needs.prepare.outputs.sites }}
       create-pr: true
       release-test: true
+      artifact-prefix: attempt-${{ github.run_attempt }}-create-
       base-branch: ${{ needs.prepare.outputs.base }}
       import-branch: ${{ needs.prepare.outputs.branch }}
 
   preview:
     name: Preview ${{ matrix.id }} Site
     needs: prepare
-    if: inputs.phase == 'create'
     permissions:
       contents: read
       pages: write
@@ -69,10 +96,216 @@ jobs:
       deploy: false
       source-repository: ${{ matrix.repository }}
       source-ref: ${{ matrix.sha }}
-      artifact-name: preview-${{ matrix.id }}
+      artifact-name: attempt-${{ github.run_attempt }}-create-preview-${{ matrix.id }}
       artifact-mode: pages
       preview-urls: true
       use-bun: ${{ matrix.use-bun }}
       submodules: ${{ matrix.submodules }}
       venv-path: ${{ matrix.venv-path }}
       build-script: ${{ matrix.build-script }}
+
+  verify-create:
+    name: Verify Created PR
+    needs: [import, preview]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: read
+      actions: read
+    steps:
+      - name: Checkout Candidate Sources
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Set Up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Restore Pipeline State
+        uses: actions/download-artifact@v4
+        with:
+          name: pipeline-${{ github.run_attempt }}-prepare
+          path: ${{ runner.temp }}/release-evidence
+      - name: Verify Created PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IMPORT_CHANGED: ${{ needs.import.outputs.changed }}
+        run: python3 release-management/pipeline.py create
+      - name: Save Verified State
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-${{ github.run_attempt }}-create
+          path: ${{ runner.temp }}/release-evidence/state.json
+          if-no-files-found: error
+          retention-days: 7
+
+  refresh:
+    name: "Refresh Import PR"
+    needs: [prepare, verify-create]
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: ./.github/workflows/import-zensical-sites.yml
+    with:
+      sites: ${{ needs.prepare.outputs.sites }}
+      create-pr: true
+      release-test: true
+      artifact-prefix: attempt-${{ github.run_attempt }}-refresh-
+      base-branch: ${{ needs.prepare.outputs.base }}
+      import-branch: ${{ needs.prepare.outputs.branch }}
+
+  verify-refresh:
+    name: Verify Refreshed PR
+    needs: refresh
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: read
+      actions: read
+    steps:
+      - name: Checkout Candidate Sources
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Set Up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Restore Pipeline State
+        uses: actions/download-artifact@v4
+        with:
+          name: pipeline-${{ github.run_attempt }}-create
+          path: ${{ runner.temp }}/release-evidence
+      - name: Verify Refreshed PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IMPORT_CHANGED: ${{ needs.refresh.outputs.changed }}
+        run: python3 release-management/pipeline.py refresh
+      - name: Save Verified State
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-${{ github.run_attempt }}-refresh
+          path: ${{ runner.temp }}/release-evidence/state.json
+          if-no-files-found: error
+          retention-days: 7
+
+  skip:
+    name: "Skip Import PR"
+    needs: [prepare, verify-refresh]
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: ./.github/workflows/import-zensical-sites.yml
+    with:
+      sites: ${{ needs.prepare.outputs.sites }}
+      create-pr: true
+      release-test: true
+      artifact-prefix: attempt-${{ github.run_attempt }}-skip-
+      base-branch: ${{ needs.prepare.outputs.base }}
+      import-branch: ${{ needs.prepare.outputs.branch }}
+
+  verify-skip:
+    name: Verify Unchanged Sources
+    needs: skip
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: read
+      actions: read
+    steps:
+      - name: Checkout Candidate Sources
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Set Up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Restore Pipeline State
+        uses: actions/download-artifact@v4
+        with:
+          name: pipeline-${{ github.run_attempt }}-refresh
+          path: ${{ runner.temp }}/release-evidence
+      - name: Verify Unchanged Sources
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IMPORT_CHANGED: ${{ needs.skip.outputs.changed }}
+        run: python3 release-management/pipeline.py skip
+      - name: Save Verified State
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-${{ github.run_attempt }}-skip
+          path: ${{ runner.temp }}/release-evidence/state.json
+          if-no-files-found: error
+          retention-days: 7
+
+  cleanup:
+    name: Clean Test Resources
+    if: always()
+    needs: [prepare, import, preview, verify-create, refresh, verify-refresh, skip, verify-skip]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout Candidate Sources
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set Up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Clean Test Resources
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 release-management/pipeline.py cleanup
+
+  results:
+    name: Full Test Results
+    if: always()
+    needs: [verify-skip, cleanup]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require All Checks
+        env:
+          CHECK_RESULT: ${{ needs.verify-skip.result }}
+          CLEANUP_RESULT: ${{ needs.cleanup.result }}
+        run: |
+          printf '## Pipeline outcome\n\nVerification: %s\n\nCleanup: %s\n' "$CHECK_RESULT" "$CLEANUP_RESULT" >> "$GITHUB_STEP_SUMMARY"
+          test "$CHECK_RESULT" = success && test "$CLEANUP_RESULT" = success
+      - name: Checkout Candidate Sources
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set Up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Restore Verified State
+        uses: actions/download-artifact@v4
+        with:
+          name: pipeline-${{ github.run_attempt }}-skip
+          path: ${{ runner.temp }}/release-evidence
+      - name: Summarize Full Tests
+        env:
+          CHECK_RESULT: ${{ needs.verify-skip.result }}
+          CLEANUP_RESULT: ${{ needs.cleanup.result }}
+        run: python3 release-management/pipeline.py finish
+      - name: Save Test Evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-${{ github.run_attempt }}-result
+          path: ${{ runner.temp }}/release-evidence/test-manifest.json
+          if-no-files-found: error
+          retention-days: 30

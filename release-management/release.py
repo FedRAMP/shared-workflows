@@ -117,21 +117,6 @@ def harness_inputs(sites, ref, repository):
             'base': match[1] + '/base', 'branch': match[1] + '/import'}
 
 
-def prepare_harness():
-    if os.environ.get('GITHUB_EVENT_NAME') != 'workflow_dispatch':
-        raise ValueError('Harness requires workflow_dispatch')
-    values = harness_inputs(json.loads(os.environ['SITES']), os.environ['GITHUB_REF'],
-                            os.environ['GITHUB_REPOSITORY'])
-    with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
-        for name, value in values.items():
-            stream.write(f'{name}={value}\n')
-    parent = values['base'].split('/')[1].split('-')[0]
-    with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
-        stream.write(f'Part of [parent test/release run #{parent}]'
-                     f'(https://github.com/{REPOSITORY}/actions/runs/{parent}).\n\n'
-                     'This internal test phase does not publish or deploy.\n')
-
-
 def wait_ci(source):
     deadline = time.monotonic() + 600
     while time.monotonic() < deadline:
@@ -183,7 +168,7 @@ def push_branch(sha, branch):
 
 def dispatch_and_wait(phase, branch, harness_sha, state):
     repo_api('actions/workflows/local-release-e2e.yml/dispatches', method='POST',
-             data={'ref': branch, 'inputs': {'phase': phase, 'sites': json.dumps(state['sites']),
+             data={'ref': branch, 'inputs': {'sites': json.dumps(state['sites']), 'urls': json.dumps(state['urls']),
                                            'parent-run': os.environ['GITHUB_RUN_ID']}})
     deadline = time.monotonic() + 300
     known = {r['id'] for r in state['runs']}
@@ -202,22 +187,23 @@ def dispatch_and_wait(phase, branch, harness_sha, state):
     output_json(evidence_dir() / 'state.json', state)
     print('Running ' + phase + ': ' + record['url'], flush=True)
     with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
-        stream.write(f"- [{PHASE_LABELS[phase]}]({record['url']}) started.\n")
-    # Runs are sequential; the outer workflow's 180-minute timeout is the final bound.
-    deadline = time.monotonic() + 3600
+        stream.write(f"- [{PHASE_LABELS.get(phase, 'Full integration pipeline')}]({record['url']}) started.\n")
+    # Leave time for controller cleanup before its 180-minute timeout.
+    deadline = time.monotonic() + 150 * 60
     while time.monotonic() < deadline:
         result = repo_api(f"actions/runs/{record['id']}")
         if result['status'] == 'completed':
             record['conclusion'] = result['conclusion']
+            state['pipeline_attempt'] = result['run_attempt']
             output_json(evidence_dir() / 'state.json', state)
             with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
-                stream.write(f"- [{PHASE_LABELS[phase]}]({record['url']}): {result['conclusion']}.\n")
+                stream.write(f"- [{PHASE_LABELS.get(phase, 'Full integration pipeline')}]({record['url']}): {result['conclusion']}.\n")
             if result['conclusion'] != 'success':
                 raise RuntimeError('Release E2E failed: ' + record['url'])
             return record['id']
         print('Waiting for ' + record['url'], flush=True)
         time.sleep(20)
-    raise RuntimeError('Release E2E exceeded one hour: ' + record['url'])
+    raise RuntimeError('Release E2E exceeded 150 minutes: ' + record['url'])
 
 
 def test_pr(namespace):
@@ -265,26 +251,31 @@ class CanonicalParser(HTMLParser):
             self.urls.append(attrs.get('href', ''))
 
 
-def verify_artifacts(run_id, sites, urls, include_preview=True):
+def verify_artifacts(run_id, sites, urls, include_preview=True, artifact_prefix=""):
+    """Verify only this phase's artifacts when several phases share a run."""
     artifacts = repo_api(f'actions/runs/{run_id}/artifacts?per_page=100')['artifacts']
-    names = {a['name'] for a in artifacts}
+    names = {a['name'] for a in artifacts if not artifact_prefix or a['name'].startswith(artifact_prefix)}
     expected = {'collected-sites'} | {'import-' + s['id'] for s in sites}
     if include_preview:
         expected |= {'preview-' + s['id'] for s in sites}
+    expected = {artifact_prefix + name for name in expected}
     if names != expected:
         raise RuntimeError(f'Unexpected build artifacts: {names ^ expected}')
     environments = {}
     with tempfile.TemporaryDirectory() as directory:
-        run('gh', 'run', 'download', str(run_id), '--repo', REPOSITORY, '--dir', directory)
+        args = ['gh', 'run', 'download', str(run_id), '--repo', REPOSITORY, '--dir', directory]
+        for name in sorted(expected):
+            args += ['--name', name]
+        run(*args)
         for site in sites:
-            info = Path(directory) / ('import-' + site['id']) / 'build-info.txt'
+            info = Path(directory) / (artifact_prefix + 'import-' + site['id']) / 'build-info.txt'
             environments[site['id']] = info.read_text()
             checks = [('import-' + site['id'], 'site.tar.gz', 'r:gz', urls[site['id']])]
             if include_preview:
                 checks.append(('preview-' + site['id'], 'artifact.tar', 'r:*',
                                urls[site['id']].replace('www.fedramp.gov', 'preview.fedramp.gov')))
             for name, filename, mode, expected_url in checks:
-                with tarfile.open(Path(directory) / name / filename, mode) as archive:
+                with tarfile.open(Path(directory) / (artifact_prefix + name) / filename, mode) as archive:
                     member = next((m for m in archive if m.name.removeprefix('./') == 'index.html'), None)
                     if member is None or not member.isfile() or member.size == 0:
                         raise RuntimeError('Missing generated index in ' + name)
@@ -314,9 +305,15 @@ def cleanup():
             if time.monotonic() >= deadline:
                 raise RuntimeError('Child still running; preserve test branches for safe cleanup')
             time.sleep(5)
+    cleanup_branches(namespace)
+
+
+def cleanup_branches(namespace, suffixes=('import', 'base', 'harness', 'candidate')):
+    if not re.fullmatch(r'release-tests/[0-9]+-[0-9]+', namespace):
+        raise ValueError('Invalid cleanup namespace')
     for pr in repo_api(f'pulls?state=open&base={namespace}/base&head=FedRAMP:{namespace}/import'):
         repo_api(f"pulls/{pr['number']}", method='PATCH', data={'state': 'closed'})
-    for suffix in ('import', 'base', 'harness', 'candidate'):
+    for suffix in suffixes:
         repo_api(f'git/refs/heads/{namespace}/{suffix}', method='DELETE', missing_ok=True)
     print('Closed isolated test PRs and removed this attempt’s temporary branches.', flush=True)
 
@@ -381,82 +378,27 @@ def latest_published_version():
 
 
 def run_e2e(state, urls):
-    """Shared full-test gate for test-only runs and releases; never publishes."""
-    sites = state['sites']
-    candidate = state['release_sha']
+    """Dispatch one complete native-job pipeline at the immutable candidate."""
     namespace = prefix()
-    with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
-        stream.write('## Full pipeline test plan\n\n' + BUILD_POLICY + '\n\n'
-                     f"Expected builds: {len(sites)} imports + {len(sites)} previews + "
-                     f"{len(sites)} refreshed imports = {3 * len(sites)} builds. "
-                     'The final unchanged-source check must produce zero builds.\n\n')
+    candidate = state['release_sha']
+    state['urls'] = urls
     git('checkout', '--detach', candidate)
     push_branch(candidate, namespace + '/candidate')
-    # Isolated base contains deliberate stale output to exercise replacement.
-    for site in sites:
-        destination = ROOT / site['destination']
-        destination.mkdir(parents=True, exist_ok=True)
-        # Always exercise the complete build, even if the candidate happens to
-        # contain markers matching today's downstream SHAs.
-        (destination / '.zensical-source-sha').unlink(missing_ok=True)
-        (destination / 'release-stale.txt').write_text('Must be removed by import\n')
-    base = commit('Prepare isolated import test base')
-    push_branch(base, namespace + '/base')
-    git('checkout', '--detach', candidate)
-    harness = candidate  # Dispatch the committed workflow unchanged.
-    push_branch(harness, namespace + '/harness')
-    first_run = dispatch_and_wait('create', namespace + '/harness', harness, state)
-    pr = verify_pr(namespace, sites)
-    state['test_pr_url'] = pr['html_url']
-    output_json(evidence_dir() / 'state.json', state)
-    state['environments'] = {'create/' + k: v for k, v in verify_artifacts(first_run, sites, urls).items()}
-    # Corrupt a pending marker: the next run must refresh the existing PR.
-    marker_path = sites[0]['destination'] + '/.zensical-source-sha'
-    content = repo_api(f'contents/{marker_path}?ref={pr["head"]["sha"]}')
-    repo_api('contents/' + marker_path, method='PUT', data={
-        'message': 'Exercise pending import refresh', 'branch': namespace + '/import',
-        'sha': content['sha'], 'content': base64.b64encode(('0' * 40 + '\n').encode()).decode()})
-    refresh_run = dispatch_and_wait('refresh', namespace + '/harness', harness, state)
-    state['environments'].update({'refresh/' + k: v for k, v in
-                                  verify_artifacts(refresh_run, sites, urls, include_preview=False).items()})
-    updated = verify_pr(namespace, sites, pr['number'])
-    skip_run = dispatch_and_wait('skip', namespace + '/harness', harness, state)
-    unchanged = verify_pr(namespace, sites, pr['number'])
-    if updated['head']['sha'] != unchanged['head']['sha']:
-        raise RuntimeError('Pending import skip unexpectedly changed the PR')
-    if repo_api(f'actions/runs/{skip_run}/artifacts?per_page=100')['artifacts']:
-        raise RuntimeError('Pending import skip unexpectedly rebuilt sites')
-    # Cleanup is part of the release gate, not an optional post-release courtesy.
+    push_branch(candidate, namespace + '/harness')
+    run_id = dispatch_and_wait('pipeline', namespace + '/harness', candidate, state)
+    with tempfile.TemporaryDirectory() as directory:
+        run('gh', 'run', 'download', str(run_id), '--repo', REPOSITORY,
+            '--name', f"pipeline-{state['pipeline_attempt']}-result", '--dir', directory)
+        result = json.loads((Path(directory) / 'test-manifest.json').read_text())
+    if (result['release_sha'] != candidate or result['sites'] != state['sites'] or
+            result['namespace'] != namespace or result['pipeline_run_id'] != str(run_id) or
+            result['pipeline_run_attempt'] != str(state['pipeline_attempt'])):
+        raise RuntimeError('Pipeline evidence does not match the candidate and test scope')
+    release_ready(result)
+    state.update({key: result[key] for key in ('runs', 'environments', 'test_pr_url', 'cleanup_complete')})
+    # Child cleans its PR/base; controller removes candidate/harness after it exits.
     cleanup()
-    state['cleanup_complete'] = True
     release_ready(state)
-
-
-def run_tests():
-    context_guard()
-    source = os.environ['GITHUB_SHA']
-    if not SHA.fullmatch(source) or git('rev-parse', 'HEAD') != source:
-        raise ValueError('Checkout must match the dispatched source commit')
-    if git('status', '--porcelain', '--untracked-files=no'):
-        raise ValueError('Tracked source files must be clean')
-    evidence_dir().mkdir(parents=True, exist_ok=True)
-    ci_url = wait_ci(source)
-    sites, urls = resolve_sites()
-    git('config', 'user.name', 'github-actions[bot]')
-    git('config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com')
-    state = {'mode': 'test-only', 'source_sha': source, 'release_sha': source,
-             'builder_sha': source, 'sites': sites, 'runs': [], 'ci_url': ci_url,
-             'requirements_sha256': hashlib.sha256((ROOT / 'requirements.txt').read_bytes()).hexdigest()}
-    output_json(evidence_dir() / 'state.json', state)
-    run_e2e(state, urls)
-    output_json(evidence_dir() / 'test-manifest.json', state)
-    with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
-        stream.write(f"## Full tests passed\n\nTested commit: `{source}`\n\n")
-        for record in state['runs']:
-            stream.write(f"- [{PHASE_LABELS[record['phase']]}]({record['url']}): {record['conclusion']}\n")
-        stream.write(f"- [Inspect the test PR (closed without merging)]({state['test_pr_url']})\n\n"
-                     + BUILD_POLICY + '\n\nNo release was published and no tags were changed.\n')
-    print('Full tests passed. No releases or tags were created or changed.', flush=True)
 
 
 def main():
@@ -556,9 +498,9 @@ def main():
 if __name__ == '__main__':
     try:
         parser = argparse.ArgumentParser(description=__doc__)
-        parser.add_argument('command', nargs='?', default='release', choices=['release', 'test', 'cleanup', 'harness'])
+        parser.add_argument('command', nargs='?', default='release', choices=['release', 'cleanup'])
         command = parser.parse_args().command
-        {'release': main, 'test': run_tests, 'cleanup': cleanup, 'harness': prepare_harness}[command]()
+        {'release': main, 'cleanup': cleanup}[command]()
     except Exception as error:
         print(f'::error::{error}', file=sys.stderr)
         sys.exit(1)

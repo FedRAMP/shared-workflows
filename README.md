@@ -89,12 +89,19 @@ jobs:
   for seven days without writing a branch or PR. Setting it to `true` is allowed
   for the caller repository `FedRAMP/fedramp.gov`. The release harness can also
   create PRs within `FedRAMP/shared-workflows` using `release-test: true`, but only
-  with matching `release-tests/<run-id>-<attempt>/{harness,base,import}` branches
-  and a `workflow_dispatch` event. It cannot target `main` or `develop`.
+  with matching `release-tests/<run-id>-<attempt>/{base,import}` branches
+  and a `workflow_dispatch` event. The caller must be either a candidate's
+  `release-tests/<run-id>-<attempt>/harness` branch or this repository's
+  `local-test.yml` on main, using that test run's own ID and attempt. It cannot
+  create an import PR targeting `main` or `develop`.
 - `base-branch` defaults to `develop`; `import-branch` defaults to
   `automation/zensical-sites`. A PR-mode run skips builds if the existing open
   import PR already has all desired source markers. Build-only runs do not skip
   based on pending PRs.
+- `artifact-prefix` defaults to an empty string, preserving existing artifact names.
+  Tests set distinct prefixes for each phase and attempt so repeated importer calls
+  in one workflow run cannot overwrite or consume another phase's artifacts.
+  The reusable workflow also exposes a `changed` output for checking skip behavior.
 - `ZENSICAL_IMPORT_TOKEN` is optional. A fine-grained PAT with contents and pull
   requests read/write can trigger downstream CI. Without it, the workflow uses
   `github.token`; enable Actions PR creation in the caller repository settings.
@@ -143,7 +150,7 @@ are copyable caller templates, not active workflows in this repository.
 | `.github/workflows/local-ci.yml` | (Local) Test: Quick CI Checks |
 | `.github/workflows/local-test.yml` | (Local) Test: All Builds & Pull Requests |
 | `.github/workflows/local-release.yml` | (Local) Publish: Full Release |
-| `.github/workflows/local-release-e2e.yml` | (Local) Test: Internal Pipeline Phase |
+| `.github/workflows/local-release-e2e.yml` | (Local) Test: Complete Integration Pipeline |
 | `.github/workflows/build-fr-zensical.yml` | (Shared) Publish: Build Site And Deploy Pages |
 | `.github/workflows/build-zensical-artifact.yml` | (Shared) Build Only: Upload Site Artifact |
 | `.github/workflows/import-zensical-sites.yml` | (Shared) Import: Build Sites And Prepare Draft PR |
@@ -160,13 +167,19 @@ There are two levels of validation. `local-ci.yml` runs on pull requests targeti
 permission checks, Python/shell syntax checks, and offline importer/release tests.
 It does not build sites, create PRs, deploy Pages, or change tags. The tests in
 `release-management/tests/` are part of CI, not the production import path.
+Each quick-check run writes a summary explaining the setup, workflow/script
+validation, and offline regression checks, with their success, failure, or skipped
+status. Step logs contain individual test results and failure details. This summary
+also appears when quick checks run as part of a full test or release.
 
 To run the full tests **without releasing**, use **Actions → (Local) Test: All Builds & Pull Requests → Run workflow → main** after merging these workflows. This runs the same twelve site
 builds and draft-PR create/refresh/skip checks as a release, then closes the test
 PR and removes its temporary branches. It creates no version tags or GitHub
-release and does not move `v1`. Results are attached as a `test-evidence-*`
-artifact, including `test-manifest.json`. Run `local-test`, not the internal
-`local-release-e2e` harness, which requires controller-supplied inputs.
+release and does not move `v1`. Results are attached as a `pipeline-<attempt>-result`
+artifact containing `test-manifest.json`. Preparation and phase state artifacts are
+also retained. Run `local-test`; it calls `local-release-e2e` as a reusable workflow,
+so all jobs appear within the same run. The internal pipeline's manual dispatch
+is reserved for release-controller inputs.
 
 Every manual full test deliberately builds all four sites even if no downstream
 SHA has changed. It removes source markers only from the isolated test base, then
@@ -176,14 +189,28 @@ imports skip unchanged sources; the final test verifies that behavior by expecti
 zero builds and no PR changes. The run summary explains this deliberate test behavior.
 Production import behavior is unchanged.
 
-Each full suite dispatches three child runs: `create` tests the initial PR and
-preview builds; `refresh` tests updating that PR; `skip` verifies unchanged sources
-are not rebuilt. These remain separate runs so the controller can test the exact
-candidate commit and inspect or modify the test PR between phases. Child run titles
-include the parent run ID. The parent's summary links to each phase as it starts,
-and each child's summary links back to its parent. No child publishes a release or
-deploys Pages. Cleanup is safe to repeat after the test controller has already
-removed its branches.
+The full suite is one workflow graph with native jobs:
+
+```text
+Prepare isolated test base
+  → Build imports + preview sites
+  → Verify created PR and prepare refresh
+  → Rebuild imports
+  → Verify refreshed PR
+  → Check unchanged sources
+  → Verify no builds or PR changes
+  → Cleanup
+  → Final results
+```
+
+For manual testing, monitor these jobs directly in the **All Builds & Pull Requests**
+run. Releases dispatch one **Complete Integration Pipeline** run at the exact
+candidate commit; all phases and site builds are visible together there. The release
+controller remains separate and publishes only after that entire pipeline succeeds.
+Job summaries appear as their jobs finish. No test job publishes or deploys Pages.
+Cleanup waits for all jobs that can write branches, runs after failures as well as
+success, and is safe to repeat. The final results gate requires both verification
+and cleanup to succeed.
 
 `local-test` requires successful CI for the selected main commit and the same
 Actions PR/branch permissions described below. It uses the automatic token and
@@ -223,7 +250,7 @@ rules or Actions permissions. The release workflow does not require access to th
 private fedramp.gov repository. It reads the public source-site repositories for
 builds; all release branches, PRs, tags, and releases stay in shared-workflows.
 GitHub permits `workflow_dispatch` with the automatic token, so no separate token
-is needed to start the child test runs.
+is needed to start the single candidate test pipeline.
 
 ### What a release does
 
@@ -233,8 +260,8 @@ is needed to start the child test runs.
    Workflow files are unchanged, and main is not modified. Same-commit references
    keep the builder at this candidate commit without rewriting workflow files.
 3. Resolves the four source-site commits from the root importer template and
-   dispatches the **fixed, committed harness** at the candidate commit. It passes
-   site definitions and SHAs as inputs, validates them against the importer
+   dispatches the **fixed, committed pipeline once** at the candidate commit. It passes
+   site definitions, SHAs, and expected URLs as inputs, validates sites against the importer
    template, and uses the same entry points as both root caller templates. Static
    checks keep those entry points aligned. No test call follows the current `v1`.
 4. Builds all four sites through the actual importer, creates a draft PR in this
@@ -243,11 +270,14 @@ is needed to start the child test runs.
    sites through the Pages wrapper with preview URLs and `deploy: false`, then
    downloads and verifies the real Pages artifacts and canonical URLs.
 5. Corrupts a pending marker on the disposable PR branch, runs the importer again,
-   and verifies that it refreshes the **same PR**. A third run verifies that an
+   and verifies that it refreshes the **same PR**. The final import phase verifies that an
    unchanged pending import produces no artifacts and does not modify that PR.
 6. Closes the draft PR without merging and deletes this attempt's test branches.
-   Cleanup must succeed before publication. An `always()` step also attempts
-   cleanup after failures or cancellations, cancelling child runs first.
+   A native `always()` cleanup job waits for the test jobs to finish and removes
+   the PR/base branches. The controller verifies the resulting manifest matches
+   the candidate, sites, namespace, run ID, and attempt, then removes the candidate
+   and harness branches. Its fallback cleanup cancels any active pipeline before
+   deleting branches. All cleanup must succeed before publication.
 7. Creates a numbered tag and GitHub release, attaches `release-manifest.json`,
    and moves `v1` **last**, using a compare-and-swap against its previous target.
    It verifies the resulting remote ref and writes a workflow summary.
@@ -273,13 +303,18 @@ PR references link to this repository.
 
 Each release records its source SHA, prepared release SHA, builder SHA (the release
 SHA), prior `v1` tag object and peeled commit, dependency-lock checksum, source-site
-SHAs, build versions/submodule SHAs, source CI link, all E2E run links, and the
+SHAs, build versions/submodule SHAs, source CI link, all test phase links (within one pipeline run), and the
 closed test PR. The manifest is attached to the release. Workflow evidence is also
 retained for 30 days, including on failures when available. Numbered version tags
 are never overwritten; `v1` is a moving lightweight tag pointing directly to the
 release commit.
 
 ### Failures, retries, and rollback
+
+For integration tests, start a fresh manual run or choose **Re-run all jobs**.
+Do not use **Re-run failed jobs**: phase state and build artifacts are isolated by
+attempt, and earlier jobs must recreate the disposable base and PR for that attempt.
+This prevents a retry from accidentally passing with artifacts from an earlier run.
 
 Only one release runs at a time. A failed gate leaves `v1` unchanged. If publication
 was interrupted after the numbered tag was pushed, rerunning from the same source

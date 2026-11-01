@@ -95,10 +95,17 @@ def validate_pr_scope(repository):
     if os.environ.get('RELEASE_TEST') == 'true':
         ref = os.environ.get('GITHUB_REF', '')
         match = re.fullmatch(r'refs/heads/(release-tests/[0-9]+-[0-9]+)/harness', ref)
-        if (repository.lower() != 'fedramp/shared-workflows' or not match or
+        namespace = match[1] if match else ''
+        if (ref == 'refs/heads/main' and os.environ.get('GITHUB_WORKFLOW_REF', '').lower() ==
+                'fedramp/shared-workflows/.github/workflows/local-test.yml@refs/heads/main'):
+            run_id = os.environ.get('GITHUB_RUN_ID', '')
+            attempt = os.environ.get('GITHUB_RUN_ATTEMPT', '')
+            if re.fullmatch(r'[0-9]+', run_id) and re.fullmatch(r'[0-9]+', attempt):
+                namespace = f'release-tests/{run_id}-{attempt}'
+        if (repository.lower() != 'fedramp/shared-workflows' or not namespace or
                 os.environ.get('GITHUB_EVENT_NAME') != 'workflow_dispatch' or
-                os.environ['BASE_BRANCH'] != match[1] + '/base' or
-                os.environ['IMPORT_BRANCH'] != match[1] + '/import'):
+                os.environ['BASE_BRANCH'] != namespace + '/base' or
+                os.environ['IMPORT_BRANCH'] != namespace + '/import'):
             raise ValueError('Release test PRs require isolated shared-workflows test branches')
     elif repository.lower() != 'fedramp/fedramp.gov':
         raise ValueError('PR creation is restricted to FedRAMP/fedramp.gov')
@@ -212,7 +219,7 @@ def collect():
     body = ['Built the following upstream main commits:\n\n']
     # Validate ALL archives and prepare the review body before touching static/.
     for site in sites:
-        artifact = temp / 'site-artifacts' / ('import-' + site['id'])
+        artifact = temp / 'site-artifacts' / (os.environ.get('ARTIFACT_PREFIX', '') + 'import-' + site['id'])
         output = staged / site['id']
         unpack(artifact / 'site.tar.gz', output)
         verify_output(output)

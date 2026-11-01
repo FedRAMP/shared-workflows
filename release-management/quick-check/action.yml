@@ -4,10 +4,12 @@ runs:
   using: composite
   steps:
     - name: Set Up Python
+      id: python
       uses: actions/setup-python@v6
       with:
         python-version: '3.13'
     - name: Install Workflow Linter
+      id: linter
       shell: bash
       run: |
         lint_dir="$RUNNER_TEMP/actionlint"
@@ -19,8 +21,33 @@ runs:
         tar -xzf "$lint_dir/actionlint.tar.gz" -C "$lint_dir" actionlint
         echo "$lint_dir" >> "$GITHUB_PATH"
     - name: Validate Workflow Contracts
+      id: contracts
       shell: bash
       run: python3 release-management/check.py --actionlint
     - name: Run Regression Tests
+      id: tests
       shell: bash
       run: python3 -m unittest discover -s release-management/tests -v
+    - name: Summarize Quick Checks
+      if: always()
+      shell: bash
+      env:
+        PYTHON_RESULT: ${{ steps.python.outcome }}
+        LINTER_RESULT: ${{ steps.linter.outcome }}
+        CONTRACT_RESULT: ${{ steps.contracts.outcome }}
+        TEST_RESULT: ${{ steps.tests.outcome }}
+      run: |
+        {
+          echo '## Quick CI check results'
+          echo
+          echo '| Check | What it checked | Result |'
+          echo '| --- | --- | --- |'
+          printf '| Python setup | Python 3.13 is available for validation and tests. | %s |\n' "$PYTHON_RESULT"
+          printf '| Workflow linter setup | The pinned actionlint download matches its expected checksum. | %s |\n' "$LINTER_RESULT"
+          printf '| Workflow and script validation | Workflow syntax, reusable workflow inputs, permission boundaries, release/test safeguards, and Python and shell syntax. | %s |\n' "$CONTRACT_RESULT"
+          printf '| Offline regression tests | Import source detection, archive handling, PR scope, release gates, tag promotion/retries, cleanup, and forced full-test builds using local fixtures and mocked GitHub calls. | %s |\n' "$TEST_RESULT"
+          echo
+          echo 'A skipped check did not run and does not count as a pass. Open the corresponding step logs for test names, counts, or failure details.'
+          echo
+          echo 'These quick checks do not build the real sites, create GitHub PRs, deploy Pages, or publish releases. Use **(Local) Test: All Builds & Pull Requests** for the full pipeline test.'
+        } >> "$GITHUB_STEP_SUMMARY"

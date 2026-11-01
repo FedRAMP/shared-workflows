@@ -2,6 +2,10 @@ name: "(Shared) Import: Build Sites And Prepare Draft PR"
 
 on:
   workflow_call:
+    outputs:
+      changed:
+        description: Whether source changes required builds
+        value: ${{ jobs.discover.outputs.changed }}
     inputs:
       sites:
         description: JSON array of site IDs, repositories, destinations, and builder options
@@ -16,6 +20,10 @@ on:
       create-pr:
         type: boolean
         default: false
+      artifact-prefix:
+        description: Optional prefix to isolate artifacts when called multiple times in one run
+        type: string
+        default: ""
       release-test:
         description: Restricted to this repository's isolated release test branches
         type: boolean
@@ -78,7 +86,7 @@ jobs:
       source-ref: ${{ matrix.sha }}
       preview-urls: false
       artifact-mode: archive
-      artifact-name: import-${{ matrix.id }}
+      artifact-name: ${{ inputs.artifact-prefix }}import-${{ matrix.id }}
       use-bun: ${{ matrix.use-bun }}
       submodules: ${{ matrix.submodules }}
       venv-path: ${{ matrix.venv-path }}
@@ -105,17 +113,18 @@ jobs:
       - name: Download Site Archives
         uses: actions/download-artifact@v4
         with:
-          pattern: import-*
+          pattern: ${{ inputs.artifact-prefix }}import-*
           path: ${{ runner.temp }}/site-artifacts
       - name: Verify Site Archives
         env:
+          ARTIFACT_PREFIX: ${{ inputs.artifact-prefix }}
           MATRIX: ${{ needs.discover.outputs.matrix }}
           GIT_TERMINAL_PROMPT: '0'
         run: python3 .shared-workflows/import-zensical-sites/zensical-import.py collect
       - name: Upload Site Archives
         uses: actions/upload-artifact@v4
         with:
-          name: collected-sites
+          name: ${{ inputs.artifact-prefix }}collected-sites
           path: |
             ${{ runner.temp }}/collected-sites.tar.gz
             ${{ runner.temp }}/import-pr.md
@@ -156,10 +165,11 @@ jobs:
       - name: Download Site Archives
         uses: actions/download-artifact@v4
         with:
-          name: collected-sites
+          name: ${{ inputs.artifact-prefix }}collected-sites
           path: ${{ runner.temp }}/collected
       - name: Apply Built Sites
         env:
+          ARTIFACT_PREFIX: ${{ inputs.artifact-prefix }}
           MATRIX: ${{ needs.discover.outputs.matrix }}
         run: python3 .shared-workflows/import-zensical-sites/zensical-import.py apply
       - name: Update Draft PR
