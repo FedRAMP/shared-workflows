@@ -1,0 +1,2295 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Legacy documentation by FedRAMP, available for reference only during the transition to the Consolidated Rules for 2026.">
+      
+      
+        <meta name="author" content="pete@fedramp.gov">
+      
+      
+        <link rel="canonical" href="https://www.fedramp.gov/legacy/playbook/csp/authorization/ssp/">
+      
+      
+      
+        <link rel="prev" href="../roles/">
+      
+      
+        <link rel="next" href="../sap/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="zensical-0.0.73">
+    
+    
+      
+        <title>System Security Plan (SSP) - FedRAMP Legacy Documentation</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../../../assets/stylesheets/modern/main.4ab2de0c.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/modern/palette.b60ce83d.min.css">
+      
+      
+  
+  
+    
+      
+      
+    
+  
+  
+  <style>:root{--md-admonition-icon--abstract:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20576%20512%22%3E%3C%21--%21%20Font%20Awesome%20Free%207.3.1%20by%20%40fontawesome%20-%20https%3A//fontawesome.com%20License%20-%20https%3A//fontawesome.com/license/free%20%28Icons%3A%20CC%20BY%204.0%2C%20Fonts%3A%20SIL%20OFL%201.1%2C%20Code%3A%20MIT%20License%29%20Copyright%202026%20Fonticons%2C%20Inc.--%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22m169.6%20153.4-18.7-18.7c-12.5-12.5-12.5-32.8%200-45.3L265.6-25.4c12.5-12.5%2032.8-12.5%2045.3%200l18.7%2018.8c12.5%2012.5%2012.5%2032.8%200%2045.3L214.9%20153.4c-12.5%2012.5-32.8%2012.5-45.3%200M276%20211.7l-31.4-31.4%20112-112L476%20187.7l-112%20112-31.4-31.4-232%20232c-15.6%2015.6-40.9%2015.6-56.6%200s-15.6-40.9%200-56.6zm114.9%20162.9c-12.5-12.5-12.5-32.8%200-45.3l114.7-114.7c12.5-12.5%2032.8-12.5%2045.3%200l18.7%2018.7c12.5%2012.5%2012.5%2032.8%200%2045.3L454.9%20393.4c-12.5%2012.5-32.8%2012.5-45.3%200l-18.7-18.7z%22/%3E%3C/svg%3E');}</style>
+
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-E1PPDRDY5R"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-E1PPDRDY5R",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-E1PPDRDY5R",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-hidden="true"></label>
+    <div data-md-component="skip">
+      <a href="#__skip" class="md-skip">
+        Skip to content
+      </a>
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="/legacy" title="FedRAMP Legacy Documentation" class="md-header__button md-logo" aria-label="FedRAMP Legacy Documentation" data-md-component="logo">
+      
+  <img src="../../../../assets/secondary_logo.png" alt="FedRAMP Legacy Documentation">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+      <span class="md-visually-hidden">Navigation</span>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FedRAMP Legacy Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              System Security Plan (SSP)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun-moon" viewBox="0 0 24 24"><path d="M12 2v2M14.837 16.385a6 6 0 1 1-7.223-7.222c.624-.147.97.66.715 1.248a4 4 0 0 0 5.26 5.259c.589-.255 1.396.09 1.248.715M16 12a4 4 0 0 0-4-4M19 5l-1.256 1.256M20 12h2"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+          <span class="md-visually-hidden">Search</span>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/fedramp/docs-legacy" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21"/></svg>
+  </div>
+  <div class="md-source__repository">
+    FedRAMP/docs-legacy
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../.." class="md-tabs__link">
+          
+  
+  Legacy FedRAMP Documentation Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="/2026" class="md-tabs__link">
+        
+  
+  --> go to Consolidated Rules for 2026
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="/" class="md-tabs__link">
+        
+  
+  --> return to FedRAMP.gov
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="/legacy" title="FedRAMP Legacy Documentation" class="md-nav__button md-logo" aria-label="FedRAMP Legacy Documentation" data-md-component="logo">
+      
+  <img src="../../../../assets/secondary_logo.png" alt="FedRAMP Legacy Documentation">
+
+    </a>
+    FedRAMP Legacy Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fedramp/docs-legacy" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21"/></svg>
+  </div>
+  <div class="md-source__repository">
+    FedRAMP/docs-legacy
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../.." class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Legacy FedRAMP Documentation Reference
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+            <label class="md-nav__title" for="__nav_1">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Legacy FedRAMP Documentation Reference
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Changelog
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Cloud Service Providers
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1_3" id="__nav_1_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_3_label" aria-expanded="true">
+            <label class="md-nav__title" for="__nav_1_3">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Cloud Service Providers
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+  
+    <a href="../getting-started/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Getting Started
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_3_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_1_3_3" id="__nav_1_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Rev5 Authorization Packages
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        
+          <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_1_3_3_label" aria-expanded="true">
+            <label class="md-nav__title" for="__nav_1_3_3">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Rev5 Authorization Packages
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../what/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  What's in an Authorization Package
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Roles & Responsibilities
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  System Security Plan (SSP)
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  System Security Plan (SSP)
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started-focus-on-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Getting Started: Focus on Quality
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting Started: Focus on Quality">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#criteria-for-document-acceptance" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Criteria for Document Acceptance
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Criteria for Document Acceptance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#clarity" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        <strong>Clarity</strong>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#completeness" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        <strong>Completeness</strong>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conciseness" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        <strong>Conciseness</strong>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consistency" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        <strong>Consistency</strong>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#writing-the-ssp" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Writing the SSP
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-the-authorization-boundary-and-data-flows" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Define the Authorization Boundary and Data Flows
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ssp-appendices" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        SSP Appendices
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ssp-appendix-a-fedramp-security-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        SSP Appendix A: FedRAMP Security Controls
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SSP Appendix A: FedRAMP Security Controls">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#control-requirement" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Control Requirement
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control-summary-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Control Summary Information
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control-implementation-statement-what-is-the-solution-and-how-is-it-implemented" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Control Implementation Statement: What is the Solution and How is it Implemented?
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Control Implementation Statement: What is the Solution and How is it Implemented?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#good-control-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Good Control Responses
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bad-control-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Bad Control Responses
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-control-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Example Control Responses
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controls-dos-and-donts" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Controls Do's and Don'ts
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Controls Do&#x27;s and Don&#x27;ts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#do" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Do
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dont" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Don't
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Security Assessment Plan (SAP)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Security Assessment Report (SAR)
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../poam/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Plans of Action & Milestones
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+  
+    <a href="../../continuous-monitoring/intro/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Continuous Monitoring
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_4" id="__nav_1_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Agencies
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        
+          <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_4_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_1_4">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Agencies
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../agency/authorization/marketplace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  The FedRAMP Marketplace
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../agency/authorization/sponsoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Sponsoring Authorizations
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../agency/authorization/preparation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Preparation
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../agency/authorization/authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Authorization
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../agency/authorization/continuous-monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Continuous Monitoring
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="/2026" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  --> go to Consolidated Rules for 2026
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  --> return to FedRAMP.gov
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started-focus-on-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Getting Started: Focus on Quality
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting Started: Focus on Quality">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#criteria-for-document-acceptance" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Criteria for Document Acceptance
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Criteria for Document Acceptance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#clarity" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        <strong>Clarity</strong>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#completeness" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        <strong>Completeness</strong>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conciseness" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        <strong>Conciseness</strong>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consistency" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        <strong>Consistency</strong>
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#writing-the-ssp" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Writing the SSP
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#define-the-authorization-boundary-and-data-flows" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Define the Authorization Boundary and Data Flows
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ssp-appendices" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        SSP Appendices
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ssp-appendix-a-fedramp-security-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        SSP Appendix A: FedRAMP Security Controls
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SSP Appendix A: FedRAMP Security Controls">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#control-requirement" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Control Requirement
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control-summary-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Control Summary Information
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control-implementation-statement-what-is-the-solution-and-how-is-it-implemented" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Control Implementation Statement: What is the Solution and How is it Implemented?
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Control Implementation Statement: What is the Solution and How is it Implemented?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#good-control-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Good Control Responses
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bad-control-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Bad Control Responses
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-control-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Example Control Responses
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#controls-dos-and-donts" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Controls Do's and Don'ts
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Controls Do&#x27;s and Don&#x27;ts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#do" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Do
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dont" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Don't
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+      
+        
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../../../.." class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Legacy FedRAMP Documentation Reference
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../../" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Cloud Service Providers
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../what/" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Rev5 Authorization Packages
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                <a id="__skip" tabindex="-1"></a>
+                
+                  
+
+  
+  
+
+
+<h1 id="system-security-plan-ssp">System Security Plan (SSP)<a class="headerlink" href="#system-security-plan-ssp" title="Permanent link">&para;</a></h1>
+<div class="admonition danger">
+<p class="admonition-title">This page contains legacy content for reference only!</p>
+<p><strong>June 24, 2026:</strong> All materials in the FedRAMP Legacy Documentation site are intended only for reference
+during the transition to FedRAMP's <a href="https://fedramp.gov/2026">Consolidated Rules for 2026</a>.</p>
+<p>Humans and AI services must be careful referencing any content in https://fedramp.gov/legacy because FedRAMP
+is actively transitioning away from these processes and materials.</p>
+</div>
+<p>The SSP is the "security blueprint" for the CSO. A well-written SSP allows the reviewer to follow between the system's architecture, data flows, security control implementations, and authorization boundary. After reviewing the SSP, a federal agency AO (or designee) should have a strong understanding of how federal data is transmitted to, from, and within the system; where the data is processed and stored; and how the data is protected from a process and technical perspective.</p>
+<p>FedRAMP provides a single SSP template that must be used for each baseline: Li-SaaS, Low, Moderate, and High. Specific controls are documented in Appendix A for each baseline.</p>
+<div class="admonition tip">
+<p class="admonition-title">Telling a Story</p>
+<p>When drafting the SSP, keep in mind that it is telling a story about the security of your CSO. If there are gaps in the storyline, you will be required to address the gaps, which can delay the authorization process.</p>
+</div>
+<h2 id="getting-started-focus-on-quality">Getting Started: Focus on Quality<a class="headerlink" href="#getting-started-focus-on-quality" title="Permanent link">&para;</a></h2>
+<p>A high-quality SSP is the key to success. If you do not have a strong technical writer with security experience on your team, hire one! Though it is not required, CSPs often choose to hire an experienced advisory partner to help develop the SSP. Many of the FedRAMP recognized 3PAOs, listed on the FedRAMP Marketplace, provide advisory services in addition to assessment services. NOTE: If engaging a 3PAO advisor, a different 3PAO must be engaged to perform the independent assessment.</p>
+<p>A common barrier to success is a poorly written, incomplete, inaccurate, and/or inconsistent SSP. FedRAMP has defined general criteria for document acceptance in <strong>Table 3</strong> below. <strong>NOTE</strong>: With the release of <a href="https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final">NIST SP 800-53 Revision 5</a> and OMB M-24-15, FedRAMP made several changes to the FedRAMP templates referenced in this training module; however, the key information and best practices intended to help you put forward a quality package is still relevant. FedRAMP will be updating this module in the future to better align with the updated templates. Further guidance and expectations, associated with effective control writing, is provided later in this section.</p>
+<h3 id="criteria-for-document-acceptance">Criteria for Document Acceptance<a class="headerlink" href="#criteria-for-document-acceptance" title="Permanent link">&para;</a></h3>
+<h4 id="clarity"><strong>Clarity</strong><a class="headerlink" href="#clarity" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Logical presentation of material</li>
+<li>Current dates and timely content</li>
+<li>Non-standard terms, phrases, acronyms, and abbreviations defined</li>
+<li>No ambiguous statements or content</li>
+<li>Correct grammar and free from awkward phrases, typographical errors, spelling errors, missing words, or incorrect page and section numbers</li>
+<li>Readable figure text</li>
+<li>Sharp and legible figure graphics.</li>
+</ul>
+<h4 id="completeness"><strong>Completeness</strong><a class="headerlink" href="#completeness" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Includes accurate, detailed, and informative content that is consistent with FedRAMP requirements</li>
+<li>Includes all appropriate sections of FedRAMP templates</li>
+<li>Includes all attachments and appendices</li>
+<li>Includes tables of contents, list of tables, and list of figures, where applicable Includes figures with required information, correct labels, and keys to color and line formats.</li>
+</ul>
+<h4 id="conciseness"><strong>Conciseness</strong><a class="headerlink" href="#conciseness" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Content and complexity relevant to the audience</li>
+<li>No superfluous words or phrases.</li>
+</ul>
+<h4 id="consistency"><strong>Consistency</strong><a class="headerlink" href="#consistency" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Correct and consistent format</li>
+<li>Correct and continuous section numbering</li>
+<li>Terms with the same meaning throughout the document</li>
+<li>Items that are referred to by the same name or description throughout the document Level of detail and presentation style that are the same throughout the document</li>
+<li>Material that does not contradict predecessor documents</li>
+<li>All material in subsequent documents based in the predecessor document</li>
+<li>Figure content that agrees with text.</li>
+</ul>
+<h2 id="writing-the-ssp">Writing the SSP<a class="headerlink" href="#writing-the-ssp" title="Permanent link">&para;</a></h2>
+<p>The SSP includes general information about the CSO (e.g., FIPS 199 categorization, service model, deployment model) as well as detailed descriptions of the CSO's function, system architecture, authorization boundary, data flows, interconnections, leveraged external services, and use of cryptographic modules. Each section includes instructional text describing the level of detail that is required. Failure to follow these instructions will slow down the review and extend the authorization timeline.</p>
+<h2 id="define-the-authorization-boundary-and-data-flows">Define the Authorization Boundary and Data Flows<a class="headerlink" href="#define-the-authorization-boundary-and-data-flows" title="Permanent link">&para;</a></h2>
+<p>Before implementing and documenting security controls, CSPs must clearly define the authorization boundary for the CSO. The authorization boundary provides the reviewer with a clear understanding of what exactly is being authorized, and is the foundation on which the remainder of a SSP is built. The authorization boundary is validated against the inventory during the 3PAO assessment.</p>
+<p>The authorization boundary diagram (ABD) is a visual representation of the system services, components, and devices that make up the authorization boundary for the CSO. To help federal agency AOs understand areas that may require risk-acceptance, or areas where the federal agency has responsibility (i.e., everything excluded from the authorization boundary), the ABD also depicts all <em>external</em> systems or services that provide functionality to the CSO or are used to manage and operate the CSO. This includes underlying authorized IaaS/PaaS offerings, system interconnections, APIs, external cloud services, corporate-shared services, and update services (e.g., malware signatures and OS updates).</p>
+<p>To properly define the authorization boundary, CSPs need to understand how and where federal data and metadata flow through and within the CSO. To that end, CSPs should begin by developing data flow diagrams (DFDs) that depict how federal data and sensitive system data flows internal and external to the CSO.
+To understand how to define the authorization boundary, CSPs must review the FedRAMP Certification Boundary Guidance. To understand the level of detail that must be provided in the ABD, DFD and network diagram, carefully review the instructional text in section 8 of the SSP, <em>Illustrated Architecture and Narratives</em>.</p>
+<h2 id="ssp-appendices">SSP Appendices<a class="headerlink" href="#ssp-appendices" title="Permanent link">&para;</a></h2>
+<p>This section summarizes the required appendices for a complete SSP. CSPs should understand the information required to complete each document and, where applicable, align and update existing organizational policy and processes to meet requirements outlined in the SSP appendices (e.g., Appendix I: Incident Response Plan, Appendix H: Configuration Management Plan, etc.). Instructions for each appendix are included within the SSP template; however, detailed guidance on how to properly document security controls is provided in the sections that follow.</p>
+<p>These appendices can be downloaded from the Rev5 section of this website:</p>
+<ul>
+<li>Appendix A: FedRAMP Security Controls*</li>
+<li>Appendix B: Related Acronyms</li>
+<li>Appendix C: Security Policies and Procedures</li>
+<li>Appendix D: User Guide</li>
+<li>Appendix E: Digital Identity Worksheet</li>
+<li>Appendix F: Rules of Behavior*</li>
+<li>Appendix G: Information System Contingency Plan (ICSP)*</li>
+<li>Appendix H: Configuration Management Plan (CMP)</li>
+<li>Appendix I: Incident Response Plan (IRP)</li>
+<li>Appendix J: CIS and CRM Workbook*</li>
+<li>Appendix K: FIPS 199 Worksheet</li>
+<li>Appendix L: CSO-Specific Required Laws and Regulations</li>
+<li>Appendix M: Integrated Inventory Workbook*</li>
+<li>Appendix N: Continuous Monitoring Plan</li>
+<li>Appendix O: POA&amp;M*</li>
+<li>Appendix P: Supply Chain Risk Management Plan (SCRMP)</li>
+<li>Appendix Q: Cryptographic Modules Table*</li>
+</ul>
+<p><em>*Document must be submitted in FedRAMP-provided template</em></p>
+<h2 id="ssp-appendix-a-fedramp-security-controls">SSP Appendix A: FedRAMP Security Controls<a class="headerlink" href="#ssp-appendix-a-fedramp-security-controls" title="Permanent link">&para;</a></h2>
+<p>The FedRAMP-provided SSP appendix A template is used to document the security control implementations for the CSO. A separate appendix A template is provided for each impact level: LI-SaaS, Low, Moderate, High. CSPs must use the template that corresponds to the CSO's impact level.</p>
+<p>This section provides guidance on how to properly document security controls in appendix A.
+Each and every control contains three sections: Control Requirement(s), Control Summary Information, and Control Implementation Statement. Guidance related to each section is provided below, along with a list of "Dos and Don'ts" to ensure success.</p>
+<h3 id="control-requirement">Control Requirement<a class="headerlink" href="#control-requirement" title="Permanent link">&para;</a></h3>
+<p>FedRAMP's baselines are based on the National Institute of Standards and Technology (NIST) Special Publication (SP) 800-53 catalog of security and privacy controls for federal information systems. Security controls may include a single requirement or may be broken down into several requirements.</p>
+<p>A requirement that begins with "The information system…" generally refers to a technical capability that must be in place. For example, IA-2(1) requires the information system to <em>implement multifactor authentication for access to privileged accounts.</em></p>
+<p>A requirement that begins with "The organization…" generally refers to a process or procedure that must be in place. For example, IR-5 requires the organization to <em>track and document incidents</em>.</p>
+<p>Many control requirements include <em>parameters</em> that are defined by the CSP or defined by FedRAMP. Some controls also include additional FedRAMP requirements and/or guidance. Let's use IR-6 as an example:</p>
+<div class="admonition abstract">
+<p class="admonition-title">IR-6 INCIDENT REPORTING</p>
+<p>Require personnel to report suspected incidents to the organizational incident response capability within <strong>[FedRAMP Assignment: US-CERT incident reporting timelines as specified in NIST Special Publication 800-61 (as amended)]</strong>; and</p>
+<p><em>Hint: CSPs cannot define this parameter. FedRAMP requires CSPs to report an incident in accordance with US-CERT timelines.</em></p>
+<p>Report incident information to <strong>[Assignment: organization-defined authorities]</strong>.</p>
+<p><em>Hint: The organization (CSP) defines which authorities receive incident reports, but must also follow the reporting requirements defined in the FedRAMP <a href="../../continuous-monitoring/incident-communication/">Continuous Monitoring Playbook</a>.</em></p>
+<p><strong>IR-6 Additional FedRAMP Requirements and Guidance: Requirement:</strong> Reports security incident information according to <em>FedRAMP <a href="../../continuous-monitoring/incident-communication/">Continuous Monitoring Playbook</a></em>.</p>
+</div>
+<h3 id="control-summary-information">Control Summary Information<a class="headerlink" href="#control-summary-information" title="Permanent link">&para;</a></h3>
+<p>The FedRAMP SSP Appendix A template includes a control summary information table for each control. This table includes the following fields which must be completed by the CSP. The information in this table must be consistent with the control implementation statement (i.e., the control narrative) and the FedRAMP SSP Appendix J CIS and CRM Workbook.</p>
+<p><strong>Responsible Role:</strong> The role (e.g., Database Administrator, Account Manager, ISSO) that can best respond to questions about the particular control. It is typically the role responsible for implementing, managing, and monitoring the control. Actual names of individuals should NOT be provided.</p>
+<ul>
+<li>
+<p><strong>Parameter(s):</strong> Enter the actual parameter value in the appropriate field. In the IR-6 example above, the Control Summary Information table would include two parameter fields for IR-6(a) and IR-6(b).</p>
+</li>
+<li>
+<p><strong>Implementation Status:</strong> At least one status must be selected for each control.</p>
+</li>
+<li>
+<p>For controls with multiple requirements, a CSP may need to select more than one status. For example, AC-8 requires the system to:</p>
+<ul>
+<li>
+<p>(a) display a system use notification message before granting access to the system AND</p>
+</li>
+<li>
+<p>(b) retain the message on screen until the user acknowledges the usage conditions by taking an explicit action</p>
+</li>
+</ul>
+</li>
+<li>
+<p>If the CSP has successfully implemented (a) but is still figuring out a way to implement (b), the CSP would select both "Implemented" and "Planned".</p>
+<div class="admonition tip">
+<p class="admonition-title">Other than Satisfied</p>
+<p>If any portion of a control is "Planned" or "Partially Implemented," the control will be identified as "Other than Satisfied" during the 3PAO security assessment.</p>
+</div>
+</li>
+<li>
+<p><strong>Control Origination:</strong> All controls originate from a system or from a business process. It is important to correctly describe the control origination so that it is clear who is responsible for implementing, managing, and monitoring the control. Definitions and examples for each control origination can be found in Table A-1, <em>Control Origination and Definitions</em>.</p>
+</li>
+<li>
+<p>If the system is inheriting a control from a FedRAMP Certified IaaS/PaaS, select the "inherited" box and provide the name and FedRAMP ID of the underlying IaaS/PaaS along with the date of authorization. Controls can only be inherited from a pre-existing FedRAMP Certification. If the CSO is hosted in an IaaS/PaaS not authorized by FedRAMP, there is no leveraging/inheritance relationship. In this scenario, the CSP is responsible for the entire stack, and the underlying components must be defined as part of the CSO's authorization boundary as system interconnections and external services.</p>
+<div class="admonition tip">
+<p class="admonition-title">Describe Inheritance</p>
+<p>Control authors should clearly indicate which portions of the security control are inherited and provide a description of <em>what</em> is inherited. Authors do not need to describe <em>how</em> the leveraged system implemented the control. That detail is found in the authorization package of the leveraged system from which the control is inherited. Authors should write to their customer responsibilities for all controls that are not fully inherited.</p>
+</div>
+</li>
+</ul>
+<h3 id="control-implementation-statement-what-is-the-solution-and-how-is-it-implemented">Control Implementation Statement: What is the Solution and How is it Implemented?<a class="headerlink" href="#control-implementation-statement-what-is-the-solution-and-how-is-it-implemented" title="Permanent link">&para;</a></h3>
+<p>The control implementation statement is the written narrative that describes what is implemented, how it's implemented, and who's responsible for it. Carefully read the control requirement(s) and ask yourself the following:</p>
+<ul>
+<li>
+<p>Does the control implementation statement address each and every requirement defined in the control? For multi-part controls, the implementation statement should only address the requirements associated with that part.</p>
+</li>
+<li>
+<p>Every control part (Part a, Part b, Part c, etc.) should contain a focused discussion on the specific control requirement. Using the previous IR-6 example, the Part b narrative should describe the authorities that receive incident reports and nothing more. Focusing the narrative on the specific requirement(s) will help expedite the review process.</p>
+</li>
+<li>
+<p>Is the implementation statement clear with no room for interpretation or confusion?</p>
+</li>
+<li>
+<p>Does the implementation statement explicitly state whether or not the control requirement is satisfied?</p>
+</li>
+<li>
+<p>Does the implementation statement clearly describe how the control is implemented?</p>
+</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">High Level Explanations</p>
+<p>In some cases, describing the <em>how</em> is difficult because the answer may be complex or lengthy. In these cases, it is acceptable to describe the <em>how</em> at a high level and then point the reviewer to an external document for more detailed information. Although reviewers will have varying degrees of technical and security expertise, they will not have a deep understanding of your CSO. Therefore, remove all ambiguity and guesswork by explaining all system-specific terms, components, etc.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Verbs Matter</p>
+<p>Pay attention to the verbs in each of the control requirements. For example, IR-5 requires the CSP to <em>track</em> and <em>document</em> security incidents. In the control implementation statement for IR-5, CSPs must describe the process/tools employed to <em>track</em> incidents, as well as the process/tools employed to <em>document</em> incidents. To ensure that all control requirements are implemented and adequately addressed in the implementation statement, CSPs are encouraged to review the assessment objectives defined for each control in the FedRAMP Security Requirements Traceability Matrix  (SAR Appendix B). Templates for the LI-SaaS, Low, Moderate, and High baselines are available.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Customer Responsibility Headings</p>
+<p>For customer-provided, customer-configured, or shared controls, create a "Customer Responsibility" heading in the control implementation statement. Clearly describe what the customer is expected to do under this heading. You do not have to describe how the customer implements the requirement.</p>
+</div>
+<h4 id="good-control-responses">Good Control Responses<a class="headerlink" href="#good-control-responses" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p>Are clear and outline who, what, where, when, why and how a control is met with technical detail that reflects the systems current operational state;</p>
+</li>
+<li>
+<p>Are clear, concise, consistent throughout the document;</p>
+</li>
+<li>
+<p>Are complete, addressing the full requirement for all relevant components, staff, or resources; and</p>
+</li>
+<li>
+<p>Are readable, relevant, and understandable.</p>
+</li>
+</ul>
+<h4 id="bad-control-responses">Bad Control Responses<a class="headerlink" href="#bad-control-responses" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p>Simply restate the control requirement but fail to address the who, what, where, when, why and how;</p>
+</li>
+<li>
+<p>Are inconsistent across controls, such as referring to same components in different ways;</p>
+</li>
+<li>
+<p>Are incomplete, and fail to fully address all relevant components, staff, or resources in a response; and</p>
+</li>
+<li>
+<p>Include superfluous information and non-relevant information such as marketing language.</p>
+</li>
+</ul>
+<h4 id="example-control-responses">Example Control Responses<a class="headerlink" href="#example-control-responses" title="Permanent link">&para;</a></h4>
+<p>If the control states: "<strong>Ensure tires are safe, regularly inspected, properly maintained, and meet the requirements for your vehicle."</strong></p>
+<p><strong>A good response may be:</strong></p>
+<p>"I visually inspect the tires on my car every time I drive for signs of wear, damage, and proper inflation. I use a NIST-tracable pressure gauge, which I have calibrated yearly to check the tire pressure weekly. I take my car to an authorized mechanic and have the oil changed and the tires inspected and rotated every 5,000 miles. I have the dealer authorized mechanic replace tires that fail inspection, have a tread under 6/32 of an inch, or when they are over 6 years of age with a tire that meets the DOT specifications in the vehicles owner manual on page 45 for a vehicle driven on public roads."</p>
+<p><strong>A bad response may be:</strong></p>
+<p>"The tires on my car are best of breed, ultra high performance, and run flat. High performance tires are important because the car is very fast. Some people I know change the oil with 5-W20 high performance oil every 5,000 miles, which ensures that the tires are safe, inspected, and meet the requirements. Bad tires are replaced with other tires that are black and round. Also the car is Red with a black interior, and it has the DVD player accessory."</p>
+<h3 id="controls-dos-and-donts">Controls Do's and Don'ts<a class="headerlink" href="#controls-dos-and-donts" title="Permanent link">&para;</a></h3>
+<h4 id="do">Do<a class="headerlink" href="#do" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p><strong>Do</strong> ensure that all responsible roles are defined in Table 11.1, <em>Separation of Duties</em> in the SSP.</p>
+</li>
+<li>
+<p><strong>Do</strong> complete all fields in the control summary information table and ensure the information is consistent with the control implementation statement.</p>
+</li>
+<li>
+<p><strong>Do</strong> provide a rationale for "Not Applicable" (N/A) controls. Many CSPs mistakenly identify controls as N/A if the capability is not authorized for use. For example, many CSPs consider AC-2(2) to be N/A because temporary/emergency accounts are not used in the environment. FedRAMP considers this control to be applicable and requires the CSPs to reference the policy that prohibits the creation of temporary/emergency accounts and describe any technical controls in place to prevent the creation of and/or audit unauthorized accounts.</p>
+</li>
+<li>
+<p><strong>Do</strong> include correct and consistent document titles when referencing other SSP appendices or external documents. If the entire referenced document does not apply, specific section references should be provided so the applicable sections can be located easily. Provide the filenames of all SSP appendices in Table 12.1 of the SSP template, SSP <em>Required Appendices.</em> This way, you only have to update the filename in one location. If referencing other external documents, use a standard naming convention, add the document name and filename, to Table 12.1 of the SSP, and upload the documents to the secure repository with the SSP package. NOTE: If an external document contains sensitive system information and cannot be uploaded to the secure repository, include a statement in Table 12.1 to the effect of, "this document contains sensitive system information, but can be provided upon request for audits and assessments."</p>
+</li>
+</ul>
+<h4 id="dont">Don't<a class="headerlink" href="#dont" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p><strong>Don't</strong> modify the control requirement text, including the parameter assignment instructions and additional FedRAMP requirements/guidance. CSP responses must be documented in the "Control Summary Information" and "What is the solution and how is it implemented?" tables.</p>
+</li>
+<li>
+<p><strong>Don't</strong> simply repeat or rephrase the control requirement when writing the control implementation statement.</p>
+</li>
+<li>
+<p><strong>Don't</strong> reference other controls instead of providing a written control narrative. Referencing related controls for <em>additional detail</em> is acceptable, but each control needs to stand on its own with a narrative that adequately addresses the control requirement(s).</p>
+</li>
+<li>
+<p><strong>Don't</strong> reference SSP appendices or external documents instead of providing a written control narrative. Referencing SSP appendices or external documents as <em>examples</em> or for <em>additional detail</em> is acceptable as long as the control narrative adequately addresses the control requirement(s).</p>
+</li>
+<li>
+<p><strong>Don't</strong> copy and paste implementation statements from one control to another. The implementation statement should address the specific control requirement(s). It should not contain content that is not directly relevant to the control requirement.</p>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  <form class="md-feedback" name="feedback" hidden>
+    <fieldset>
+      <legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+      <div class="md-feedback__inner">
+        <div class="md-feedback__list">
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page was helpful" data-md-value="1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8m2 0a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10M10 9.5c0 .8-.7 1.5-1.5 1.5S7 10.3 7 9.5 7.7 8 8.5 8s1.5.7 1.5 1.5m7 0c0 .8-.7 1.5-1.5 1.5S14 10.3 14 9.5 14.7 8 15.5 8s1.5.7 1.5 1.5m-5 7.73c-1.75 0-3.29-.73-4.19-1.81L9.23 14c.45.72 1.52 1.23 2.77 1.23s2.32-.51 2.77-1.23l1.42 1.42c-.9 1.08-2.44 1.81-4.19 1.81"/></svg>
+            </button>
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page could be improved" data-md-value="0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8m2 0a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10m-6.5-4c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5-1.5-.7-1.5-1.5.7-1.5 1.5-1.5M10 9.5c0 .8-.7 1.5-1.5 1.5S7 10.3 7 9.5 7.7 8 8.5 8s1.5.7 1.5 1.5m2 4.5c1.75 0 3.29.72 4.19 1.81l-1.42 1.42C14.32 16.5 13.25 16 12 16s-2.32.5-2.77 1.23l-1.42-1.42C8.71 14.72 10.25 14 12 14"/></svg>
+            </button>
+          
+        </div>
+        <div class="md-feedback__note">
+          
+            <div data-md-value="1" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+            <div data-md-value="0" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../roles/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Roles &amp; Responsibilities">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Roles & Responsibilities
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../sap/" class="md-footer__link md-footer__link--next" aria-label="Next: Security Assessment Plan (SAP)">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Security Assessment Plan (SAP)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      fedramp.gov
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog" role="status" aria-atomic="true">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      
+<div class="md-progress" data-md-component="progress" role="progressbar" aria-label="Loading"></div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"../../../..","features":["announce.dismiss","content.code.annotate","content.code.copy","content.code.select","content.footnote.tooltips","content.tabs.link","content.tooltips","header.autohide","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.instant.progress","navigation.path","navigation.prune","navigation.sections","navigation.tabs","navigation.tabs.sticky","navigation.top","navigation.tracking","search.highlight","toc.follow"],"redirect":null,"search":"../../../../assets/javascripts/workers/search.c47bb847.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","clipboard.error":"Could not copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.77dd0ce9.min.js"></script>
+      
+        <script src="https://www.fedramp.gov/javascripts/dap.js"></script>
+      
+    
+  </body>
+</html>

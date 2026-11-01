@@ -1,0 +1,4577 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="This site contains FedRAMP's Consolidated Rules for 2026.">
+      
+      
+        <meta name="author" content="pete@fedramp.gov">
+      
+      
+        <link rel="canonical" href="https://www.fedramp.gov/2026/reference/independent-verification-and-validation/">
+      
+      
+      
+        <link rel="prev" href="../significant-change-notification/">
+      
+      
+        <link rel="next" href="../vulnerability-evaluation-and-reporting/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="zensical-0.0.73">
+    
+    
+      
+        <title>Independent Verification and Validation - FedRAMP Consolidated Rules for 2026</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.4ab2de0c.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.b60ce83d.min.css">
+      
+      
+  
+  
+    
+      
+      
+    
+  
+    
+      
+      
+    
+  
+  
+  <style>:root{--md-admonition-icon--abstract:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20576%20512%22%3E%3C%21--%21%20Font%20Awesome%20Free%207.3.1%20by%20%40fontawesome%20-%20https%3A//fontawesome.com%20License%20-%20https%3A//fontawesome.com/license/free%20%28Icons%3A%20CC%20BY%204.0%2C%20Fonts%3A%20SIL%20OFL%201.1%2C%20Code%3A%20MIT%20License%29%20Copyright%202026%20Fonticons%2C%20Inc.--%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22m169.6%20153.4-18.7-18.7c-12.5-12.5-12.5-32.8%200-45.3L265.6-25.4c12.5-12.5%2032.8-12.5%2045.3%200l18.7%2018.8c12.5%2012.5%2012.5%2032.8%200%2045.3L214.9%20153.4c-12.5%2012.5-32.8%2012.5-45.3%200M276%20211.7l-31.4-31.4%20112-112L476%20187.7l-112%20112-31.4-31.4-232%20232c-15.6%2015.6-40.9%2015.6-56.6%200s-15.6-40.9%200-56.6zm114.9%20162.9c-12.5-12.5-12.5-32.8%200-45.3l114.7-114.7c12.5-12.5%2032.8-12.5%2045.3%200l18.7%2018.7c12.5%2012.5%2012.5%2032.8%200%2045.3L454.9%20393.4c-12.5%2012.5-32.8%2012.5-45.3%200l-18.7-18.7z%22/%3E%3C/svg%3E');--md-admonition-icon--schema:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20class%3D%22lucide%20lucide-file-braces%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M6%2022a2%202%200%200%201-2-2V4a2%202%200%200%201%202-2h8a2.4%202.4%200%200%201%201.704.706l3.588%203.588A2.4%202.4%200%200%201%2020%208v12a2%202%200%200%201-2%202z%22/%3E%3Cpath%20d%3D%22M14%202v5a1%201%200%200%200%201%201h5M10%2012a1%201%200%200%200-1%201v1a1%201%200%200%201-1%201%201%201%200%200%201%201%201v1a1%201%200%200%200%201%201M14%2018a1%201%200%200%200%201-1v-1a1%201%200%200%201%201-1%201%201%200%200%201-1-1v-1a1%201%200%200%200-1-1%22/%3E%3C/svg%3E');}</style>
+
+
+
+  
+  
+    
+      
+      
+      
+        
+      
+      
+    
+  
+    
+      
+      
+      
+        
+      
+      
+    
+  
+    
+      
+      
+      
+        
+      
+      
+    
+  
+    
+      
+      
+      
+        
+      
+      
+    
+  
+    
+      
+      
+      
+        
+      
+      
+    
+  
+    
+      
+      
+      
+        
+      
+      
+    
+  
+    
+      
+      
+      
+        
+      
+      
+    
+  
+    
+      
+      
+      
+        
+      
+      
+    
+  
+    
+      
+      
+      
+        
+      
+      
+    
+  
+    
+      
+      
+      
+        
+      
+      
+    
+  
+    
+      
+      
+      
+        
+      
+      
+    
+  
+    
+      
+      
+      
+        
+      
+      
+    
+  
+    
+      
+      
+      
+        
+      
+      
+    
+  
+    
+      
+      
+      
+        
+      
+      
+    
+  
+    
+      
+      
+      
+        
+      
+      
+    
+  
+  
+  <style>:root{.md-tag.md-tag--20x{--md-tag-icon:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M9%207h2l1%202.5L13%207h2l-2%205%202%205h-2l-1-2.5-1%202.5H9l2-5zm3-5a10%2010%200%200%201%2010%2010%2010%2010%200%200%201-10%2010A10%2010%200%200%201%202%2012%2010%2010%200%200%201%2012%202m0%202a8%208%200%200%200-8%208%208%208%200%200%200%208%208%208%208%200%200%200%208-8%208%208%200%200%200-8-8%22/%3E%3C/svg%3E');}.md-tag.md-tag--advisors{--md-tag-icon:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M13%203c3.88%200%207%203.14%207%207%200%202.8-1.63%205.19-4%206.31V21H9v-3H8c-1.11%200-2-.89-2-2v-3H4.5c-.42%200-.66-.5-.42-.81L6%209.66A7.003%207.003%200%200%201%2013%203m-2.68%204.39h1.93c.01-.3.1-.53.28-.69a1%201%200%200%201%20.66-.23c.31%200%20.57.1.75.28.18.19.26.45.26.75%200%20.32-.07.59-.23.82-.14.23-.35.43-.61.59-.51.34-.86.64-1.05.91-.2.26-.31.68-.31%201.18h2c0-.31.04-.56.13-.74.09-.19.26-.36.51-.52.45-.24.82-.53%201.11-.93s.44-.81.44-1.31c0-.76-.27-1.37-.81-1.82-.53-.45-1.26-.68-2.19-.68-.87%200-1.57.2-2.11.59-.52.41-.78.98-.77%201.77zM12%2014h2v-2h-2zm1-13C8.41%201%204.61%204.42%204.06%208.9L2.5%2011h-.03l-.02.03c-.55.76-.62%201.76-.19%202.59.36.69%201%201.17%201.74%201.32V16c0%201.85%201.28%203.42%203%203.87V23h11v-5.5c2.5-1.67%204-4.44%204-7.5%200-4.97-4.04-9-9-9%22/%3E%3C/svg%3E');}.md-tag.md-tag--cloud-service-providers{--md-tag-icon:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M6.5%2018H13v2H6.5c-1.5%200-2.81-.5-3.89-1.57C1.54%2017.38%201%2016.09%201%2014.58q0-1.95%201.17-3.48C3.34%209.57%204%209.43%205.25%209.15c.42-1.53%201.25-2.77%202.5-3.72S10.42%204%2012%204c1.95%200%203.6.68%204.96%202.04%201.12%201.12%201.77%202.46%201.97%203.96-.7%200-1.37.19-1.98.46a4.8%204.8%200%200%200-1.41-3C14.56%206.5%2013.38%206%2012%206s-2.56.5-3.54%201.46C7.5%208.44%207%209.62%207%2011h-.5c-.97%200-1.79.34-2.47%201.03-.69.68-1.03%201.5-1.03%202.47s.34%201.79%201.03%202.5c.68.66%201.5%201%202.47%201m16.5-.7v3.5c0%20.6-.6%201.2-1.3%201.2h-5.5c-.6%200-1.2-.6-1.2-1.3v-3.5c0-.6.6-1.2%201.2-1.2v-1.5c0-1.4%201.4-2.5%202.8-2.5s2.8%201.1%202.8%202.5V16c.6%200%201.2.6%201.2%201.3m-2.5-2.8c0-.8-.7-1.3-1.5-1.3s-1.5.5-1.5%201.3V16h3z%22/%3E%3C/svg%3E');}.md-tag.md-tag--controls{--md-tag-icon:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M12%2012h7c-.53%204.11-3.28%207.78-7%208.92zH5V6.3l7-3.11M12%201%203%205v6c0%205.55%203.84%2010.73%209%2012%205.16-1.27%209-6.45%209-12V5z%22/%3E%3C/svg%3E');}.md-tag.md-tag--deadlines{--md-tag-icon:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M6%201v2H5c-1.11%200-2%20.89-2%202v14a2%202%200%200%200%202%202h6.1c1.26%201.24%202.99%202%204.9%202%203.87%200%207-3.13%207-7%200-1.91-.76-3.64-2-4.9V5a2%202%200%200%200-2-2h-1V1h-2v2H8V1M5%205h14v2H5m0%202h14v.67c-.91-.43-1.93-.67-3-.67-3.87%200-7%203.13-7%207%200%201.07.24%202.09.67%203H5m11-7.85c2.68%200%204.85%202.17%204.85%204.85s-2.17%204.85-4.85%204.85-4.85-2.17-4.85-4.85%202.17-4.85%204.85-4.85M15%2013v3.69l3.19%201.84.75-1.3-2.44-1.41V13Z%22/%3E%3C/svg%3E');}.md-tag.md-tag--definitions{--md-tag-icon:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M5.81%202C4.83%202.09%204%203%204%204v16c0%201.05.95%202%202%202h12c1.05%200%202-.95%202-2V4a2%202%200%200%200-2-2h-6v7L9.5%207.5%207%209V2H5.81M12%2013h1a1%201%200%200%201%201%201v4h-1v-2h-1v2h-1v-4a1%201%200%200%201%201-1m0%201v1h1v-1zm3%201h3v1l-2%203h2v1h-3v-1l2-3h-2z%22/%3E%3C/svg%3E');}.md-tag.md-tag--federal-agencies{--md-tag-icon:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M6.5%2010h-2v7h2zm6%200h-2v7h2zm8.5%209H2v2h19zm-2.5-9h-2v7h2zm-7-6.74L16.71%206H6.29zm0-2.26L2%206v2h19V6z%22/%3E%3C/svg%3E');}.md-tag.md-tag--fedramp{--md-tag-icon:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M12%201%203%205v6c0%205.55%203.84%2010.74%209%2012%205.16-1.26%209-6.45%209-12V5zm0%202.18%207%203.12v4.92c0%201.7-.5%203.43-1.35%204.95C16%2014.94%2013.26%2014.5%2012%2014.5s-4%20.44-5.65%201.67C5.5%2014.65%205%2012.92%205%2011.22V6.3zM12%206a3.5%203.5%200%200%200-3.5%203.5A3.5%203.5%200%200%200%2012%2013a3.5%203.5%200%200%200%203.5-3.5A3.5%203.5%200%200%200%2012%206m0%202a1.5%201.5%200%200%201%201.5%201.5A1.5%201.5%200%200%201%2012%2011a1.5%201.5%200%200%201-1.5-1.5A1.5%201.5%200%200%201%2012%208m0%208.5c1.57%200%203.64.61%204.53%201.34C15.29%2019.38%2013.7%2020.55%2012%2021c-1.7-.45-3.29-1.62-4.53-3.16.9-.73%202.96-1.34%204.53-1.34%22/%3E%3C/svg%3E');}.md-tag.md-tag--guidance{--md-tag-icon:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22m19%201-5%205v11l5-4.5zm2%204v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7%200-4.15.65-5.5%201.5V6c-1.45-1.1-3.55-1.5-5.5-1.5S2.45%204.9%201%206v14.65c0%20.25.25.5.5.5.1%200%20.15-.05.25-.05C3.1%2020.45%205.05%2020%206.5%2020c1.95%200%204.05.4%205.5%201.5%201.35-.85%203.8-1.5%205.5-1.5%201.65%200%203.35.3%204.75%201.05.1.05.15.05.25.05.25%200%20.5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10%2018.41C8.75%2018.09%207.5%2018%206.5%2018c-1.06%200-2.32.19-3.5.5V7.13c.91-.4%202.14-.63%203.5-.63s2.59.23%203.5.63z%22/%3E%3C/svg%3E');}.md-tag.md-tag--historical{--md-tag-icon:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M20%202H2v6h18zm-2%204H4V4h14zm-2%203c-1.31%200-2.54.37-3.59%201H8.5c-.28%200-.5.22-.5.5V12h2.26A6.94%206.94%200%200%200%209%2016c0%20.7.11%201.37.29%202H5V9H3v11h7.26c1.27%201.81%203.36%203%205.74%203%203.87%200%207-3.13%207-7s-3.13-7-7-7m0%2012c-2.76%200-5-2.24-5-5s2.24-5%205-5%205%202.24%205%205-2.24%205-5%205m.5-4.75%202.86%201.69-.75%201.22L15%2017v-5h1.5z%22/%3E%3C/svg%3E');}.md-tag.md-tag--independent-assessors{--md-tag-icon:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22m23.5%2017-5%205-3.5-3.5%201.5-1.5%202%202%203.5-3.5zM12%209a3%203%200%200%201%203%203%203%203%200%200%201-3%203%203%203%200%200%201-3-3%203%203%200%200%201%203-3m0-4.5c5%200%209.27%203.11%2011%207.5-.25.65-.56%201.26-.92%201.85a5.8%205.8%200%200%200-1.9-.73l.64-1.12a9.821%209.821%200%200%200-17.64%200A9.82%209.82%200%200%200%2012%2017.5l1.21-.07c-.14.5-.21%201.03-.21%201.57v.46l-1%20.04c-5%200-9.27-3.11-11-7.5%201.73-4.39%206-7.5%2011-7.5%22/%3E%3C/svg%3E');}.md-tag.md-tag--key-security-indicators{--md-tag-icon:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22m16%2011.78%204.24-7.33%201.73%201-5.23%209.05-6.51-3.75L5.46%2019H22v2H2V3h2v14.54L9.5%208z%22/%3E%3C/svg%3E');}.md-tag.md-tag--legal-authority{--md-tag-icon:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M12%203c-1.27%200-2.4.8-2.82%202H3v2h1.95L2%2014c-.47%202%201%203%203.5%203s4.06-1%203.5-3L6.05%207h3.12c.33.85.98%201.5%201.83%201.83V20H2v2h20v-2h-9V8.82c.85-.32%201.5-.97%201.82-1.82h3.13L15%2014c-.47%202%201%203%203.5%203s4.06-1%203.5-3l-2.95-7H21V5h-6.17C14.4%203.8%2013.27%203%2012%203m0%202a1%201%200%200%201%201%201%201%201%200%200%201-1%201%201%201%200%200%201-1-1%201%201%200%200%201%201-1m-6.5%205.25L7%2014H4zm13%200L20%2014h-3z%22/%3E%3C/svg%3E');}.md-tag.md-tag--rev5{--md-tag-icon:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M9%207h6v2h-4v2h2a2%202%200%200%201%202%202v2a2%202%200%200%201-2%202H9v-2h4v-2H9zm3-5a10%2010%200%200%201%2010%2010%2010%2010%200%200%201-10%2010A10%2010%200%200%201%202%2012%2010%2010%200%200%201%2012%202m0%202a8%208%200%200%200-8%208%208%208%200%200%200%208%208%208%208%200%200%200%208-8%208%208%200%200%200-8-8%22/%3E%3C/svg%3E');}.md-tag.md-tag--rules{--md-tag-icon:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20576%20512%22%3E%3C%21--%21%20Font%20Awesome%20Free%207.3.1%20by%20%40fontawesome%20-%20https%3A//fontawesome.com%20License%20-%20https%3A//fontawesome.com/license/free%20%28Icons%3A%20CC%20BY%204.0%2C%20Fonts%3A%20SIL%20OFL%201.1%2C%20Code%3A%20MIT%20License%29%20Copyright%202026%20Fonticons%2C%20Inc.--%3E%3Cpath%20fill%3D%22currentColor%22%20d%3D%22m169.6%20153.4-18.7-18.7c-12.5-12.5-12.5-32.8%200-45.3L265.6-25.4c12.5-12.5%2032.8-12.5%2045.3%200l18.7%2018.8c12.5%2012.5%2012.5%2032.8%200%2045.3L214.9%20153.4c-12.5%2012.5-32.8%2012.5-45.3%200M276%20211.7l-31.4-31.4%20112-112L476%20187.7l-112%20112-31.4-31.4-232%20232c-15.6%2015.6-40.9%2015.6-56.6%200s-15.6-40.9%200-56.6zm114.9%20162.9c-12.5-12.5-12.5-32.8%200-45.3l114.7-114.7c12.5-12.5%2032.8-12.5%2045.3%200l18.7%2018.7c12.5%2012.5%2012.5%2032.8%200%2045.3L454.9%20393.4c-12.5%2012.5-32.8%2012.5-45.3%200l-18.7-18.7z%22/%3E%3C/svg%3E');}}</style>
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-E1PPDRDY5R"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-E1PPDRDY5R",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-E1PPDRDY5R",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  <meta property="og:type" content="website" />
+<meta property="og:title" content="Independent Verification and Validation - FedRAMP Consolidated Rules for 2026" />
+<meta property="og:description" content="This site contains FedRAMP&#39;s Consolidated Rules for 2026." />
+<meta property="og:image" content="https://www.fedramp.gov/2026/assets/images/social/reference/independent-verification-and-validation.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:url" content="https://www.fedramp.gov/2026/reference/independent-verification-and-validation/" />
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:title" content="Independent Verification and Validation - FedRAMP Consolidated Rules for 2026" />
+<meta property="twitter:description" content="This site contains FedRAMP&#39;s Consolidated Rules for 2026." />
+<meta property="twitter:image" content="https://www.fedramp.gov/2026/assets/images/social/reference/independent-verification-and-validation.png" />
+</head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-hidden="true"></label>
+    <div data-md-component="skip">
+      <a href="#__skip" class="md-skip">
+        Skip to content
+      </a>
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="/2026" title="FedRAMP Consolidated Rules for 2026" class="md-header__button md-logo" aria-label="FedRAMP Consolidated Rules for 2026" data-md-component="logo">
+      
+  <img src="../../assets/fr-only-logo-black.png" alt="FedRAMP Consolidated Rules for 2026">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+      <span class="md-visually-hidden">Navigation</span>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FedRAMP Consolidated Rules for 2026
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Independent Verification and Validation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun-moon" viewBox="0 0 24 24"><path d="M12 2v2M14.837 16.385a6 6 0 1 1-7.223-7.222c.624-.147.97.66.715 1.248a4 4 0 0 0 5.26 5.259c.589-.255 1.396.09 1.248.715M16 12a4 4 0 0 0-4-4M19 5l-1.256 1.256M20 12h2"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+          <span class="md-visually-hidden">Search</span>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Search">
+  <button type="button" class="md-search__button">
+    Search
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+        <a href="https://github.com/fedramp/2026" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21"/></svg>
+  </div>
+  <div class="md-source__repository">
+    FedRAMP/2026
+  </div>
+</a>
+      
+    </div>
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../.." class="md-tabs__link">
+          
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../responsibilities/" class="md-tabs__link">
+          
+  
+  FedRAMP
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../agencies/" class="md-tabs__link">
+          
+  
+  Agencies
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../providers/" class="md-tabs__link">
+          
+  
+  Cloud Service Providers
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../assessors/" class="md-tabs__link">
+          
+  
+  Independent Assessors
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../advisors/" class="md-tabs__link">
+          
+  
+  Advisors
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+      
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  Ruleset Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="https://fedramp.gov" class="md-tabs__link">
+        
+  
+  --> return to FedRAMP.gov
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="/2026" title="FedRAMP Consolidated Rules for 2026" class="md-nav__button md-logo" aria-label="FedRAMP Consolidated Rules for 2026" data-md-component="logo">
+      
+  <img src="../../assets/fr-only-logo-black.png" alt="FedRAMP Consolidated Rules for 2026">
+
+    </a>
+    FedRAMP Consolidated Rules for 2026
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fedramp/2026" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2026 Fonticons, Inc.--><path fill="currentColor" d="M216.5 362.5c-66-8-112.5-55.5-112.5-117 0-25 9-52 24-70-6.5-16.5-5.5-51.5 2-66 20-2.5 47 8 63 22.5 19-6 39-9 63.5-9s44.5 3 62.5 8.5c15.5-14 43-24.5 63-22 7 13.5 8 48.5 1.5 65.5 16 19 24.5 44.5 24.5 70.5 0 61.5-46.5 108-113.5 116.5 17 11 28.5 35 28.5 62.5v52c0 15 12.5 23.5 27.5 17.5C441 459.5 512 369 512 257 512 115.5 397 0 255.5 0S0 115.5 0 257c0 111 70.5 203 165.5 237.5 13.5 5 26.5-4 26.5-17.5v-40c-7 3-16 5-24 5-33 0-52.5-18-66.5-51.5-5.5-13.5-11.5-21.5-23-23-6-.5-8-3-8-6 0-6 10-10.5 20-10.5 14.5 0 27 9 40 27.5 10 14.5 20.5 21 33 21s20.5-4.5 32-16c8.5-8.5 15-16 21-21"/></svg>
+  </div>
+  <div class="md-source__repository">
+    FedRAMP/2026
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+  
+    <a href="../.." class="md-nav__link">
+      
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 9h2V7h-2m1 13c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8m0-18A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2m-1 15h2v-6h-2z"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+  Overview
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+  
+    <a href="../../responsibilities/" class="md-nav__link">
+      
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m2.3 20.28 9.6-9.6-1.4-1.42-.72.71a.996.996 0 0 1-1.41 0l-.71-.71a.996.996 0 0 1 0-1.41l5.66-5.66a.996.996 0 0 1 1.41 0l.71.71c.39.39.39 1.02 0 1.41l-.71.69 1.42 1.43a.996.996 0 0 1 1.41 0c.39.39.39 1.03 0 1.42l1.41 1.41.71-.71c.39-.39 1.03-.39 1.42 0l.7.71c.39.39.39 1.03 0 1.42l-5.65 5.65c-.39.39-1.03.39-1.42 0l-.7-.7a.99.99 0 0 1 0-1.42l.7-.71-1.41-1.41-9.61 9.61a.996.996 0 0 1-1.41 0c-.39-.39-.39-1.03 0-1.42M20 19a2 2 0 0 1 2 2v1H12v-1a2 2 0 0 1 2-2z"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+  FedRAMP
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+  
+    <a href="../../agencies/" class="md-nav__link">
+      
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6.5 10h-2v7h2zm6 0h-2v7h2zm8.5 9H2v2h19zm-2.5-9h-2v7h2zm-7-6.74L16.71 6H6.29zm0-2.26L2 6v2h19V6z"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+  Agencies
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+  
+    <a href="../../providers/" class="md-nav__link">
+      
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6.5 18H13v2H6.5c-1.5 0-2.81-.5-3.89-1.57C1.54 17.38 1 16.09 1 14.58q0-1.95 1.17-3.48C3.34 9.57 4 9.43 5.25 9.15c.42-1.53 1.25-2.77 2.5-3.72S10.42 4 12 4c1.95 0 3.6.68 4.96 2.04 1.12 1.12 1.77 2.46 1.97 3.96-.7 0-1.37.19-1.98.46a4.8 4.8 0 0 0-1.41-3C14.56 6.5 13.38 6 12 6s-2.56.5-3.54 1.46C7.5 8.44 7 9.62 7 11h-.5c-.97 0-1.79.34-2.47 1.03-.69.68-1.03 1.5-1.03 2.47s.34 1.79 1.03 2.5c.68.66 1.5 1 2.47 1m16.5-.7v3.5c0 .6-.6 1.2-1.3 1.2h-5.5c-.6 0-1.2-.6-1.2-1.3v-3.5c0-.6.6-1.2 1.2-1.2v-1.5c0-1.4 1.4-2.5 2.8-2.5s2.8 1.1 2.8 2.5V16c.6 0 1.2.6 1.2 1.3m-2.5-2.8c0-.8-.7-1.3-1.5-1.3s-1.5.5-1.5 1.3V16h3z"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+  Cloud Service Providers
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+  
+    <a href="../../assessors/" class="md-nav__link">
+      
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m23.5 17-5 5-3.5-3.5 1.5-1.5 2 2 3.5-3.5zM12 9a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5-.25.65-.56 1.26-.92 1.85a5.8 5.8 0 0 0-1.9-.73l.64-1.12a9.821 9.821 0 0 0-17.64 0A9.82 9.82 0 0 0 12 17.5l1.21-.07c-.14.5-.21 1.03-.21 1.57v.46l-1 .04c-5 0-9.27-3.11-11-7.5 1.73-4.39 6-7.5 11-7.5"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+  Independent Assessors
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+  
+    <a href="../../advisors/" class="md-nav__link">
+      
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 3c3.88 0 7 3.14 7 7 0 2.8-1.63 5.19-4 6.31V21H9v-3H8c-1.11 0-2-.89-2-2v-3H4.5c-.42 0-.66-.5-.42-.81L6 9.66A7.003 7.003 0 0 1 13 3m-2.68 4.39h1.93c.01-.3.1-.53.28-.69a1 1 0 0 1 .66-.23c.31 0 .57.1.75.28.18.19.26.45.26.75 0 .32-.07.59-.23.82-.14.23-.35.43-.61.59-.51.34-.86.64-1.05.91-.2.26-.31.68-.31 1.18h2c0-.31.04-.56.13-.74.09-.19.26-.36.51-.52.45-.24.82-.53 1.11-.93s.44-.81.44-1.31c0-.76-.27-1.37-.81-1.82-.53-.45-1.26-.68-2.19-.68-.87 0-1.57.2-2.11.59-.52.41-.78.98-.77 1.77zM12 14h2v-2h-2zm1-13C8.41 1 4.61 4.42 4.06 8.9L2.5 11h-.03l-.02.03c-.55.76-.62 1.76-.19 2.59.36.69 1 1.17 1.74 1.32V16c0 1.85 1.28 3.42 3 3.87V23h11v-5.5c2.5-1.67 4-4.44 4-7.5 0-4.97-4.04-9-9-9"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+  Advisors
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 9h2V7h-2m1 13c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8m0-18A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2m-1 15h2v-6h-2z"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+  Ruleset Reference
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+            <label class="md-nav__title" for="__nav_7">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Ruleset Reference
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../20x/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  20x
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_2" id="__nav_7_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_2_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_7_2">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  20x
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+  
+    <a href="../20x/a/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  20x Class A
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+  
+    <a href="../20x/b/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  20x Class B
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+  
+    <a href="../20x/c/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  20x Class C
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../rev5/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Rev5
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_3" id="__nav_7_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_3_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_7_3">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Rev5
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+  
+    <a href="../rev5/b/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Rev5 Class B
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+  
+    <a href="../rev5/c/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Rev5 Class C
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+  
+    <a href="../rev5/d/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Rev5 Class D
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../complete-rulesets/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Complete Rulesets
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_4" id="__nav_7_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        
+          <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_4_label" aria-expanded="true">
+            <label class="md-nav__title" for="__nav_7_4">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Complete Rulesets
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../marketplace-listing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Marketplace Listing
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fedramp-certification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  FedRAMP Certification
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+  
+    <a href="../minimum-assessment-scope/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Boundary Rulesets
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_4_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7_4_5" id="__nav_7_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Assurance Rulesets
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        
+          <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_7_4_5_label" aria-expanded="true">
+            <label class="md-nav__title" for="__nav_7_4_5">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Assurance Rulesets
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../collaborative-continuous-monitoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Collaborative Continuous Monitoring
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../addressing-fedramp-communication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Addressing FedRAMP Communication
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../incident-evaluation-and-communication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Incident Evaluation and Communication
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../significant-change-notification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Significant Change Notification
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Independent Verification and Validation
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Independent Verification and Validation
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#general-provider-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        General Provider Responsibilities
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="General Provider Responsibilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fedramp-independent-assessments" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        FedRAMP Independent Assessments
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supply-evidence-of-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Supply Evidence of Implementation
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supply-evidence-of-effectiveness" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Supply Evidence of Effectiveness
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inclusion-in-certification-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Inclusion in Certification Package
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#document-use-of-representative-samples" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Document Use of Representative Samples
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supply-technical-explanations" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Supply Technical Explanations
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-representative-samples" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Use Representative Samples
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#receiving-assessor-advice" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Receiving Assessor Advice
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#general-independent-assessor-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        General Independent Assessor Responsibilities
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="General Independent Assessor Responsibilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verify-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Verify Implementation
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validate-effectiveness" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Validate Effectiveness
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#assessment-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Assessment Summary
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overall-summary-of-assessment" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Overall Summary of Assessment
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-inclusion-in-certification-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Verify Inclusion in Certification Package
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#engage-provider-experts" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Engage Provider Experts
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sharing-advice" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Sharing Advice
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#20x-specific-provider-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        20x-Specific Provider Responsibilities
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="20x-Specific Provider Responsibilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#annual-independent-assessments-for-20x" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Annual Independent Assessments for 20x
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rev5-specific-provider-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Rev5-Specific Provider Responsibilities
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rev5-Specific Provider Responsibilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#annual-independent-assessments-for-rev5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Annual Independent Assessments for Rev5
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mandatory-control-assessment" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Mandatory Control Assessment
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#assessment-of-rev5-controls-with-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Assessment of Rev5 Controls with Findings
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#preferred-control-assessment" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Preferred Control Assessment
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vulnerability-evaluation-and-reporting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Vulnerability Evaluation and Reporting
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+  
+    <a href="../certification-package-overview/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Package Rulesets
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../key-security-indicators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Key Security Indicators
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rev5-control-guidance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Rev5 Control Guidance
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+  
+    <a href="../agency-use/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Gov Rulesets
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+  
+    <a href="../fedramp-recognition/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Assessor Rulesets
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_5" id="__nav_7_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Other References
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        
+          <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_5_label" aria-expanded="false">
+            <label class="md-nav__title" for="__nav_7_5">
+              <span class="md-nav__icon md-icon"></span>
+              
+  
+  Other References
+
+            </label>
+            <ul class="md-nav__list" data-md-scrollfix>
+              
+                
+                  
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+  
+    <a href="../controls/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  Full Rev5 Control Reference
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+                
+              
+            </ul>
+          </nav>
+        
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://fedramp.gov" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  --> return to FedRAMP.gov
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#general-provider-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        General Provider Responsibilities
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="General Provider Responsibilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fedramp-independent-assessments" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        FedRAMP Independent Assessments
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supply-evidence-of-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Supply Evidence of Implementation
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supply-evidence-of-effectiveness" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Supply Evidence of Effectiveness
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inclusion-in-certification-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Inclusion in Certification Package
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#document-use-of-representative-samples" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Document Use of Representative Samples
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supply-technical-explanations" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Supply Technical Explanations
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-representative-samples" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Use Representative Samples
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#receiving-assessor-advice" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Receiving Assessor Advice
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#general-independent-assessor-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        General Independent Assessor Responsibilities
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="General Independent Assessor Responsibilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verify-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Verify Implementation
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validate-effectiveness" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Validate Effectiveness
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#assessment-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Assessment Summary
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overall-summary-of-assessment" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Overall Summary of Assessment
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verify-inclusion-in-certification-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Verify Inclusion in Certification Package
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#engage-provider-experts" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Engage Provider Experts
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sharing-advice" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Sharing Advice
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#20x-specific-provider-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        20x-Specific Provider Responsibilities
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="20x-Specific Provider Responsibilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#annual-independent-assessments-for-20x" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Annual Independent Assessments for 20x
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rev5-specific-provider-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Rev5-Specific Provider Responsibilities
+      </span>
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rev5-Specific Provider Responsibilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#annual-independent-assessments-for-rev5" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Annual Independent Assessments for Rev5
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mandatory-control-assessment" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Mandatory Control Assessment
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#assessment-of-rev5-controls-with-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Assessment of Rev5 Controls with Findings
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#preferred-control-assessment" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Preferred Control Assessment
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+      
+        
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Ruleset Reference
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../complete-rulesets/" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Complete Rulesets
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+      <li class="md-path__item">
+        <a href="../collaborative-continuous-monitoring/" class="md-path__link">
+          
+  
+  <span class="md-ellipsis">
+    Assurance Rulesets
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                <a id="__skip" tabindex="-1"></a>
+                
+                  
+
+  
+  
+
+
+<p><span class="picto"><span class="twemoji machine" title="This content is machine-generated from FedRAMP Machine-Readable Rules."><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-computer" viewBox="0 0 24 24"><path d="M12 18h6M6 18h.01M8 6h1"/><rect width="20" height="8" x="2" y="14" rx="2"/><rect width="16" height="12" x="4" y="2" rx="2"/></svg></span></span></p>
+<h1 id="independent-verification-and-validation">Independent Verification and Validation<a class="headerlink" href="#independent-verification-and-validation" title="Permanent link">&para;</a></h1>
+<p>This ruleset explains the expectations for independent verification and validation assessments.</p>
+<p><strong>Subsets</strong></p>
+<ul>
+<li><a href="#general-provider-responsibilities">General Provider Responsibilities</a></li>
+<li><a href="#general-independent-assessor-responsibilities">General Independent Assessor Responsibilities</a></li>
+<li><a href="#20x-specific-provider-responsibilities">20x-Specific Provider Responsibilities</a></li>
+<li><a href="#rev5-specific-provider-responsibilities">Rev5-Specific Provider Responsibilities</a></li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">Effective Date(s) &amp; Overall Applicability for 20x</p>
+<ul>
+<li><strong>Required</strong> (Consolidated Rules for 2026)</li>
+<li><strong>Optional Adoption Allowed:</strong> 2026-07-04</li>
+<li><strong>Obtaining Initial Certification:</strong> 2026-07-04</li>
+<li><strong>Maintaining Ongoing Certification:</strong> 2027-01-01</li>
+<li><strong>Grace Period Ends:</strong> On the first FedRAMP independent assessment started after 2027-01-01</li>
+</ul>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Effective Date(s) &amp; Overall Applicability for Rev5</p>
+<ul>
+<li><strong>Required</strong> (Consolidated Rules for 2026)</li>
+<li><strong>Optional Adoption Allowed:</strong> 2026-07-04</li>
+<li><strong>Obtaining Initial Certification:</strong> 2027-01-01</li>
+<li><strong>Maintaining Ongoing Certification:</strong> 2027-01-01</li>
+<li><strong>Grace Period Ends:</strong> On the first FedRAMP independent assessment started after 2027-01-01</li>
+</ul>
+</div>
+<hr />
+<h2 id="general-provider-responsibilities">General Provider Responsibilities<a class="headerlink" href="#general-provider-responsibilities" title="Permanent link">&para;</a></h2>
+<p>These rules apply to cloud service providers obtaining and maintaining any FedRAMP Certification.</p>
+<div class="subset-applicability" role="group" aria-label="Applicability">
+<span class="subset-applicability__group subset-applicability__group--types"><span class="subset-applicability__label">Type:</span> <span class="subset-applicability__values"><span class="subset-applicability__tag">20x</span><span class="subset-applicability__tag">Rev5</span></span></span><br>
+<span class="subset-applicability__group subset-applicability__group--paths"><span class="subset-applicability__label">Path:</span> <span class="subset-applicability__values"><span class="subset-applicability__tag">Program</span><span class="subset-applicability__tag">Agency</span></span></span><br>
+<span class="subset-applicability__group subset-applicability__group--classes"><span class="subset-applicability__label">Class:</span> <span class="subset-applicability__values"><span class="subset-applicability__tag">Class B</span><span class="subset-applicability__tag">Class C</span><span class="subset-applicability__tag">Class D</span></span></span><br>
+<span class="subset-applicability__group subset-applicability__group--affects"><span class="subset-applicability__label">Audience:</span> <span class="subset-applicability__values"><span class="subset-applicability__tag">Providers</span></span></span>
+</div>
+
+<h3 id="fedramp-independent-assessments">FedRAMP Independent Assessments<a class="headerlink" href="#fedramp-independent-assessments" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-CSO-FIA</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li>
+<p><strong>2026-10-13:</strong> Updated control mappings: added ca-2, ca-2.1, ca-2.2, ca-7.1, ca-7.4.</p>
+</li>
+<li>
+<p><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</p>
+</li>
+</ul>
+</details>
+<div class="admonition quote">
+<div class="tabbed-set tabbed-alternate" data-tabs="1:4"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Class A</label><label for="__tabbed_1_2">Class B</label><label for="__tabbed_1_3">Class C</label><label for="__tabbed_1_4">Class D</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Providers with Class A Certifications <a data-preview="data-preview" href="../../definitions/#may">MAY</a> persistently complete an independent verification and validation assessment of all applicable FedRAMP rules with a FedRAMP Recognized independent assessment service OR FedRAMP at least once per year; this is a FedRAMP independent assessment.</p>
+<p><strong>Timeframe:</strong> 1 year</p>
+</div>
+<div class="tabbed-block">
+<p>Providers with Class B Certifications <a data-preview="data-preview" href="../../definitions/#must">MUST</a> persistently complete an independent verification and validation assessment of all applicable FedRAMP rules with a FedRAMP Recognized independent assessment service OR FedRAMP at least once per year; this is a FedRAMP independent assessment.</p>
+<p><strong>Timeframe:</strong> 1 year</p>
+</div>
+<div class="tabbed-block">
+<p>Providers with Class C Certifications <a data-preview="data-preview" href="../../definitions/#must">MUST</a> persistently complete an independent verification and validation assessment of all applicable FedRAMP rules with a FedRAMP Recognized independent assessment service OR FedRAMP at least once per year; this is a FedRAMP independent assessment.</p>
+<p><strong>Timeframe:</strong> 1 year</p>
+</div>
+<div class="tabbed-block">
+<p>Providers with Class D Certifications <a data-preview="data-preview" href="../../definitions/#must">MUST</a> persistently complete an independent verification and validation assessment of all applicable FedRAMP rules with a FedRAMP Recognized independent assessment service OR FedRAMP at least once per year; this is a FedRAMP independent assessment.</p>
+<p><strong>Timeframe:</strong> 1 year</p>
+</div>
+</div>
+</div>
+<hr />
+<p><em><strong>Notes:</strong></em></p>
+<ul>
+<li><em>The first such completed assessment is typically called an "initial assessment" while following assessments are called "annual assessments."</em></li>
+<li><em>The specific requirements for independent verification and validation assessments are documented by the FedRAMP Certification Class and Type.</em></li>
+<li><em>The option for assessment by FedRAMP directly is limited to cloud services that are explicitly prioritized by FedRAMP, in consultation with the FedRAMP Board and the federal Chief Information Officers Council; this is <em>extremely</em> rare.</em></li>
+<li><em>FedRAMP Recognized independent assessment services are listed on the FedRAMP Marketplace.</em></li>
+</ul>
+<p><strong>Related SP 800-53 Controls:</strong> <a data-preview="data-preview" href="../controls/assessment-authorization-and-monitoring/#ca-02">CA-02</a>, <a data-preview="data-preview" href="../controls/assessment-authorization-and-monitoring/#ca-02-01">CA-02 (01)</a>, <a data-preview="data-preview" href="../controls/assessment-authorization-and-monitoring/#ca-02-02">CA-02 (02)</a>, <a data-preview="data-preview" href="../controls/assessment-authorization-and-monitoring/#ca-07-01">CA-07 (01)</a>, <a data-preview="data-preview" href="../controls/assessment-authorization-and-monitoring/#ca-07-04">CA-07 (04)</a></p>
+<hr />
+<p><strong>Terms:</strong> <a data-preview="data-preview" href="../../definitions/#certification-class">Certification Class</a>, <a data-preview="data-preview" href="../../definitions/#fedramp-independent-assessment">FedRAMP Independent Assessment</a>, <a data-preview="data-preview" href="../../definitions/#fedramp-recognized">FedRAMP Recognized</a>, <a data-preview="data-preview" href="../../definitions/#persistently">Persistently</a>, <a data-preview="data-preview" href="../../definitions/#validation">Validation</a>, <a data-preview="data-preview" href="../../definitions/#verification">Verification</a></p>
+</div>
+<h3 id="supply-evidence-of-implementation">Supply Evidence of Implementation<a class="headerlink" href="#supply-evidence-of-implementation" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-CSO-SEI</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</li>
+</ul>
+</details>
+<div class="admonition quote">
+<p>Providers <a data-preview="data-preview" href="../../definitions/#must">MUST</a> supply evidence to all necessary assessors of the implementation of the measures that have been documented to meet FedRAMP Practices; this evidence is the result of verification.</p>
+<hr />
+<p><em><strong>Note:</strong> For example, if the documentation says that firewall rules are used to block traffic then the cloud service provider would verify that firewall rules are in place to block traffic and supply that evidence to assessors (preferably by allowing them to see how firewall configurations are deployed from a source of truth).</em></p>
+<hr />
+<p><strong>Terms:</strong> <a data-preview="data-preview" href="../../definitions/#all-necessary-assessors">All Necessary Assessors</a>, <a data-preview="data-preview" href="../../definitions/#fedramp-practices">FedRAMP Practices</a>, <a data-preview="data-preview" href="../../definitions/#verification">Verification</a></p>
+</div>
+<h3 id="supply-evidence-of-effectiveness">Supply Evidence of Effectiveness<a class="headerlink" href="#supply-evidence-of-effectiveness" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-CSO-SEE</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</li>
+</ul>
+</details>
+<div class="admonition quote">
+<p>Providers <a data-preview="data-preview" href="../../definitions/#must">MUST</a> supply evidence to all necessary assessors of the effectiveness of the measures that have been implemented to meet FedRAMP Practices; this evidence is the result of validation.</p>
+<hr />
+<p><em><strong>Note:</strong> For example, after verifying that firewalls are configured to block traffic following <a data-preview="data-preview" href="#supply-evidence-of-implementation">IVV-CSO-SEI (Supply Evidence of Implementation)</a>, the provider would validate that traffic is actually being blocked and supply evidence of that validation to assessors (such as by allowing them to see metrics on the traffic that is blocked vs not).</em></p>
+<hr />
+<p><strong>Terms:</strong> <a data-preview="data-preview" href="../../definitions/#all-necessary-assessors">All Necessary Assessors</a>, <a data-preview="data-preview" href="../../definitions/#fedramp-practices">FedRAMP Practices</a>, <a data-preview="data-preview" href="../../definitions/#validation">Validation</a></p>
+</div>
+<h3 id="inclusion-in-certification-package">Inclusion in Certification Package<a class="headerlink" href="#inclusion-in-certification-package" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-CSO-ICP</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</li>
+</ul>
+</details>
+<div class="admonition quote">
+<p>Providers <a data-preview="data-preview" href="../../definitions/#must">MUST</a> supply the results of FedRAMP independent assessments in their FedRAMP Certification Package without inappropriate modification.</p>
+<hr />
+<p><em><strong>Notes:</strong></em></p>
+<ul>
+<li><em>Inappropriate modification in this context means changing the underlying intent/etc. of the content provided by the independent assessment service - the content itself may be modified for presentation, formatting, etc. as needed.</em></li>
+<li><em>This rule is related to <a data-preview="data-preview" href="#verify-inclusion-in-certification-package">IVV-IAS-VIP (Verify Inclusion in Certification Package)</a>.</em></li>
+</ul>
+<hr />
+<p><strong>Terms:</strong> <a data-preview="data-preview" href="../../definitions/#certification-package">Certification Package</a>, <a data-preview="data-preview" href="../../definitions/#fedramp-independent-assessment">FedRAMP Independent Assessment</a>, <a data-preview="data-preview" href="../../definitions/#verification">Verification</a></p>
+</div>
+<h3 id="document-use-of-representative-samples">Document Use of Representative Samples<a class="headerlink" href="#document-use-of-representative-samples" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-CSO-DUS</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</li>
+</ul>
+</details>
+<div class="admonition quote">
+<p>Providers <a data-preview="data-preview" href="../../definitions/#must">MUST</a> document and explain the use of representative samples during verification and validation when using representative samples as allowed by <a data-preview="data-preview" href="#use-representative-samples">IVV-CSO-USR (Use Representative Samples)</a>.</p>
+<hr />
+<p><strong>Terms:</strong> <a data-preview="data-preview" href="../../definitions/#validation">Validation</a>, <a data-preview="data-preview" href="../../definitions/#verification">Verification</a></p>
+</div>
+<h3 id="supply-technical-explanations">Supply Technical Explanations<a class="headerlink" href="#supply-technical-explanations" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-CSO-STE</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</li>
+</ul>
+</details>
+<div class="admonition quote">
+<p>Providers <a data-preview="data-preview" href="../../definitions/#should">SHOULD</a> supply all necessary assessors with technical explanations, demonstrations, and other relevant supporting information about the technical capabilities they employ to address FedRAMP rules; this <a data-preview="data-preview" href="../../definitions/#should">SHOULD</a> be supplied as necessary to ensure the assessor can effectively complete verification and validation.</p>
+<hr />
+<p><strong>Terms:</strong> <a data-preview="data-preview" href="../../definitions/#all-necessary-assessors">All Necessary Assessors</a>, <a data-preview="data-preview" href="../../definitions/#validation">Validation</a>, <a data-preview="data-preview" href="../../definitions/#verification">Verification</a></p>
+</div>
+<h3 id="use-representative-samples">Use Representative Samples<a class="headerlink" href="#use-representative-samples" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-CSO-USR</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</li>
+</ul>
+</details>
+<div class="admonition quote">
+<p>Providers <a data-preview="data-preview" href="../../definitions/#may">MAY</a> use representative samples as appropriate during verification and validation.</p>
+<hr />
+<p><em><strong>Note:</strong> Many modern cloud services using effective automation do not need to use representative sampling and are capable of persistently verifying and validating the majority of their security measures automatically.</em></p>
+<hr />
+<p><strong>Terms:</strong> <a data-preview="data-preview" href="../../definitions/#persistently">Persistently</a>, <a data-preview="data-preview" href="../../definitions/#validation">Validation</a>, <a data-preview="data-preview" href="../../definitions/#verification">Verification</a></p>
+</div>
+<h3 id="receiving-assessor-advice">Receiving Assessor Advice<a class="headerlink" href="#receiving-assessor-advice" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-CSO-RAA</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</li>
+</ul>
+</details>
+<div class="admonition quote">
+<p>Providers <a data-preview="data-preview" href="../../definitions/#may">MAY</a> ask for and accept advice from their assessor during assessment regarding techniques and procedures that will improve their security posture or the effectiveness, clarity, and accuracy of their verification, validation and reporting procedures, UNLESS doing so is likely to compromise the objectivity and integrity of the assessment.</p>
+<hr />
+<p><strong>Terms:</strong> <a data-preview="data-preview" href="../../definitions/#likely">Likely</a>, <a data-preview="data-preview" href="../../definitions/#validation">Validation</a>, <a data-preview="data-preview" href="../../definitions/#verification">Verification</a></p>
+</div>
+<h2 id="general-independent-assessor-responsibilities">General Independent Assessor Responsibilities<a class="headerlink" href="#general-independent-assessor-responsibilities" title="Permanent link">&para;</a></h2>
+<p>These rules apply to independent assessment services supporting all FedRAMP Certification types.</p>
+<div class="subset-applicability" role="group" aria-label="Applicability">
+<span class="subset-applicability__group subset-applicability__group--types"><span class="subset-applicability__label">Type:</span> <span class="subset-applicability__values"><span class="subset-applicability__tag">20x</span><span class="subset-applicability__tag">Rev5</span></span></span><br>
+<span class="subset-applicability__group subset-applicability__group--paths"><span class="subset-applicability__label">Path:</span> <span class="subset-applicability__values"><span class="subset-applicability__tag">Program</span><span class="subset-applicability__tag">Agency</span></span></span><br>
+<span class="subset-applicability__group subset-applicability__group--classes"><span class="subset-applicability__label">Class:</span> <span class="subset-applicability__values"><span class="subset-applicability__tag">Class B</span><span class="subset-applicability__tag">Class C</span><span class="subset-applicability__tag">Class D</span></span></span><br>
+<span class="subset-applicability__group subset-applicability__group--affects"><span class="subset-applicability__label">Audience:</span> <span class="subset-applicability__values"><span class="subset-applicability__tag">Assessors</span></span></span>
+</div>
+
+<h3 id="verify-implementation">Verify Implementation<a class="headerlink" href="#verify-implementation" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-IAS-VIM</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</li>
+</ul>
+</details>
+<div class="admonition quote">
+<p>Assessors <a data-preview="data-preview" href="../../definitions/#must">MUST</a> verify that the measures implemented by the cloud service offering matches the measures they documented to meet FedRAMP Practices.</p>
+<hr />
+<p><em><strong>Note:</strong> This requires reviewing the actual measures themselves at a technical level, such as reviewing underlying code as appropriate; don't simply review documentation or screenshots.</em></p>
+<hr />
+<p><strong>Terms:</strong> <a data-preview="data-preview" href="../../definitions/#cloud-service-offering">Cloud Service Offering</a>, <a data-preview="data-preview" href="../../definitions/#fedramp-practices">FedRAMP Practices</a>, <a data-preview="data-preview" href="../../definitions/#verification">Verification</a></p>
+</div>
+<h3 id="validate-effectiveness">Validate Effectiveness<a class="headerlink" href="#validate-effectiveness" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-IAS-VEF</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</li>
+</ul>
+</details>
+<div class="admonition quote">
+<p>Assessors <a data-preview="data-preview" href="../../definitions/#must">MUST</a> validate the effectiveness of the implemented measures to ensure they have the intended outcome for meeting FedRAMP Practices.</p>
+<hr />
+<p><em><strong>Note:</strong> This requires reviewing the actual measures themselves at a technical level, such as reviewing underlying code as appropriate; don't simply review documentation or screenshots.</em></p>
+<hr />
+<p><strong>Terms:</strong> <a data-preview="data-preview" href="../../definitions/#fedramp-practices">FedRAMP Practices</a>, <a data-preview="data-preview" href="../../definitions/#validation">Validation</a></p>
+</div>
+<h3 id="assessment-summary">Assessment Summary<a class="headerlink" href="#assessment-summary" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-IAS-SUM</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</li>
+</ul>
+</details>
+<div class="admonition quote">
+<p>Assessors <a data-preview="data-preview" href="../../definitions/#must">MUST</a> supply the provider with a high-level summary of their assessment process and findings for each FedRAMP Practice; this summary will be included by the provider in the FedRAMP Security Decision Record for the cloud service offering.</p>
+<hr />
+<p><em><strong>Note:</strong> FedRAMP does not require a separate Security Assessment Plan or Security Assessment Report for FedRAMP 20x or FedRAMP Rev5 Certifications; this information is expected to be included in the Security Decision Record by the cloud service provider.</em></p>
+<hr />
+<p><strong>Terms:</strong> <a data-preview="data-preview" href="../../definitions/#cloud-service-offering">Cloud Service Offering</a>, <a data-preview="data-preview" href="../../definitions/#fedramp-practices">FedRAMP Practices</a>, <a data-preview="data-preview" href="../../definitions/#security-decision-record-sdr">Security Decision Record (SDR)</a></p>
+</div>
+<h3 id="overall-summary-of-assessment">Overall Summary of Assessment<a class="headerlink" href="#overall-summary-of-assessment" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-IAS-OSA</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</li>
+</ul>
+</details>
+<div class="admonition quote">
+<p>Assessors <a data-preview="data-preview" href="../../definitions/#must">MUST</a> supply the provider with an overall summary of the verification and validation assessment results, including any resulting failures or areas of dispute; this summary will be included by the provider in the FedRAMP Certification Package Overview for the cloud service offering.</p>
+<hr />
+<p><em><strong>Note:</strong> FedRAMP does not supply a template for this summary and encourages independent assessment services to optimize for the best customer experience in the creation of these materials.</em></p>
+<hr />
+<p><strong>Terms:</strong> <a data-preview="data-preview" href="../../definitions/#certification-package">Certification Package</a>, <a data-preview="data-preview" href="../../definitions/#cloud-service-offering">Cloud Service Offering</a>, <a data-preview="data-preview" href="../../definitions/#validation">Validation</a>, <a data-preview="data-preview" href="../../definitions/#verification">Verification</a></p>
+</div>
+<h3 id="verify-inclusion-in-certification-package">Verify Inclusion in Certification Package<a class="headerlink" href="#verify-inclusion-in-certification-package" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-IAS-VIP</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</li>
+</ul>
+</details>
+<div class="admonition quote">
+<p>Assessors <a data-preview="data-preview" href="../../definitions/#must">MUST</a> verify that information supplied during a FedRAMP independent assessment is included in the FedRAMP Certification Package by the provider without inappropriate modification.</p>
+<hr />
+<p><em><strong>Note:</strong> This rule is related to <a data-preview="data-preview" href="#inclusion-in-certification-package">IVV-CSO-ICP (Inclusion in Certification Package)</a>.</em></p>
+<hr />
+<p><strong>Terms:</strong> <a data-preview="data-preview" href="../../definitions/#certification-package">Certification Package</a>, <a data-preview="data-preview" href="../../definitions/#fedramp-independent-assessment">FedRAMP Independent Assessment</a>, <a data-preview="data-preview" href="../../definitions/#verification">Verification</a></p>
+</div>
+<h3 id="engage-provider-experts">Engage Provider Experts<a class="headerlink" href="#engage-provider-experts" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-IAS-EPX</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</li>
+</ul>
+</details>
+<div class="admonition quote">
+<p>Assessors <a data-preview="data-preview" href="../../definitions/#should">SHOULD</a> engage provider experts in discussion to understand the decisions made by the provider and inform expert qualitative assessment, and <a data-preview="data-preview" href="../../definitions/#should">SHOULD</a> perform independent research to test such information as part of the expert qualitative assessment process.</p>
+</div>
+<h3 id="sharing-advice">Sharing Advice<a class="headerlink" href="#sharing-advice" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-IAS-SHA</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</li>
+</ul>
+</details>
+<div class="admonition quote">
+<p>Assessors <a data-preview="data-preview" href="../../definitions/#may">MAY</a> share advice with providers they are assessing about techniques and procedures that will improve the provider's security posture or the effectiveness, clarity, and accuracy of their verification, validation and reporting procedures, UNLESS doing so is likely to compromise the objectivity and integrity of the assessment.</p>
+<hr />
+<p><strong>Terms:</strong> <a data-preview="data-preview" href="../../definitions/#likely">Likely</a>, <a data-preview="data-preview" href="../../definitions/#validation">Validation</a>, <a data-preview="data-preview" href="../../definitions/#verification">Verification</a></p>
+</div>
+<h2 id="20x-specific-provider-responsibilities">20x-Specific Provider Responsibilities<a class="headerlink" href="#20x-specific-provider-responsibilities" title="Permanent link">&para;</a></h2>
+<p>These rules apply to providers for FedRAMP 20x Certifications.</p>
+<div class="subset-applicability" role="group" aria-label="Applicability">
+<span class="subset-applicability__group subset-applicability__group--types"><span class="subset-applicability__label">Type:</span> <span class="subset-applicability__values"><span class="subset-applicability__tag">20x</span></span></span><br>
+<span class="subset-applicability__group subset-applicability__group--paths"><span class="subset-applicability__label">Path:</span> <span class="subset-applicability__values"><span class="subset-applicability__tag">Program</span></span></span><br>
+<span class="subset-applicability__group subset-applicability__group--classes"><span class="subset-applicability__label">Class:</span> <span class="subset-applicability__values"><span class="subset-applicability__tag">Class B</span><span class="subset-applicability__tag">Class C</span><span class="subset-applicability__tag">Class D</span></span></span><br>
+<span class="subset-applicability__group subset-applicability__group--affects"><span class="subset-applicability__label">Audience:</span> <span class="subset-applicability__values"><span class="subset-applicability__tag">Providers</span></span></span>
+</div>
+
+<h3 id="annual-independent-assessments-for-20x">Annual Independent Assessments for 20x<a class="headerlink" href="#annual-independent-assessments-for-20x" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-CSX-AIA</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</li>
+</ul>
+</details>
+<div class="admonition quote">
+<div class="tabbed-set tabbed-alternate" data-tabs="2:4"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Class A</label><label for="__tabbed_2_2">Class B</label><label for="__tabbed_2_3">Class C</label><label for="__tabbed_2_4">Class D</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Providers with 20x Class A Certifications <a data-preview="data-preview" href="../../definitions/#must">MUST</a> meet the expectations of their underlying alternative security framework as part of their persistent independent verification and validation assessment.</p>
+</div>
+<div class="tabbed-block">
+<p>Providers with 20x Class B Certifications <a data-preview="data-preview" href="../../definitions/#must">MUST</a> include all Key Security Indicators in a FedRAMP independent assessment at least once per year.</p>
+<p><strong>Timeframe:</strong> 1 year</p>
+</div>
+<div class="tabbed-block">
+<p>Providers with 20x Class C Certifications <a data-preview="data-preview" href="../../definitions/#must">MUST</a> include all Key Security Indicators in a FedRAMP independent assessment at least once per year.</p>
+<p><strong>Timeframe:</strong> 1 year</p>
+</div>
+<div class="tabbed-block">
+<p>Providers with 20x Class D Certifications <a data-preview="data-preview" href="../../definitions/#must">MUST</a> include all Key Security Indicators in a FedRAMP independent assessment at least once per year.</p>
+<p><strong>Timeframe:</strong> 1 year</p>
+</div>
+</div>
+</div>
+<hr />
+<p><strong>Terms:</strong> <a data-preview="data-preview" href="../../definitions/#fedramp-independent-assessment">FedRAMP Independent Assessment</a>, <a data-preview="data-preview" href="../../definitions/#persistently">Persistently</a>, <a data-preview="data-preview" href="../../definitions/#validation">Validation</a>, <a data-preview="data-preview" href="../../definitions/#verification">Verification</a></p>
+</div>
+<h2 id="rev5-specific-provider-responsibilities">Rev5-Specific Provider Responsibilities<a class="headerlink" href="#rev5-specific-provider-responsibilities" title="Permanent link">&para;</a></h2>
+<p>These rules apply to providers for FedRAMP Rev5 Certifications.</p>
+<div class="subset-applicability" role="group" aria-label="Applicability">
+<span class="subset-applicability__group subset-applicability__group--types"><span class="subset-applicability__label">Type:</span> <span class="subset-applicability__values"><span class="subset-applicability__tag">Rev5</span></span></span><br>
+<span class="subset-applicability__group subset-applicability__group--paths"><span class="subset-applicability__label">Path:</span> <span class="subset-applicability__values"><span class="subset-applicability__tag">Program</span><span class="subset-applicability__tag">Agency</span></span></span><br>
+<span class="subset-applicability__group subset-applicability__group--classes"><span class="subset-applicability__label">Class:</span> <span class="subset-applicability__values"><span class="subset-applicability__tag">Class B</span><span class="subset-applicability__tag">Class C</span><span class="subset-applicability__tag">Class D</span></span></span><br>
+<span class="subset-applicability__group subset-applicability__group--affects"><span class="subset-applicability__label">Audience:</span> <span class="subset-applicability__values"><span class="subset-applicability__tag">Providers</span></span></span>
+</div>
+
+<h3 id="annual-independent-assessments-for-rev5">Annual Independent Assessments for Rev5<a class="headerlink" href="#annual-independent-assessments-for-rev5" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-CSF-AIA</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</li>
+</ul>
+</details>
+<div class="admonition quote">
+<div class="tabbed-set tabbed-alternate" data-tabs="3:3"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Class B</label><label for="__tabbed_3_2">Class C</label><label for="__tabbed_3_3">Class D</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Providers with Rev5 Class B Certifications <a data-preview="data-preview" href="../../definitions/#must">MUST</a> include the following Rev5 Controls in a FedRAMP independent assessment at least once per year:</p>
+<p><strong>Timeframe:</strong> 1 year</p>
+<details class="info" open="open">
+<summary>Rev5 Control List</summary>
+<ul>
+<li><strong>Access Control (AC)</strong><ul>
+<li><code>AC-02</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02">Account Management</a>)</li>
+<li><code>AC-03</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-03">Access Enforcement</a>)</li>
+</ul>
+</li>
+<li><strong>Audit and Accountability (AU)</strong><ul>
+<li><code>AU-02</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-02">Event Logging</a>)</li>
+<li><code>AU-03</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-03">Content of Audit Records</a>)</li>
+<li><code>AU-04</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-04">Audit Log Storage Capacity</a>)</li>
+<li><code>AU-05</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-05">Response to Audit Logging Process Failures</a>)</li>
+<li><code>AU-06</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-06">Audit Record Review, Analysis, and Reporting</a>)</li>
+<li><code>AU-08</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-08">Time Stamps</a>)</li>
+<li><code>AU-11</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-11">Audit Record Retention</a>)</li>
+<li><code>AU-12</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-12">Audit Record Generation</a>)</li>
+</ul>
+</li>
+<li><strong>Assessment, Authorization, and Monitoring (CA)</strong><ul>
+<li><code>CA-08</code> (<a data-preview="data-preview" href="../controls/assessment-authorization-and-monitoring/#ca-08">Penetration Testing</a>)</li>
+</ul>
+</li>
+<li><strong>Configuration Management (CM)</strong><ul>
+<li><code>CM-05</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-05">Access Restrictions for Change</a>)</li>
+<li><code>CM-06</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-06">Configuration Settings</a>)</li>
+<li><code>CM-07</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-07">Least Functionality</a>)</li>
+<li><code>CM-08</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-08">System Component Inventory</a>)</li>
+</ul>
+</li>
+<li><strong>Contingency Planning (CP)</strong><ul>
+<li><code>CP-04</code> (<a data-preview="data-preview" href="../controls/contingency-planning/#cp-04">Contingency Plan Testing</a>)</li>
+</ul>
+</li>
+<li><strong>Identification and Authentication (IA)</strong><ul>
+<li><code>IA-02</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-02">Identification and Authentication (Organizational Users)</a>)</li>
+<li><code>IA-02 (01)</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-02-01">Multi-factor Authentication to Privileged Accounts</a>)</li>
+<li><code>IA-02 (02)</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-02-02">Multi-factor Authentication to Non-privileged Accounts</a>)</li>
+<li><code>IA-02 (08)</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-02-08">Access to Accounts — Replay Resistant</a>)</li>
+<li><code>IA-02 (12)</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-02-12">Acceptance of PIV Credentials</a>)</li>
+<li><code>IA-04</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-04">Identifier Management</a>)</li>
+<li><code>IA-05</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-05">Authenticator Management</a>)</li>
+</ul>
+</li>
+<li><strong>Incident Response (IR)</strong><ul>
+<li><code>IR-04</code> (<a data-preview="data-preview" href="../controls/incident-response/#ir-04">Incident Handling</a>)</li>
+</ul>
+</li>
+<li><strong>Physical and Environmental Protection (PE)</strong><ul>
+<li><code>PE-03</code> (<a data-preview="data-preview" href="../controls/physical-and-environmental-protection/#pe-03">Physical Access Control</a>)</li>
+</ul>
+</li>
+<li><strong>Risk Assessment (RA)</strong><ul>
+<li><code>RA-05</code> (<a data-preview="data-preview" href="../controls/risk-assessment/#ra-05">Vulnerability Monitoring and Scanning</a>)</li>
+<li><code>RA-05 (02)</code> (<a data-preview="data-preview" href="../controls/risk-assessment/#ra-05-02">Update Vulnerabilities to Be Scanned</a>)</li>
+</ul>
+</li>
+<li><strong>System and Services Acquisition (SA)</strong><ul>
+<li><code>SA-09</code> (<a data-preview="data-preview" href="../controls/system-and-services-acquisition/#sa-09">External System Services</a>)</li>
+</ul>
+</li>
+<li><strong>System and Communications Protection (SC)</strong><ul>
+<li><code>SC-07</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-07">Boundary Protection</a>)</li>
+<li><code>SC-08</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-08">Transmission Confidentiality and Integrity</a>)</li>
+<li><code>SC-12</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-12">Cryptographic Key Establishment and Management</a>)</li>
+<li><code>SC-13</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-13">Cryptographic Protection</a>)</li>
+<li><code>SC-21</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-21">Secure Name/Address Resolution Service (Recursive or Caching Resolver)</a>)</li>
+<li><code>SC-28</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-28">Protection of Information at Rest</a>)</li>
+</ul>
+</li>
+<li><strong>System and Information Integrity (SI)</strong><ul>
+<li><code>SI-03</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-03">Malicious Code Protection</a>)</li>
+</ul>
+</li>
+</ul>
+</details>
+</div>
+<div class="tabbed-block">
+<p>Providers with Rev5 Class C Certifications <a data-preview="data-preview" href="../../definitions/#must">MUST</a> include the following Rev5 Controls in a FedRAMP independent assessment at least once per year:</p>
+<p><strong>Timeframe:</strong> 1 year</p>
+<details class="info" open="open">
+<summary>Rev5 Control List</summary>
+<ul>
+<li><strong>Access Control (AC)</strong><ul>
+<li><code>AC-02</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02">Account Management</a>)</li>
+<li><code>AC-02 (01)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02-01">Automated System Account Management</a>)</li>
+<li><code>AC-02 (02)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02-02">Automated Temporary and Emergency Account Management</a>)</li>
+<li><code>AC-02 (03)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02-03">Disable Accounts</a>)</li>
+<li><code>AC-02 (04)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02-04">Automated Audit Actions</a>)</li>
+<li><code>AC-02 (05)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02-05">Inactivity Logout</a>)</li>
+<li><code>AC-02 (07)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02-07">Privileged User Accounts</a>)</li>
+<li><code>AC-02 (09)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02-09">Restrictions on Use of Shared and Group Accounts</a>)</li>
+<li><code>AC-02 (12)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02-12">Account Monitoring for Atypical Usage</a>)</li>
+<li><code>AC-02 (13)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02-13">Disable Accounts for High-risk Individuals</a>)</li>
+<li><code>AC-03</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-03">Access Enforcement</a>)</li>
+<li><code>AC-06</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-06">Least Privilege</a>)</li>
+<li><code>AC-06 (02)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-06-02">Non-privileged Access for Nonsecurity Functions</a>)</li>
+<li><code>AC-06 (05)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-06-05">Privileged Accounts</a>)</li>
+<li><code>AC-06 (10)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-06-10">Prohibit Non-privileged Users from Executing Privileged Functions</a>)</li>
+<li><code>AC-17 (02)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-17-02">Protection of Confidentiality and Integrity Using Encryption</a>)</li>
+</ul>
+</li>
+<li><strong>Audit and Accountability (AU)</strong><ul>
+<li><code>AU-02</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-02">Event Logging</a>)</li>
+<li><code>AU-03</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-03">Content of Audit Records</a>)</li>
+<li><code>AU-03 (01)</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-03-01">Additional Audit Information</a>)</li>
+<li><code>AU-04</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-04">Audit Log Storage Capacity</a>)</li>
+<li><code>AU-05</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-05">Response to Audit Logging Process Failures</a>)</li>
+<li><code>AU-06</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-06">Audit Record Review, Analysis, and Reporting</a>)</li>
+<li><code>AU-06 (01)</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-06-01">Automated Process Integration</a>)</li>
+<li><code>AU-06 (03)</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-06-03">Correlate Audit Record Repositories</a>)</li>
+<li><code>AU-08</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-08">Time Stamps</a>)</li>
+<li><code>AU-11</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-11">Audit Record Retention</a>)</li>
+<li><code>AU-12</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-12">Audit Record Generation</a>)</li>
+</ul>
+</li>
+<li><strong>Assessment, Authorization, and Monitoring (CA)</strong><ul>
+<li><code>CA-08 (01)</code> (<a data-preview="data-preview" href="../controls/assessment-authorization-and-monitoring/#ca-08-01">Independent Penetration Testing Agent or Team</a>)</li>
+<li><code>CA-08 (02)</code> (<a data-preview="data-preview" href="../controls/assessment-authorization-and-monitoring/#ca-08-02">Red Team Exercises</a>)</li>
+</ul>
+</li>
+<li><strong>Configuration Management (CM)</strong><ul>
+<li><code>CM-05</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-05">Access Restrictions for Change</a>)</li>
+<li><code>CM-06</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-06">Configuration Settings</a>)</li>
+<li><code>CM-06 (01)</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-06-01">Automated Management, Application, and Verification</a>)</li>
+<li><code>CM-07</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-07">Least Functionality</a>)</li>
+<li><code>CM-07 (01)</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-07-01">Periodic Review</a>)</li>
+<li><code>CM-07 (02)</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-07-02">Prevent Program Execution</a>)</li>
+<li><code>CM-07 (05)</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-07-05">Authorized Software — Allow-by-exception</a>)</li>
+<li><code>CM-08</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-08">System Component Inventory</a>)</li>
+</ul>
+</li>
+<li><strong>Contingency Planning (CP)</strong><ul>
+<li><code>CP-04</code> (<a data-preview="data-preview" href="../controls/contingency-planning/#cp-04">Contingency Plan Testing</a>)</li>
+</ul>
+</li>
+<li><strong>Identification and Authentication (IA)</strong><ul>
+<li><code>IA-02</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-02">Identification and Authentication (Organizational Users)</a>)</li>
+<li><code>IA-02 (01)</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-02-01">Multi-factor Authentication to Privileged Accounts</a>)</li>
+<li><code>IA-02 (02)</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-02-02">Multi-factor Authentication to Non-privileged Accounts</a>)</li>
+<li><code>IA-02 (05)</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-02-05">Individual Authentication with Group Authentication</a>)</li>
+<li><code>IA-02 (06)</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-02-06">Access to Accounts —separate Device</a>)</li>
+<li><code>IA-02 (08)</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-02-08">Access to Accounts — Replay Resistant</a>)</li>
+<li><code>IA-02 (12)</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-02-12">Acceptance of PIV Credentials</a>)</li>
+<li><code>IA-04</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-04">Identifier Management</a>)</li>
+<li><code>IA-05</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-05">Authenticator Management</a>)</li>
+</ul>
+</li>
+<li><strong>Incident Response (IR)</strong><ul>
+<li><code>IR-03</code> (<a data-preview="data-preview" href="../controls/incident-response/#ir-03">Incident Response Testing</a>)</li>
+<li><code>IR-04</code> (<a data-preview="data-preview" href="../controls/incident-response/#ir-04">Incident Handling</a>)</li>
+<li><code>IR-04 (01)</code> (<a data-preview="data-preview" href="../controls/incident-response/#ir-04-01">Automated Incident Handling Processes</a>)</li>
+</ul>
+</li>
+<li><strong>Maintenance (MA)</strong><ul>
+<li><code>MA-03 (02)</code> (<a data-preview="data-preview" href="../controls/maintenance/#ma-03-02">Inspect Media</a>)</li>
+</ul>
+</li>
+<li><strong>Physical and Environmental Protection (PE)</strong><ul>
+<li><code>PE-03</code> (<a data-preview="data-preview" href="../controls/physical-and-environmental-protection/#pe-03">Physical Access Control</a>)</li>
+</ul>
+</li>
+<li><strong>Risk Assessment (RA)</strong><ul>
+<li><code>RA-05</code> (<a data-preview="data-preview" href="../controls/risk-assessment/#ra-05">Vulnerability Monitoring and Scanning</a>)</li>
+<li><code>RA-05 (02)</code> (<a data-preview="data-preview" href="../controls/risk-assessment/#ra-05-02">Update Vulnerabilities to Be Scanned</a>)</li>
+<li><code>RA-05 (03)</code> (<a data-preview="data-preview" href="../controls/risk-assessment/#ra-05-03">Breadth and Depth of Coverage</a>)</li>
+</ul>
+</li>
+<li><strong>System and Services Acquisition (SA)</strong><ul>
+<li><code>SA-09</code> (<a data-preview="data-preview" href="../controls/system-and-services-acquisition/#sa-09">External System Services</a>)</li>
+<li><code>SA-11 (01)</code> (<a data-preview="data-preview" href="../controls/system-and-services-acquisition/#sa-11-01">Static Code Analysis</a>)</li>
+</ul>
+</li>
+<li><strong>System and Communications Protection (SC)</strong><ul>
+<li><code>SC-07</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-07">Boundary Protection</a>)</li>
+<li><code>SC-07 (03)</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-07-03">Access Points</a>)</li>
+<li><code>SC-07 (04)</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-07-04">External Telecommunications Services</a>)</li>
+<li><code>SC-07 (05)</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-07-05">Deny by Default — Allow by Exception</a>)</li>
+<li><code>SC-07 (07)</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-07-07">Split Tunneling for Remote Devices</a>)</li>
+<li><code>SC-07 (08)</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-07-08">Route Traffic to Authenticated Proxy Servers</a>)</li>
+<li><code>SC-07 (12)</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-07-12">Host-based Protection</a>)</li>
+<li><code>SC-07 (18)</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-07-18">Fail Secure</a>)</li>
+<li><code>SC-08</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-08">Transmission Confidentiality and Integrity</a>)</li>
+<li><code>SC-12</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-12">Cryptographic Key Establishment and Management</a>)</li>
+<li><code>SC-13</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-13">Cryptographic Protection</a>)</li>
+<li><code>SC-21</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-21">Secure Name/Address Resolution Service (Recursive or Caching Resolver)</a>)</li>
+<li><code>SC-28</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-28">Protection of Information at Rest</a>)</li>
+<li><code>SC-45 (01)</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-45-01">Synchronization with Authoritative Time Source</a>)</li>
+</ul>
+</li>
+<li><strong>System and Information Integrity (SI)</strong><ul>
+<li><code>SI-03</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-03">Malicious Code Protection</a>)</li>
+<li><code>SI-04 (01)</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-04-01">System-wide Intrusion Detection System</a>)</li>
+<li><code>SI-04 (02)</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-04-02">Automated Tools and Mechanisms for Real-time Analysis</a>)</li>
+<li><code>SI-04 (16)</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-04-16">Correlate Monitoring Information</a>)</li>
+<li><code>SI-04 (23)</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-04-23">Host-based Devices</a>)</li>
+<li><code>SI-06</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-06">Security and Privacy Function Verification</a>)</li>
+<li><code>SI-07</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-07">Software, Firmware, and Information Integrity</a>)</li>
+<li><code>SI-07 (01)</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-07-01">Integrity Checks</a>)</li>
+<li><code>SI-10</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-10">Information Input Validation</a>)</li>
+</ul>
+</li>
+</ul>
+</details>
+</div>
+<div class="tabbed-block">
+<p>Providers with Rev5 Class D Certifications <a data-preview="data-preview" href="../../definitions/#must">MUST</a> include the following Rev5 Controls in a FedRAMP independent assessment at least once per year:</p>
+<p><strong>Timeframe:</strong> 1 year</p>
+<details class="info" open="open">
+<summary>Rev5 Control List</summary>
+<ul>
+<li><strong>Access Control (AC)</strong><ul>
+<li><code>AC-02</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02">Account Management</a>)</li>
+<li><code>AC-02 (01)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02-01">Automated System Account Management</a>)</li>
+<li><code>AC-02 (02)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02-02">Automated Temporary and Emergency Account Management</a>)</li>
+<li><code>AC-02 (03)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02-03">Disable Accounts</a>)</li>
+<li><code>AC-02 (04)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02-04">Automated Audit Actions</a>)</li>
+<li><code>AC-02 (05)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02-05">Inactivity Logout</a>)</li>
+<li><code>AC-02 (07)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02-07">Privileged User Accounts</a>)</li>
+<li><code>AC-02 (09)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02-09">Restrictions on Use of Shared and Group Accounts</a>)</li>
+<li><code>AC-02 (11)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02-11">Usage Conditions</a>)</li>
+<li><code>AC-02 (12)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02-12">Account Monitoring for Atypical Usage</a>)</li>
+<li><code>AC-02 (13)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-02-13">Disable Accounts for High-risk Individuals</a>)</li>
+<li><code>AC-03</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-03">Access Enforcement</a>)</li>
+<li><code>AC-06</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-06">Least Privilege</a>)</li>
+<li><code>AC-06 (02)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-06-02">Non-privileged Access for Nonsecurity Functions</a>)</li>
+<li><code>AC-06 (03)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-06-03">Network Access to Privileged Commands</a>)</li>
+<li><code>AC-06 (05)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-06-05">Privileged Accounts</a>)</li>
+<li><code>AC-06 (08)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-06-08">Privilege Levels for Code Execution</a>)</li>
+<li><code>AC-06 (10)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-06-10">Prohibit Non-privileged Users from Executing Privileged Functions</a>)</li>
+<li><code>AC-17 (02)</code> (<a data-preview="data-preview" href="../controls/access-control/#ac-17-02">Protection of Confidentiality and Integrity Using Encryption</a>)</li>
+</ul>
+</li>
+<li><strong>Audit and Accountability (AU)</strong><ul>
+<li><code>AU-02</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-02">Event Logging</a>)</li>
+<li><code>AU-03</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-03">Content of Audit Records</a>)</li>
+<li><code>AU-03 (01)</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-03-01">Additional Audit Information</a>)</li>
+<li><code>AU-04</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-04">Audit Log Storage Capacity</a>)</li>
+<li><code>AU-05</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-05">Response to Audit Logging Process Failures</a>)</li>
+<li><code>AU-05 (01)</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-05-01">Storage Capacity Warning</a>)</li>
+<li><code>AU-05 (02)</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-05-02">Real-time Alerts</a>)</li>
+<li><code>AU-06</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-06">Audit Record Review, Analysis, and Reporting</a>)</li>
+<li><code>AU-06 (01)</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-06-01">Automated Process Integration</a>)</li>
+<li><code>AU-06 (03)</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-06-03">Correlate Audit Record Repositories</a>)</li>
+<li><code>AU-06 (04)</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-06-04">Central Review and Analysis</a>)</li>
+<li><code>AU-06 (05)</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-06-05">Integrated Analysis of Audit Records</a>)</li>
+<li><code>AU-06 (06)</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-06-06">Correlation with Physical Monitoring</a>)</li>
+<li><code>AU-06 (07)</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-06-07">Permitted Actions</a>)</li>
+<li><code>AU-08</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-08">Time Stamps</a>)</li>
+<li><code>AU-10</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-10">Non-repudiation</a>)</li>
+<li><code>AU-11</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-11">Audit Record Retention</a>)</li>
+<li><code>AU-12</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-12">Audit Record Generation</a>)</li>
+<li><code>AU-12 (01)</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-12-01">System-wide and Time-correlated Audit Trail</a>)</li>
+<li><code>AU-12 (03)</code> (<a data-preview="data-preview" href="../controls/audit-and-accountability/#au-12-03">Changes by Authorized Individuals</a>)</li>
+</ul>
+</li>
+<li><strong>Assessment, Authorization, and Monitoring (CA)</strong><ul>
+<li><code>CA-08 (01)</code> (<a data-preview="data-preview" href="../controls/assessment-authorization-and-monitoring/#ca-08-01">Independent Penetration Testing Agent or Team</a>)</li>
+<li><code>CA-08 (02)</code> (<a data-preview="data-preview" href="../controls/assessment-authorization-and-monitoring/#ca-08-02">Red Team Exercises</a>)</li>
+</ul>
+</li>
+<li><strong>Configuration Management (CM)</strong><ul>
+<li><code>CM-05</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-05">Access Restrictions for Change</a>)</li>
+<li><code>CM-06</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-06">Configuration Settings</a>)</li>
+<li><code>CM-06 (01)</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-06-01">Automated Management, Application, and Verification</a>)</li>
+<li><code>CM-06 (02)</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-06-02">Respond to Unauthorized Changes</a>)</li>
+<li><code>CM-07</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-07">Least Functionality</a>)</li>
+<li><code>CM-07 (01)</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-07-01">Periodic Review</a>)</li>
+<li><code>CM-07 (02)</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-07-02">Prevent Program Execution</a>)</li>
+<li><code>CM-07 (05)</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-07-05">Authorized Software — Allow-by-exception</a>)</li>
+<li><code>CM-08</code> (<a data-preview="data-preview" href="../controls/configuration-management/#cm-08">System Component Inventory</a>)</li>
+</ul>
+</li>
+<li><strong>Contingency Planning (CP)</strong><ul>
+<li><code>CP-04</code> (<a data-preview="data-preview" href="../controls/contingency-planning/#cp-04">Contingency Plan Testing</a>)</li>
+</ul>
+</li>
+<li><strong>Identification and Authentication (IA)</strong><ul>
+<li><code>IA-02</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-02">Identification and Authentication (Organizational Users)</a>)</li>
+<li><code>IA-02 (01)</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-02-01">Multi-factor Authentication to Privileged Accounts</a>)</li>
+<li><code>IA-02 (02)</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-02-02">Multi-factor Authentication to Non-privileged Accounts</a>)</li>
+<li><code>IA-02 (05)</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-02-05">Individual Authentication with Group Authentication</a>)</li>
+<li><code>IA-02 (06)</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-02-06">Access to Accounts —separate Device</a>)</li>
+<li><code>IA-02 (08)</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-02-08">Access to Accounts — Replay Resistant</a>)</li>
+<li><code>IA-02 (12)</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-02-12">Acceptance of PIV Credentials</a>)</li>
+<li><code>IA-04</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-04">Identifier Management</a>)</li>
+<li><code>IA-05</code> (<a data-preview="data-preview" href="../controls/identification-and-authentication/#ia-05">Authenticator Management</a>)</li>
+</ul>
+</li>
+<li><strong>Incident Response (IR)</strong><ul>
+<li><code>IR-03</code> (<a data-preview="data-preview" href="../controls/incident-response/#ir-03">Incident Response Testing</a>)</li>
+<li><code>IR-04</code> (<a data-preview="data-preview" href="../controls/incident-response/#ir-04">Incident Handling</a>)</li>
+<li><code>IR-04 (01)</code> (<a data-preview="data-preview" href="../controls/incident-response/#ir-04-01">Automated Incident Handling Processes</a>)</li>
+<li><code>IR-04 (02)</code> (<a data-preview="data-preview" href="../controls/incident-response/#ir-04-02">Dynamic Reconfiguration</a>)</li>
+<li><code>IR-04 (04)</code> (<a data-preview="data-preview" href="../controls/incident-response/#ir-04-04">Information Correlation</a>)</li>
+<li><code>IR-04 (06)</code> (<a data-preview="data-preview" href="../controls/incident-response/#ir-04-06">Insider Threats</a>)</li>
+</ul>
+</li>
+<li><strong>Maintenance (MA)</strong><ul>
+<li><code>MA-03 (02)</code> (<a data-preview="data-preview" href="../controls/maintenance/#ma-03-02">Inspect Media</a>)</li>
+</ul>
+</li>
+<li><strong>Physical and Environmental Protection (PE)</strong><ul>
+<li><code>PE-03</code> (<a data-preview="data-preview" href="../controls/physical-and-environmental-protection/#pe-03">Physical Access Control</a>)</li>
+</ul>
+</li>
+<li><strong>Risk Assessment (RA)</strong><ul>
+<li><code>RA-05</code> (<a data-preview="data-preview" href="../controls/risk-assessment/#ra-05">Vulnerability Monitoring and Scanning</a>)</li>
+<li><code>RA-05 (02)</code> (<a data-preview="data-preview" href="../controls/risk-assessment/#ra-05-02">Update Vulnerabilities to Be Scanned</a>)</li>
+<li><code>RA-05 (03)</code> (<a data-preview="data-preview" href="../controls/risk-assessment/#ra-05-03">Breadth and Depth of Coverage</a>)</li>
+</ul>
+</li>
+<li><strong>System and Services Acquisition (SA)</strong><ul>
+<li><code>SA-09</code> (<a data-preview="data-preview" href="../controls/system-and-services-acquisition/#sa-09">External System Services</a>)</li>
+<li><code>SA-11 (01)</code> (<a data-preview="data-preview" href="../controls/system-and-services-acquisition/#sa-11-01">Static Code Analysis</a>)</li>
+</ul>
+</li>
+<li><strong>System and Communications Protection (SC)</strong><ul>
+<li><code>SC-07</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-07">Boundary Protection</a>)</li>
+<li><code>SC-07 (03)</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-07-03">Access Points</a>)</li>
+<li><code>SC-07 (04)</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-07-04">External Telecommunications Services</a>)</li>
+<li><code>SC-07 (05)</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-07-05">Deny by Default — Allow by Exception</a>)</li>
+<li><code>SC-07 (07)</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-07-07">Split Tunneling for Remote Devices</a>)</li>
+<li><code>SC-07 (08)</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-07-08">Route Traffic to Authenticated Proxy Servers</a>)</li>
+<li><code>SC-07 (12)</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-07-12">Host-based Protection</a>)</li>
+<li><code>SC-07 (18)</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-07-18">Fail Secure</a>)</li>
+<li><code>SC-07 (20)</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-07-20">Dynamic Isolation and Segregation</a>)</li>
+<li><code>SC-07 (21)</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-07-21">Isolation of System Components</a>)</li>
+<li><code>SC-08</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-08">Transmission Confidentiality and Integrity</a>)</li>
+<li><code>SC-12</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-12">Cryptographic Key Establishment and Management</a>)</li>
+<li><code>SC-13</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-13">Cryptographic Protection</a>)</li>
+<li><code>SC-21</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-21">Secure Name/Address Resolution Service (Recursive or Caching Resolver)</a>)</li>
+<li><code>SC-28</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-28">Protection of Information at Rest</a>)</li>
+<li><code>SC-45 (01)</code> (<a data-preview="data-preview" href="../controls/system-and-communications-protection/#sc-45-01">Synchronization with Authoritative Time Source</a>)</li>
+</ul>
+</li>
+<li><strong>System and Information Integrity (SI)</strong><ul>
+<li><code>SI-03</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-03">Malicious Code Protection</a>)</li>
+<li><code>SI-04 (01)</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-04-01">System-wide Intrusion Detection System</a>)</li>
+<li><code>SI-04 (02)</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-04-02">Automated Tools and Mechanisms for Real-time Analysis</a>)</li>
+<li><code>SI-04 (10)</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-04-10">Visibility of Encrypted Communications</a>)</li>
+<li><code>SI-04 (16)</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-04-16">Correlate Monitoring Information</a>)</li>
+<li><code>SI-04 (19)</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-04-19">Risk for Individuals</a>)</li>
+<li><code>SI-04 (20)</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-04-20">Privileged Users</a>)</li>
+<li><code>SI-04 (23)</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-04-23">Host-based Devices</a>)</li>
+<li><code>SI-06</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-06">Security and Privacy Function Verification</a>)</li>
+<li><code>SI-07</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-07">Software, Firmware, and Information Integrity</a>)</li>
+<li><code>SI-07 (01)</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-07-01">Integrity Checks</a>)</li>
+<li><code>SI-10</code> (<a data-preview="data-preview" href="../controls/system-and-information-integrity/#si-10">Information Input Validation</a>)</li>
+</ul>
+</li>
+</ul>
+</details>
+</div>
+</div>
+</div>
+<hr />
+<p><strong>Terms:</strong> <a data-preview="data-preview" href="../../definitions/#fedramp-independent-assessment">FedRAMP Independent Assessment</a></p>
+</div>
+<h3 id="mandatory-control-assessment">Mandatory Control Assessment<a class="headerlink" href="#mandatory-control-assessment" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-CSF-MCA</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</li>
+</ul>
+</details>
+<div class="admonition quote">
+<p>Providers <a data-preview="data-preview" href="../../definitions/#must">MUST</a> have all applicable Rev5 Controls included in FedRAMP independent assessments every 3 years but are not required to have all Rev5 Controls included in the same FedRAMP independent assessment.</p>
+<p><strong>Timeframe:</strong> 3 years</p>
+<hr />
+<p><em><strong>Note:</strong> Traditionally this has been done by reviewing a rotating selection of Rev5 Controls at each annual assessment, however this requirement is a ceiling and not a floor. See <a data-preview="data-preview" href="#preferred-control-assessment">IVV-CSF-PCA (Preferred Control Assessment)</a> for FedRAMP's recommended approach to Rev5 control assessments.</em></p>
+<hr />
+<p><strong>Terms:</strong> <a data-preview="data-preview" href="../../definitions/#fedramp-independent-assessment">FedRAMP Independent Assessment</a></p>
+</div>
+<h3 id="assessment-of-rev5-controls-with-findings">Assessment of Rev5 Controls with Findings<a class="headerlink" href="#assessment-of-rev5-controls-with-findings" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-CSF-ACF</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</li>
+</ul>
+</details>
+<div class="admonition quote">
+<p>Providers <a data-preview="data-preview" href="../../definitions/#must">MUST</a> have Rev5 Controls with negative findings from the previous FedRAMP independent assessment included in the next FedRAMP independent assessment.</p>
+<hr />
+<p><strong>Terms:</strong> <a data-preview="data-preview" href="../../definitions/#fedramp-independent-assessment">FedRAMP Independent Assessment</a></p>
+</div>
+<h3 id="preferred-control-assessment">Preferred Control Assessment<a class="headerlink" href="#preferred-control-assessment" title="Permanent link">&para;</a></h3>
+<details class="abstract">
+<summary>IVV-CSF-PCA</summary>
+<p><strong>Changelog:</strong></p>
+<ul>
+<li><strong>2026-06-24:</strong> Official launch of the FedRAMP Consolidated Rules for 2026.</li>
+</ul>
+</details>
+<div class="admonition quote">
+<p>Providers <a data-preview="data-preview" href="../../definitions/#should">SHOULD</a> include all applicable Rev5 Controls in each FedRAMP independent assessment.</p>
+<hr />
+<p><strong>Terms:</strong> <a data-preview="data-preview" href="../../definitions/#fedramp-independent-assessment">FedRAMP Independent Assessment</a></p>
+</div>
+
+
+  <nav class="md-tags" >
+    
+      
+      
+      
+        
+        
+          
+        
+      
+      
+        <span class="md-tag md-tag-icon md-tag--20x">20x</span>
+      
+    
+      
+      
+      
+        
+        
+          
+        
+      
+      
+        <span class="md-tag md-tag-icon md-tag--cloud-service-providers">Cloud Service Providers</span>
+      
+    
+      
+      
+      
+        
+        
+          
+        
+      
+      
+        <span class="md-tag md-tag-icon md-tag--independent-assessors">Independent Assessors</span>
+      
+    
+      
+      
+      
+        
+        
+          
+        
+      
+      
+        <span class="md-tag md-tag-icon md-tag--rev5">Rev5</span>
+      
+    
+      
+      
+      
+        
+        
+          
+        
+      
+      
+        <span class="md-tag md-tag-icon md-tag--rules">Rules</span>
+      
+    
+  </nav>
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+
+  <form class="md-feedback" name="feedback" hidden>
+    <fieldset>
+      <legend class="md-feedback__title">
+        Was this page helpful?
+      </legend>
+      <div class="md-feedback__inner">
+        <div class="md-feedback__list">
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page was helpful" data-md-value="1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8m2 0a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10M10 9.5c0 .8-.7 1.5-1.5 1.5S7 10.3 7 9.5 7.7 8 8.5 8s1.5.7 1.5 1.5m7 0c0 .8-.7 1.5-1.5 1.5S14 10.3 14 9.5 14.7 8 15.5 8s1.5.7 1.5 1.5m-5 7.73c-1.75 0-3.29-.73-4.19-1.81L9.23 14c.45.72 1.52 1.23 2.77 1.23s2.32-.51 2.77-1.23l1.42 1.42c-.9 1.08-2.44 1.81-4.19 1.81"/></svg>
+            </button>
+          
+            <button class="md-feedback__icon md-icon" type="submit" title="This page could be improved" data-md-value="0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8m2 0a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10m-6.5-4c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5-1.5-.7-1.5-1.5.7-1.5 1.5-1.5M10 9.5c0 .8-.7 1.5-1.5 1.5S7 10.3 7 9.5 7.7 8 8.5 8s1.5.7 1.5 1.5m2 4.5c1.75 0 3.29.72 4.19 1.81l-1.42 1.42C14.32 16.5 13.25 16 12 16s-2.32.5-2.77 1.23l-1.42-1.42C8.71 14.72 10.25 14 12 14"/></svg>
+            </button>
+          
+        </div>
+        <div class="md-feedback__note">
+          
+            <div data-md-value="1" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+            <div data-md-value="0" hidden>
+              
+              
+                
+              
+              
+              
+                
+                
+              
+              Thanks for your feedback!
+            </div>
+          
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+
+<div id="__comments-container">
+  <h2 id="__comments">Comments</h2>
+  <!-- Insert generated snippet here -->
+</div>
+<script>
+  (function() {
+    // Giscus is only enabled on the production domain; preview deployments
+    // (e.g. preview.fedramp.gov) share this same build and must not show it.
+    var allowedHosts = ["fedramp.gov", "www.fedramp.gov"]
+    if (allowedHosts.indexOf(window.location.hostname) === -1) {
+      var container = document.getElementById("__comments-container")
+      if (container) {
+        container.style.display = "none"
+      }
+      return
+    }
+
+    var giscus = document.createElement("script")
+    giscus.src = "https://giscus.app/client.js"
+    giscus.setAttribute("data-repo", "FedRAMP/2026")
+    giscus.setAttribute("data-repo-id", "R_kgDORpyFmQ")
+    giscus.setAttribute("data-category", "Page Discussion")
+    giscus.setAttribute("data-category-id", "DIC_kwDORpyFmc4C77Oi")
+    giscus.setAttribute("data-mapping", "pathname")
+    giscus.setAttribute("data-strict", "0")
+    giscus.setAttribute("data-reactions-enabled", "1")
+    giscus.setAttribute("data-emit-metadata", "0")
+    giscus.setAttribute("data-input-position", "top")
+    giscus.setAttribute("data-theme", "preferred_color_scheme")
+    giscus.setAttribute("data-lang", "en")
+    giscus.setAttribute("data-loading", "lazy")
+    giscus.crossOrigin = "anonymous"
+    giscus.async = true
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme)
+    }
+
+    document.getElementById("__comments-container").appendChild(giscus)
+
+    // Synchronize Giscus theme with palette
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  })()
+</script>
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../significant-change-notification/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Significant Change Notification">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Significant Change Notification
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../vulnerability-evaluation-and-reporting/" class="md-footer__link md-footer__link--next" aria-label="Next: Vulnerability Evaluation and Reporting">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Vulnerability Evaluation and Reporting
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      fedramp.gov
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog" role="status" aria-atomic="true">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      
+<div class="md-progress" data-md-component="progress" role="progressbar" aria-label="Loading"></div>
+    
+    
+    
+      
+      
+      
+      
+        
+        
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["announce.dismiss","content.code.annotate","content.code.copy","content.code.select","content.footnote.tooltips","content.tabs.link","content.tooltips","header.autohide","navigation.footer","navigation.indexes","navigation.instant","navigation.instant.prefetch","navigation.instant.progress","navigation.path","navigation.prune","navigation.sections","navigation.tabs","navigation.tabs.sticky","navigation.top","navigation.tracking","search.highlight","toc.follow"],"redirect":null,"search":"../../assets/javascripts/workers/search.c47bb847.min.js","tags":{"20x":"20x","Advisors":"advisors","Cloud Service Providers":"cloud-service-providers","Controls":"controls","Deadlines":"deadlines","Definitions":"definitions","FedRAMP":"fedramp","Federal Agencies":"federal-agencies","Guidance":"guidance","Historical":"historical","Independent Assessors":"independent-assessors","Key Security Indicators":"key-security-indicators","Legal Authority":"legal-authority","Rev5":"rev5","Rules":"rules"},"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","clipboard.error":"Could not copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.77dd0ce9.min.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
+      
+        <script src="../../javascripts/tablesort.js"></script>
+      
+        <script src="https://www.fedramp.gov/javascripts/dap.js"></script>
+      
+    
+  </body>
+</html>
