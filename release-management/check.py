@@ -43,6 +43,13 @@ def check():
     assert docs['local-ci.yml']['on']['push']['branches'] == ['main']
     assert docs['local-ci.yml']['on']['pull_request']['branches'] == ['main']
     assert set(docs['local-release.yml']['on']) == {'workflow_dispatch'}
+    test_workflow = docs['local-test.yml']
+    assert set(test_workflow['on']) == {'workflow_dispatch'}
+    test_steps = test_workflow['jobs']['test']['steps']
+    test_commands = [step['run'] for step in test_steps if 'run' in step]
+    assert test_commands == ['python3 release-management/release.py test',
+                             'python3 release-management/release.py cleanup']
+    assert 'secrets.' not in (ROOT / '.github/workflows/local-test.yml').read_text()
     release_job = docs['local-release.yml']['jobs']['release']
     assert release_job['permissions'] == {'contents': 'write', 'actions': 'write', 'pull-requests': 'write'}
     assert 'secrets.' not in (ROOT / '.github/workflows/local-release.yml').read_text()

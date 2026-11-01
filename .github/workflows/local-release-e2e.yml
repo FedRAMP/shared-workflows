@@ -1,6 +1,6 @@
 # Fixed harness: dispatched at the release candidate, never generated at runtime.
-name: local-release-e2e
-run-name: local-release-e2e ${{ inputs.phase }}
+name: (Local) Internal Build And Import Test Harness
+run-name: (Local) Internal Build And Import Test Harness — ${{ inputs.phase }}
 on:
   workflow_dispatch:
     inputs:

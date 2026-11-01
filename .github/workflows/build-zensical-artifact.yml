@@ -1,4 +1,4 @@
-name: Build Zensical artifact
+name: (Shared) Build Zensical Site And Upload Artifact
 
 on:
   workflow_call:

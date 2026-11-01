@@ -1,4 +1,4 @@
-name: Import Zensical sites
+name: (Shared) Import Sites And Create Draft Pull Request
 
 on:
   workflow_call:
