@@ -24,9 +24,11 @@ Clean up any old actions if appropriate, as well as any leftover `requirements.i
 `build-fr-zensical.yml` contains the common build environment and optional Pages
 deployment. `import-zensical-sites.yml` calls it for each changed site with
 `deploy: false`, `preview-urls: false`, and `artifact-mode: archive`. Python, Bun,
-and locked Python dependencies are configured in one place. The `$/` same-repository
-reusable-workflow reference and shared source checkout keep builds and
-dependencies on the same release commit.
+and locked Python dependencies are configured in one place. The importer calls
+the builder through an explicit repository and commit reference. The builder
+checks out its dependencies from that same commit. When releasing builder or
+dependency changes, update the importer's builder SHA to the published commit
+before releasing the importer.
 
 The import workflow uses
 [`import-zensical-sites/zensical-import.py`](import-zensical-sites/zensical-import.py)

@@ -63,7 +63,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.discover.outputs.matrix) }}
-    uses: $/.github/workflows/build-fr-zensical.yml
+    # Pin the builder commit explicitly to avoid relative lookup through a release tag.
+    uses: FedRAMP/shared-workflows/.github/workflows/build-fr-zensical.yml@b83b2ed08fe80755900f607e59d35b572b2a56e2
     with:
       deploy: false
       source-repository: ${{ matrix.repository }}
