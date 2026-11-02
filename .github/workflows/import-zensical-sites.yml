@@ -93,6 +93,23 @@ jobs:
       build-script: ${{ matrix.build-script }}
 
   collect:
+    name: Collect Built Sites
+    needs: [discover, build]
+    runs-on: ubuntu-26.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout Destination Repository
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.discover.outputs.base-sha }}
+          persist-credentials: false
+      - name: Checkout Shared Tools
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          path: .shared-workflows
+          persist-credentials: false
       - name: Determine Site Count
         id: site-count
         env:
@@ -121,6 +138,22 @@ jobs:
         with:
           pattern: ${{ inputs.artifact-prefix }}import-*
           path: ${{ runner.temp }}/site-artifacts
+
+      - name: Verify Site Archives
+        env:
+          ARTIFACT_PREFIX: ${{ inputs.artifact-prefix }}
+          MATRIX: ${{ needs.discover.outputs.matrix }}
+          GIT_TERMINAL_PROMPT: '0'
+        run: python3 .shared-workflows/import-zensical-sites/zensical-import.py collect
+      - name: Upload Site Archives
+        uses: actions/upload-artifact@v5
+        with:
+          name: ${{ inputs.artifact-prefix }}collected-sites
+          path: |
+            ${{ runner.temp }}/collected-sites.tar.gz
+            ${{ runner.temp }}/import-pr.md
+          if-no-files-found: error
+          retention-days: 7
 
   import-pr:
     name: Prepare Import PR
