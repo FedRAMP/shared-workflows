@@ -93,43 +93,34 @@ jobs:
       build-script: ${{ matrix.build-script }}
 
   collect:
-    name: Collect Built Sites
-    needs: [discover, build]
-    runs-on: ubuntu-26.04
-    timeout-minutes: 20
-    steps:
-      - name: Checkout Destination Repository
-        uses: actions/checkout@v5
+      - name: Determine Site Count
+        id: site-count
+        env:
+          MATRIX: ${{ needs.discover.outputs.matrix }}
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          import os
+
+          sites = json.loads(os.environ["MATRIX"])["include"]
+          if not sites:
+              raise ValueError("No sites to collect")
+          print(f"single={'true' if len(sites) == 1 else 'false'}")
+          PY
+
+      - name: Download Single Site Archive
+        if: steps.site-count.outputs.single == 'true'
+        uses: actions/download-artifact@v6
         with:
-          ref: ${{ needs.discover.outputs.base-sha }}
-          persist-credentials: false
-      - name: Checkout Shared Tools
-        uses: actions/checkout@v5
-        with:
-          repository: ${{ job.workflow_repository }}
-          ref: ${{ job.workflow_sha }}
-          path: .shared-workflows
-          persist-credentials: false
-      - name: Download Site Archives
+          name: ${{ format('{0}import-{1}', inputs.artifact-prefix, fromJSON(needs.discover.outputs.matrix).include[0].id) }}
+          path: ${{ format('{0}/site-artifacts/{1}import-{2}', runner.temp, inputs.artifact-prefix, fromJSON(needs.discover.outputs.matrix).include[0].id) }}
+
+      - name: Download Multiple Site Archives
+        if: steps.site-count.outputs.single == 'false'
         uses: actions/download-artifact@v6
         with:
           pattern: ${{ inputs.artifact-prefix }}import-*
           path: ${{ runner.temp }}/site-artifacts
-      - name: Verify Site Archives
-        env:
-          ARTIFACT_PREFIX: ${{ inputs.artifact-prefix }}
-          MATRIX: ${{ needs.discover.outputs.matrix }}
-          GIT_TERMINAL_PROMPT: '0'
-        run: python3 .shared-workflows/import-zensical-sites/zensical-import.py collect
-      - name: Upload Site Archives
-        uses: actions/upload-artifact@v5
-        with:
-          name: ${{ inputs.artifact-prefix }}collected-sites
-          path: |
-            ${{ runner.temp }}/collected-sites.tar.gz
-            ${{ runner.temp }}/import-pr.md
-          if-no-files-found: error
-          retention-days: 7
 
   import-pr:
     name: Prepare Import PR
