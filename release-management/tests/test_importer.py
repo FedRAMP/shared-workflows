@@ -144,7 +144,7 @@ class ImportTests(unittest.TestCase):
                     member.size = len(value)
                     member.mode = 0o755 if name == 'tool.sh' else 0o644
                     archive.addfile(member, io.BytesIO(value))
-            (dest / 'build-info.txt').write_text('Python 3.13\nZensical 0.0.73\n')
+            (dest / 'build-info.txt').write_text('Python 3.13\nZensical 0.1.0\n')
         os.environ['MATRIX'] = json.dumps({'include': sites})
 
     def test_round_trip_preserves_hidden_and_executable_files_removes_stale(self):
